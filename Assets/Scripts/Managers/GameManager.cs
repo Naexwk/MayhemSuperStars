@@ -41,7 +41,7 @@ public class GameManager : NetworkBehaviour
     #endregion
 
     // Variables de rondas
-    static public int numberOfPlayers;
+    static public NetworkVariable<int> numberOfPlayers = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone);
     public static NetworkVariable<bool> changedPlayers = new NetworkVariable<bool>();
 
     private int[] points = {4,8,8,16,32};
@@ -88,7 +88,7 @@ public class GameManager : NetworkBehaviour
     void OnSceneEvent (SceneEvent sceneEvent) {
         if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted) {
             //Debug.Log ("Called OnSync");
-            if (SceneManager.GetActiveScene().name == "SampleScene"){
+            if (SceneManager.GetActiveScene().name == "SampleScene" && IsOwner){
                 GameStarted.Value = false;
                 UpdateGameState(GameState.LanConnection);
                 StartGame();
@@ -114,7 +114,7 @@ public class GameManager : NetworkBehaviour
 
     public void AddPlayer(string _name){
 
-        numberOfPlayers++;
+        numberOfPlayers.Value++;
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Add(_name);
         Debug.Log("Added " + _name);
@@ -143,7 +143,7 @@ public class GameManager : NetworkBehaviour
 
         //Debug.Log("helper length: " + helper.Length);
         //prevPlayerPoints = playerPoints;
-        Array.Copy(playerPoints, helper, numberOfPlayers);
+        Array.Copy(playerPoints, helper, numberOfPlayers.Value);
         //Debug.Log("helper length 2: " + helper.Length);
         //helper = playerPoints;
         playerLeaderboard = SortAndIndex(helper);
@@ -322,9 +322,9 @@ public class GameManager : NetworkBehaviour
     {
         if (IsServer) {
             //Debug.Log("numberofplayers: " + numberOfPlayers);
-            playerPoints = new int[numberOfPlayers];
-            helper = new int[numberOfPlayers];
-            playerLeaderboard = new int[numberOfPlayers];
+            playerPoints = new int[numberOfPlayers.Value];
+            helper = new int[numberOfPlayers.Value];
+            playerLeaderboard = new int[numberOfPlayers.Value];
             currentRound = 1;
             //Debug.Log(playerPoints.Length);
             GameStarted.Value = true;

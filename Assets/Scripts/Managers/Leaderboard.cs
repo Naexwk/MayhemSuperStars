@@ -35,10 +35,10 @@ public class Leaderboard : MonoBehaviour
 
     public void updateLeaderboard(bool prev, bool curr){
         //Debug.Log("hello: " + GameManager.numberOfPlayers);
-        if (GameManager.numberOfPlayers >= 3) {
+        if (GameManager.numberOfPlayers.Value >= 3) {
             player3.SetActive(true);
         }
-        if (GameManager.numberOfPlayers >= 4) {
+        if (GameManager.numberOfPlayers.Value >= 4) {
             player4.SetActive(true);
         }
         //Debug.Log("count");
