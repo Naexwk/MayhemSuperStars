@@ -15,12 +15,15 @@ public class ZombieScript : NetworkBehaviour
     public NetworkVariable<int> health = new NetworkVariable<int>();
 
     private Animator animator;
+    private SpriteRenderer m_SpriteRenderer;
     //public int health;
 
     // Valores iniciales
     void Start()
     {
-        animator = GetComponentInChildren<Animator>();
+        animator = GetComponent<Animator>();
+        m_SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        m_SpriteRenderer.color = new Color(1f, 1f, Random.Range(0f, 1f));
     }
 
     public override void OnNetworkSpawn()
