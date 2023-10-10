@@ -25,6 +25,7 @@ public class PlayerController : NetworkBehaviour
     public int bulletDamage;
 
     //Animacion
+    public RuntimeAnimatorController[] characterAnimators;
     public Animator animator;
 
     // Variables de control
@@ -465,6 +466,7 @@ public class PlayerController : NetworkBehaviour
     public void changeCharacter(string _characterCode){
         characterCode = _characterCode;
         if (_characterCode == "cheeseman") {
+            animator.runtimeAnimatorController = characterAnimators[0];
             char_playerSpeed = 8f;
             char_bulletSpeed = 30f;
             char_maxHealth = 6;
@@ -474,7 +476,7 @@ public class PlayerController : NetworkBehaviour
             return;
         }
         if (_characterCode == "sarge") {
-            
+            animator.runtimeAnimatorController = characterAnimators[1];
             char_playerSpeed = 6f;
             char_bulletSpeed = 30f;
             char_maxHealth = 10;
