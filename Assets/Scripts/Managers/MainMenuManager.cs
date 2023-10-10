@@ -5,18 +5,26 @@ using UnityEngine;
 public class MainMenuManager : MonoBehaviour
 {
     public GameObject joinGamePanel;
-    bool joinGamePanelState = false;
+    public bool joinGamePanelState = false;
 
     public GameObject settingsPanel;
-    bool settingsPanelState = false;
+    public bool settingsPanelState = false;
 
     public void changeStateJoinGamePanel(){
         joinGamePanelState = !joinGamePanelState;
         joinGamePanel.SetActive(joinGamePanelState);
+        if (settingsPanelState) {
+            settingsPanelState = !settingsPanelState;
+            settingsPanel.SetActive(settingsPanelState);
+        }
     }
 
     public void changeStateSettingsPanel(){
         settingsPanelState = !settingsPanelState;
         settingsPanel.SetActive(settingsPanelState);
+        if (joinGamePanelState) {
+            joinGamePanelState = !joinGamePanelState;
+            joinGamePanel.SetActive(joinGamePanelState);
+        }
     }
 }

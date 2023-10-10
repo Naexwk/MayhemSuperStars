@@ -311,7 +311,7 @@ public class PlayerController : NetworkBehaviour
     // Ignora las colisiones con otros jugadores
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Dead Player")
+        if (collision.gameObject.tag == "Dead Player")
         {
             Physics2D.IgnoreCollision(collision.transform.GetComponent<Collider2D>(), GetComponent<Collider2D>());
         }
@@ -463,6 +463,7 @@ public class PlayerController : NetworkBehaviour
         gameManager.GetComponent<GameManager>().AddPlayer(_name);
     }
 
+    // No, no estamos orgullosos de esta solución, pero se reformulará
     public void changeCharacter(string _characterCode){
         characterCode = _characterCode;
         if (_characterCode == "cheeseman") {
@@ -473,6 +474,7 @@ public class PlayerController : NetworkBehaviour
             char_fireRate = 3; // en disparos por segundo
             char_bulletDamage = 3;
             specAb = new specialAbility(CheesemanSA);
+            changeAnimatorServerRpc(playerNumber, 0);
             return;
         }
         if (_characterCode == "sarge") {
@@ -483,8 +485,32 @@ public class PlayerController : NetworkBehaviour
             char_fireRate = 2; // en disparos por segundo
             char_bulletDamage = 4;
             specAb = new specialAbility(CheesemanSA);
+            changeAnimatorServerRpc(playerNumber, 1);
             return;
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void changeAnimatorServerRpc(ulong _playerNumber, int _characterAnimatorNumber){
+        Debug.Log("Called changeAnimatorServer with playerNumber " + _playerNumber + " and charNumber " + _characterAnimatorNumber);
+        changeAnimatorClientRpc(_playerNumber, _characterAnimatorNumber);
+    }
+
+    // Se ejecuta en todos los clientes
+    // Le dota su objetivo a la cámara
+    [ClientRpc]
+    public void changeAnimatorClientRpc(ulong _playerNumber, int _characterAnimatorNumber){
+        Debug.Log("Called changeAnimatorClient with playerNumber " + _playerNumber + " and charNumber " + _characterAnimatorNumber);
+        GameObject[] players;
+        PlayerController script;
+        players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players) {
+            script = player.GetComponent<PlayerController>();
+            if (script.playerNumber == _playerNumber) {
+                script.animator.runtimeAnimatorController = characterAnimators[_characterAnimatorNumber];
+            }
+        }
+        
     }
 
 
