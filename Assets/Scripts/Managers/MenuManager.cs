@@ -36,7 +36,7 @@ public class MenuManager : NetworkBehaviour
     // Suscribirse al cambio de estado del GameManager
     void Awake(){
         
-        GameManager.State.OnValueChanged += GameManagerOnGameStateChanged;
+        GameManager.state.OnValueChanged += GameManagerOnGameStateChanged;
         GameManager.handleLeaderboard.OnValueChanged += updateLeaderboard;
         NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
         SceneManager.sceneLoaded += OnSceneLoaded;

@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Controlador de las balas falsas, unicamente como efecto visual.
 public class FakePlayerBullet : MonoBehaviour
 {
-    // Script para balas client-side. No hacen nada.
 
     public float bulletSpeed = 30f;
 
@@ -13,7 +13,6 @@ public class FakePlayerBullet : MonoBehaviour
     {
         if (collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Enemy")
         {
-
             Destroy(this.gameObject);
         }
     }

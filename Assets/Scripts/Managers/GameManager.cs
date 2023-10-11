@@ -7,120 +7,105 @@ using Unity.Netcode;
 using UnityEngine.SceneManagement;
 using Unity.Collections;
 
+// Controlador de estados de juego
 public class GameManager : NetworkBehaviour
 {
     #region Game Manager Variables
-    public static GameManager Instance;
-    //public GameState State;
-    public static NetworkVariable<GameState> State = new NetworkVariable<GameState>(default, NetworkVariableReadPermission.Everyone);
-
+    public static GameManager instance;
+    // Variable de estado de juego
+    public static NetworkVariable<GameState> state = new NetworkVariable<GameState>(default, NetworkVariableReadPermission.Everyone);
     public static event Action<GameState> OnGameStateChanged;
-    public NetworkVariable<bool> GameStarted = new NetworkVariable<bool>();
-    public bool startHandled = false;
+    // Variables de control de inicio de juego
+    public NetworkVariable<bool> gameStarted = new NetworkVariable<bool>();
+    private bool startHandled = false;
     #endregion
 
-    #region Round Manager Variables   
+    #region Round Manager Variables
+    // Lista de jugadores
     private GameObject[] players;
     private GameObject[] cameraTargets;
 
-    public NetworkVariable<bool> RoundSection = new NetworkVariable<bool>();
-    public NetworkVariable<bool> LeaderboardSection = new NetworkVariable<bool>();
-    public NetworkVariable<bool> PurchasePhase = new NetworkVariable<bool>();
+    // Variables de control de estados de juego
+    private bool roundSection;
+    private bool leaderboardSection;
+    private bool purchasePhase;
 
-    //private bool RoundSection, LeaderboardSection, PurchasePhase;
-    public float RoundTime, leaderboardTime, purchaseTime;
+    // Variables de tiempo de estados de juego
+    private float roundTime, leaderboardTime, purchaseTime;
 
     // Variables de tiempo
     public NetworkVariable<float> currentRoundTime = new NetworkVariable<float>();
     public NetworkVariable<float> currentLeaderboardTime = new NetworkVariable<float>();
     public NetworkVariable<float> currentPurchaseTime = new NetworkVariable<float>();
 
+    // Timer de rondas
     private TMP_Text timeText;
-
 
     #endregion
 
-    // Variables de rondas
+    // Variables de jugadores
     static public NetworkVariable<int> numberOfPlayers = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone);
-    public static NetworkVariable<bool> changedPlayers = new NetworkVariable<bool>();
+    static public NetworkVariable<bool> changedPlayers = new NetworkVariable<bool>();
 
+    // Puntos por ronda
     private int[] points = {4,8,8,16,32};
+
+    // Variables de control de rondas
     private int currentRound;
     private int maxRounds = 5;
 
+    // Arrays de ayuda para almacenar y ordenar los puntos del jugador
     private int[] playerPoints;
     private int[] playerLeaderboard;
     private int[] helper;
 
+    // Listas de puntos de jugador, desordenados y ordenados
     public NetworkList<int> networkPoints;
     public NetworkList<int> networkLeaderboard;
+
+    // Lista de nombres de jugador
     public NetworkList<FixedString64Bytes> networkPlayerNames;
 
+    // Variable de control para llamar a actualizar el leaderboard
     public static NetworkVariable<bool> handleLeaderboard = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone);
 
-
+    // Inicializar valores
     void Awake() {
-        Instance = this;
+        instance = this;
         networkPoints = new NetworkList<int>();
         networkLeaderboard = new NetworkList<int>();
         networkPlayerNames = new NetworkList<FixedString64Bytes>();
         handleLeaderboard.Value = false;
-        //SceneManager.sceneLoaded += OnSceneLoaded;
         NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
-        //State = this.State;
-        
     }
     
+    // Entrar a estado de juego neutral
     void Start() {
-        //Debug.Log(SceneManager.GetActiveScene().name);
         UpdateGameState(GameState.LanConnection);
     }
-    
-    /*private void OnEnable() {
-        Debug.Log(SceneManager.GetActiveScene().name);
-        Debug.Log("Called");
-        if (SceneManager.GetActiveScene().name == "SampleScene"){
-            StartGame();
-            HandleStartGame();
-        }
-    }*/
 
+    // Al cargar la escena de juego, reiniciar los valores de juego
     void OnSceneEvent (SceneEvent sceneEvent) {
         if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted) {
-            //Debug.Log ("Called OnSync");
             if (SceneManager.GetActiveScene().name == "SampleScene" && IsOwner){
-                GameStarted.Value = false;
+                gameStarted.Value = false;
                 UpdateGameState(GameState.LanConnection);
                 StartGame();
                 HandleStartGame();
             }
-
-            //if (SceneManager.GetActiveScene().name == "GameRoom"){
-                //StartGame();
-                //HandleStartGame();
-                
-            //}
         }
-
     }
-
-    /*void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name == "SampleScene") {
-            
-        }
-    }*/
     
-
-    public void AddPlayer(string _name){
-
+    // Añadir jugador a la red
+    public void AddPlayer(string name){
         numberOfPlayers.Value++;
         changedPlayers.Value = !changedPlayers.Value;
-        networkPlayerNames.Add(_name);
-        Debug.Log("Added " + _name);
+        networkPlayerNames.Add(name);
     }
 
-    private void updateScores(){
+    // Actualizar los puntos de los jugadores
+    private void UpdateScores(){
+        // Distribuir los puntos de ronda entre los jugadores vivos
         players = GameObject.FindGameObjectsWithTag("Player");
         int pointsToDistribute;
         if (players.Length != 0) {
@@ -128,43 +113,34 @@ public class GameManager : NetworkBehaviour
         } else {
             pointsToDistribute = 0;
         }
-        //Debug.Log("points for today: " + points[currentRound-1]);
-        //Debug.Log("Players.Length: " + players.Length);
-        //Debug.Log("Points to Distribute: " + pointsToDistribute);
         foreach (GameObject player in players)
         {
             playerPoints[Convert.ToInt32(player.GetComponent<PlayerController>().playerNumber)] += pointsToDistribute;
         }
 
+        // Enviar los puntos de cada jugador a la red a través de networkPoints
         networkPoints.Clear();
         for (int i = 0; i < playerPoints.Length; i++) {
             networkPoints.Add(playerPoints[i]);
         }
 
-        //Debug.Log("helper length: " + helper.Length);
-        //prevPlayerPoints = playerPoints;
+        // Ordenar los puntos de los jugadores
         Array.Copy(playerPoints, helper, numberOfPlayers.Value);
-        //Debug.Log("helper length 2: " + helper.Length);
-        //helper = playerPoints;
         playerLeaderboard = SortAndIndex(helper);
-        
         Array.Reverse(playerLeaderboard);
-        //playerPoints = prevPlayerPoints;
 
-        /*for (int i = 0; i < playerLeaderboard.Length; i++) {
-            Debug.Log("order: " + playerLeaderboard[i]);
-        }*/
-        
+        // Enviar el orden de los jugadores para el leaderboard a la red a través de networkLeaderboard
         networkLeaderboard.Clear();
-        
         for (int i = 0; i < playerLeaderboard.Length; i++) {
             networkLeaderboard.Add(playerLeaderboard[i]);
         }
 
+        // Llamar a actualizar el leaderboard
         handleLeaderboard.Value = !handleLeaderboard.Value;
-        //Debug.Log(handleLeaderboard.Value);
     }
 
+    // Función para ordenar un array y recibir uno nuevo con la posición original
+    // de los datos.
     static int[] SortAndIndex<T>(T[] rg)
     {
         int i, c = rg.Length;
@@ -179,40 +155,43 @@ public class GameManager : NetworkBehaviour
         return keys;
     }
 
+    // Al aparecer en la red
     public override void OnNetworkSpawn()
     {
-        
         base.OnNetworkSpawn();
-        // Modifica las NetworkVariables y realiza otras configuraciones aquí
-        GameStarted.Value = false; // Por ejemplo, establece GameStarted en false cuando se inicie el NetworkObject
+        gameStarted.Value = false;
         DontDestroyOnLoad(this.gameObject);
         UpdateGameState(GameState.LanConnection);
-        
     }
 
 
     public void Update()
     {
-
-        if(GameStarted.Value){
+        // Controlar si el juego inició
+        if(gameStarted.Value){
             if(!startHandled){
-                GameManager.Instance.UpdateGameState(GameState.StartGame);
+                GameManager.instance.UpdateGameState(GameState.StartGame);
                 startHandled = true;
             }
         }
 
-        if (RoundSection.Value)
+        // Lógica de ronda de juego
+        if (roundSection)
         {
-            //Debug.Log("RoundSection.Value!");
+            // Encontrar el timer
             TMP_Text timeText = FindTimerText();
+
+            // Actualizar el tiempo de ronda
             if (IsOwner) {
                 currentRoundTime.Value -= Time.deltaTime;
             }
 
+            // Actualizar el texto según el tiempo
             if (timeText != null) {
                 timeText.text = (Mathf.Round(currentRoundTime.Value * 10.0f) / 10.0f).ToString();
             }
             
+            // Cambiar el formato del texto al quedar menos 10 segundos
             if(currentRoundTime.Value <= 10.1)
             {
                 if (timeText != null) {
@@ -222,56 +201,66 @@ public class GameManager : NetworkBehaviour
                 }
                 
             }
+
+            // Cambiar a leaderboard al acabarse el tiempo
             if (currentRoundTime.Value <= 0.5 )
             {
-                GameManager.Instance.UpdateGameState(GameState.Leaderboard);
+                GameManager.instance.UpdateGameState(GameState.Leaderboard);
                 if (IsOwner) {
-                    RoundSection.Value = false;
+                    roundSection = false;
                 }
 
             }
         }
-        if (LeaderboardSection.Value)
+
+        // Lógica de leaderboard
+        if (leaderboardSection)
         {
-            //Debug.Log("Leaderboard!");
+            // Actualizar el tiempo de ronda
             if (IsOwner) {
                 currentLeaderboardTime.Value -= Time.deltaTime;
             }
             
+            // Al acabarse el tiempo, cambiar a WinScreen o a Fase de Compra según 
+            // el número de rondas
             if (currentLeaderboardTime.Value <= 1)
             {
                 currentRound++;
                 if (currentRound > maxRounds) {
-                    GameManager.Instance.UpdateGameState(GameState.WinScreen);
+                    GameManager.instance.UpdateGameState(GameState.WinScreen);
                 } else {
-                    GameManager.Instance.UpdateGameState(GameState.PurchasePhase);
+                    GameManager.instance.UpdateGameState(GameState.PurchasePhase);
                 }
                 if (IsOwner) {
-                    LeaderboardSection.Value= false;
+                    leaderboardSection = false;
                 }
-                
             }
         }
 
-        if (PurchasePhase.Value)
+        // Lógica de fase de compra
+        if (purchasePhase)
         {
+            // Encontrar el timer
             TMP_Text timeText = FindTimerText();
-            //Hacer esta parte bien
+            // Modificar el texto
             timeText.color = Color.white;
             timeText.fontSize = 50;
-            //Hacer esta parte bien
+
+            // Actualizar el tiempo de fase de compra
             if (IsOwner) {
                 currentPurchaseTime.Value -= Time.deltaTime;
             }
+
+            // Actualizar el texto del timer
             if (timeText != null) {
                 timeText.text = Mathf.Round(currentPurchaseTime.Value).ToString();
             }
             
-            //Debug.Log(currentPurchaseTime.Value);
+            // Cambiar a ronda de combate al acabarse el tiempo
             if (currentPurchaseTime.Value <= 0)
             {
                 if (IsOwner) {
-                    PurchasePhase.Value = false;
+                    purchasePhase = false;
                 }
                 ResetValues();
                 // Llamar al RPC
@@ -280,14 +269,14 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    // Función de cambio de estado de juego
     public void UpdateGameState(GameState newState){
         if (IsOwner) {
-            State.Value = newState;
+            state.Value = newState;
         }
-        Debug.Log("State: " + newState);
+        Debug.Log("state: " + newState);
         switch(newState){
             case GameState.LanConnection:
-                HandleLanConnection();
                 break;
             case GameState.StartGame:
                 HandleStartGame();
@@ -299,7 +288,7 @@ public class GameManager : NetworkBehaviour
                 HandleLeaderboard();
                 break;
             case GameState.PurchasePhase:
-                HandlePurchasePhase();
+                HandlepurchasePhase();
                 break;
             case GameState.EditMode:
                 break;
@@ -311,88 +300,77 @@ public class GameManager : NetworkBehaviour
 
         OnGameStateChanged?.Invoke(newState);
     }
-
-    private void HandleLanConnection(){
-
-    }
     
     #region Round Manager Functions
 
+    // Función de inicio de juego
+    // Reinicia los valores de la partida
     public void StartGame()
     {
         if (IsServer) {
-            //Debug.Log("numberofplayers: " + numberOfPlayers);
             playerPoints = new int[numberOfPlayers.Value];
             helper = new int[numberOfPlayers.Value];
             playerLeaderboard = new int[numberOfPlayers.Value];
             currentRound = 1;
-            //Debug.Log(playerPoints.Length);
-            GameStarted.Value = true;
+            gameStarted.Value = true;
         }
         
     }
 
+    // Inicio de la ronda
     public void CombatRound()
     {
-        /*currentRound++;
-        if (currentRound > maxRounds) {
-            GameManager.Instance.UpdateGameState(GameState.WinScreen);
-        } else {
-            GameManager.Instance.UpdateGameState(GameState.Round);
-        }*/
-
-        GameManager.Instance.UpdateGameState(GameState.Round);
+        GameManager.instance.UpdateGameState(GameState.Round);
     }
 
+    // Función complementaria de inicio de juego
+    // Inicia las cámaras de los jugadores y resetea los tiempos de las rondas
     private void HandleStartGame(){
 
         if (IsOwner) {
             players = GameObject.FindGameObjectsWithTag("Player");
-            //Debug.Log(players.Length);
             foreach (GameObject player in players)
             {
-                //player.GetComponent<PlayerController>().spawnPlayerClientRpc();
                 player.GetComponent<PlayerController>().startCameraClientRpc();
             }
-            currentRoundTime.Value = RoundTime;
-            currentLeaderboardTime.Value = leaderboardTime;
-            currentPurchaseTime.Value = purchaseTime;
+            ResetValues();
         }
         CombatRound();
     }
+
+    // Iniciar sección de ronda
     private void HandleRound(){
         if (IsOwner) {
-            RoundSection.Value = true;
-
+            roundSection = true;
         }
-        
     }
+
+    // Iniciar sección de leaderboard y actualizar puntos
     void HandleLeaderboard(){
         if (IsOwner) {
-            LeaderboardSection.Value = true;
-            updateScores();
+            leaderboardSection = true;
+            UpdateScores();
+        }
+    }
+    
+    // Iniciar sección de fase de compra
+    void HandlepurchasePhase(){
+        if (IsOwner) {
+            purchasePhase = true;
         }
     }
     #endregion
 
-    void HandlePurchasePhase(){
-        
-        if (IsOwner) {
-            
-            PurchasePhase.Value = true;
-        }
-    }
-
+    // Reinicia los contadores de tiempo
     void ResetValues(){
         if (IsOwner) {
-            currentRoundTime.Value = RoundTime;
+            currentRoundTime.Value = roundTime;
             currentLeaderboardTime.Value = leaderboardTime;
             currentPurchaseTime.Value = purchaseTime;
         }
-        
-        
     }
 
+    // Función para encontrar el timer
     public TMP_Text FindTimerText()
     {
         GameObject textMeshProObject = GameObject.FindWithTag("Timer");
@@ -415,11 +393,9 @@ public class GameManager : NetworkBehaviour
             return null;
         }
     }
-
-
 }
 
-
+// Estados de juego
 public enum GameState{
     LanConnection,
     StartGame,

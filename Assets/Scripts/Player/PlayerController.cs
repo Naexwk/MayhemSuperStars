@@ -8,8 +8,6 @@ using UnityEngine.SceneManagement;
 delegate void specialAbility();
 public class PlayerController : NetworkBehaviour
 {
-
-
     // Estadísticas del personaje
     private float char_playerSpeed = 8f;
     private float char_bulletSpeed = 30f;
@@ -205,7 +203,7 @@ public class PlayerController : NetworkBehaviour
             Vector3 worldMousePos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2 direction = worldMousePos - transform.position;
             direction.Normalize();
-            bullethandler.GetComponent<BulletHandler>().spawnBulletServerRpc(bulletSpeed, direction, playerNumber, transform.position.x, transform.position.y);
+            bullethandler.GetComponent<BulletHandler>().SpawnBulletServerRpc(bulletSpeed, direction, playerNumber, transform.position.x, transform.position.y);
             timeSinceLastFire = Time.time;
 
             GameObject clone;
@@ -245,7 +243,7 @@ public class PlayerController : NetworkBehaviour
                 clone.GetComponent<Rigidbody2D>().velocity = (direction) * (10f);
             }*/
 
-            bullethandler.GetComponent<BulletHandler>().spawnCheeseBulletServerRpc(direction, playerNumber, abilityDamage, transform.position.x, transform.position.y);
+            bullethandler.GetComponent<BulletHandler>().SpawnCheeseBulletServerRpc(direction, playerNumber, abilityDamage, transform.position.x, transform.position.y);
     }
 
     // Función pública para hacer daño al jugador
@@ -392,7 +390,7 @@ public class PlayerController : NetworkBehaviour
         foreach (GameObject cameraTarget in cameraTargets)
         {
             if(cameraTarget.GetComponent<NetworkObject>().IsOwner){
-                mainCam.GetComponent<CameraMovement>().setCameraTarget(cameraTarget.transform);
+                mainCam.GetComponent<CameraMovement>().SetCameraTarget(cameraTarget.transform);
                 cameraTarget.GetComponent<CameraTarget>().StartCam();
             }
         }
