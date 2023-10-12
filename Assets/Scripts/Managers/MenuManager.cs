@@ -235,6 +235,7 @@ public class MenuManager : NetworkBehaviour
         }
     }
 
+    // Función para llamar la actualización del leaderboard
     private void UpdateLeaderboard(bool prev, bool curr){
         if (_leaderboard != null) {
             if(_leaderboard.activeSelf){

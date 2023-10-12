@@ -238,31 +238,23 @@ public class PlayerController : NetworkBehaviour
         timeSinceLastAbility = Time.time;
     }
 
+    // Sarge: Hacer invulnerable por 5 segundos
     private void SargeSA () {
-        
-            
             animator.SetBool("takeDamage", true);
-            //this.sargeActive = true;
-            //this.isInvulnerable = true;
-            //StopCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(invincibleSarge());
             StartCoroutine(recordAnimatorHitFrames());
-            //this.sargeActive = false;
             timeSinceLastAbility = Time.time;
 
     }
 
+    // Función de conteo de invulnerabilidad para la habilidad especial de Sarge
+    // DEV: Reformular para no usar sargeActive, sino isInvulnerable
     IEnumerator invincibleSarge()
     {
-        //this.isInvulnerable = true;
         StopCoroutine(recordInvulnerabiltyFrames());
         this.sargeActive = true;
-        //this.isInvulnerable = true;
-        Debug.Log("Invulnerable");
         yield return new WaitForSeconds(5);
-        //this.isInvulnerable = false;
         this.sargeActive = false;
-        Debug.Log("Vulnerable");
     }
 
     // Función pública para hacer daño al jugador
