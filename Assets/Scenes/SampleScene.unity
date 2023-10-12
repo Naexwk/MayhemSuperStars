@@ -1732,7 +1732,7 @@ MonoBehaviour:
   - {fileID: 8112366325697439444, guid: d49307185b298974085e552fb7e7f2b2, type: 3}
   - {fileID: 1412632871092107711, guid: 97d6bfc3b58145a4b9e7615edb8b3da3, type: 3}
   - {fileID: 6104055297058947148, guid: dfb4cf8fa61ec9d43bd7d6c2df26b2db, type: 3}
-  CurrentButtonPressed: 0
+  id: 0
 --- !u!4 &277407375
 Transform:
   m_ObjectHideFlags: 0
@@ -1986,7 +1986,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 901106355}
         m_TargetAssemblyTypeName: ItemController, Assembly-CSharp
-        m_MethodName: ButtonClicked
+        m_MethodName: StartNewPlacement
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2605,7 +2605,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 407735225}
         m_TargetAssemblyTypeName: SceneReload, Assembly-CSharp
-        m_MethodName: restartGame
+        m_MethodName: RestartGame
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2913,7 +2913,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf70fe6ca95c1684785b9637f589bf0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
   smoothTime: 0.15
 --- !u!114 &519420034
 MonoBehaviour:
@@ -3032,7 +3031,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 901106355}
         m_TargetAssemblyTypeName: ItemController, Assembly-CSharp
-        m_MethodName: ButtonClicked
+        m_MethodName: StartNewPlacement
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5284,9 +5283,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e92284c2328addb419f47fd0af4aa762, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 0
-  quantity: 1
-  quantityText: {fileID: 0}
   tempObject: {fileID: 0}
 --- !u!4 &901106356
 Transform:
@@ -7096,7 +7092,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 901106355}
         m_TargetAssemblyTypeName: ItemController, Assembly-CSharp
-        m_MethodName: ButtonClicked
+        m_MethodName: StartNewPlacement
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

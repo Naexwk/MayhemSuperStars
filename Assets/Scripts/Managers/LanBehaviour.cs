@@ -13,125 +13,74 @@ using Unity.Services.Relay.Models;
 using Unity.Networking.Transport.Relay;
 using UnityEngine.SceneManagement;
 
+// Controlador de sesión de red
 public class LanBehaviour : NetworkBehaviour
 {
-	private PlayerController pc;
-	private bool pcAssigned;
-
-	//[SerializeField] TextMeshProUGUI ipAddressText;
-	[SerializeField] TMP_InputField joinCodeText;
-
-	//[SerializeField] string ipAddress;
+	// Referencia a protocolo de transporte de Unity, dentro del NetworkManager
 	[SerializeField] UnityTransport transport;
+	
+	// Prefab de GameManager
+	[SerializeField] GameObject gameManagerPrefab;
 
-	public GameObject gameManagerObj;
-	//public GameObject playButton;
-	string inputJoinCode;
+	// Código de sala de juego (cliente)
+	private string inputJoinCode;
+	// Código de sala de juego (host)
 	public string hostJoinCode;
-	public string playerName = "Anon";
 
-	public GameObject  tf_newName;
+	// Nombre de este jugador
+	public string playerName = "Anon";
+	// Referencia a campo de texto de nombre
+	[SerializeField] GameObject tf_newName;
+	// Referencia a campo de texto para recibir código de sala de juego
+	[SerializeField] TMP_InputField joinCodeText;
 
 	void Awake () {
 		DontDestroyOnLoad(this.gameObject);
 	}
 
+	// Inicializar Autenticación anónima
 	async void Start()
 	{
-		//ipAddress = "0.0.0.0";
-		//SetIpAddress();
 		await UnityServices.InitializeAsync();
 		await AuthenticationService.Instance.SignInAnonymouslyAsync();
-		//await AuthenticationService.Instance.UpdatePlayerNameAsync("Anon");
-		//Debug.Log(await AuthenticationService.Instance.GetPlayerNameAsync());
+	}
 
+	// Inicia el juego como Host
+	public void StartHost() {
+		CreateRelay();
 	}
 
 	// Hostea un juego y añade un GameManager
-	public void StartHost() {
-		//Debug.Log(HostGame(3));
-		CreateRelay();
-		
-		//GetLocalIPAddress(); 
-		
-
-	}
-
-	// Inicia un cliente
-	public void StartClient() {
-		// Obtiene la IP local y se une al juego con esa IP
-		// Esto debe cambiar a conseguir la IP del campo de texto
-		//ipAddress = GetLocalIPAddress(); 
-		//ipAddress = ip.text;
-		//SetIpAddress();
-		inputJoinCode = joinCodeText.text;
-		JoinRelay(inputJoinCode);
-		
-		
-	}
-
-	/* Gets the Ip Address of your connected network and
-	shows on the screen in order to let other players join
-	by inputing that Ip in the input field */
-	// ONLY FOR HOST SIDE 
-	/*public string GetLocalIPAddress() {
-		var host = Dns.GetHostEntry(Dns.GetHostName());
-		foreach (var ip in host.AddressList) {
-			if (ip.AddressFamily == AddressFamily.InterNetwork) {
-				ipAddress = ip.ToString();
-				return ip.ToString();
-			}
-		}
-		throw new System.Exception("No network adapters with an IPv4 address in the system!");
-	}*/
-
-	/* Sets the Ip Address of the Connection Data in Unity Transport
-	to the Ip Address which was input in the Input Field */
-	// ONLY FOR CLIENT SIDE
-	/*public void SetIpAddress() {
-		transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-		transport.ConnectionData.Address = ipAddress;
-	}*/
-
-	// Instancia un GameManager. Server-only
-	public void InstantiateGameManager(){
-		GameObject gameManagerPrefab;
-		gameManagerPrefab = Instantiate(gameManagerObj, transform.position,Quaternion.identity);
-		gameManagerPrefab.GetComponent<NetworkObject>().Spawn();
-	}
-
-	public void ChangeScene(string sceneName){
-		NetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
-	}
-
-	/*public void activatePlayButton(bool _state)
-    {
-        playButton.SetActive(_state);
-    }*/
-
 	public async void CreateRelay(){
 		try {
+			// Crear sesión de juego y obtener código de sala de juego
 			Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
 			string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-			Debug.Log(joinCode);
 			hostJoinCode = joinCode;
-
 			RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
 			NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 			NetworkManager.Singleton.StartHost();
-			//ipAddressText.text = "Join Code: " + joinCode;
+			
+			// Crear un GameManager
 			InstantiateGameManager();
-			ChangeScene("GameRoom");
 
+			// Cambiar de escena
+			ChangeScene("GameRoom");
 		} catch (RelayServiceException e){
 			Debug.Log(e);
 		}
-		
+	}
+
+	// Inicia el juego como cliente
+	public void StartClient() {
+		// Entrar a sesión de juego con el código de sala en el campo de texto
+		inputJoinCode = joinCodeText.text;
+		JoinRelay(inputJoinCode);
 	}
 
 	public async void JoinRelay(string joinCode){
 		try {
-			Debug.Log("Joining Relay with " + joinCode);
+			// Entrar a sesión de juego
 			JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 			RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
 			NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
@@ -141,12 +90,20 @@ public class LanBehaviour : NetworkBehaviour
 		}
 	}
 
-	public void changeName(){
-		playerName = tf_newName.GetComponent<TMP_InputField>().text;
-		// DEV: Later
-		//await AuthenticationService.Instance.UpdatePlayerNameAsync(newName);
-		Debug.Log(playerName);
-		//Debug.Log(await AuthenticationService.Instance.GetPlayerNameAsync());
+	// Instancia un GameManager Host-Only
+	public void InstantiateGameManager(){
+		GameObject gameManager;
+		gameManager = Instantiate(gameManagerPrefab, transform.position,Quaternion.identity);
+		gameManager.GetComponent<NetworkObject>().Spawn();
 	}
 
+	// Función de cambio de escena
+	public void ChangeScene(string sceneName){
+		NetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+	}
+
+	// Función para cambiar de nombre
+	public void changeName(){
+		playerName = tf_newName.GetComponent<TMP_InputField>().text;
+	}
 }

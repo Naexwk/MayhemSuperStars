@@ -1154,7 +1154,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   joinGamePanel: {fileID: 1211255478}
+  joinGamePanelState: 0
   settingsPanel: {fileID: 120190665}
+  settingsPanelState: 0
 --- !u!4 &474994488
 Transform:
   m_ObjectHideFlags: 0
@@ -1220,11 +1222,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cb96366cdea0b043a42255a1abc642c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  joinCodeText: {fileID: 1669741362}
   transport: {fileID: 31812683}
-  gameManagerObj: {fileID: 6218536917503192965, guid: dde1425fff0e7794d880853824aa2608, type: 3}
+  gameManagerPrefab: {fileID: 6218536917503192965, guid: dde1425fff0e7794d880853824aa2608, type: 3}
   hostJoinCode: 
+  playerName: Anon
   tf_newName: {fileID: 2115573345}
+  joinCodeText: {fileID: 1669741362}
 --- !u!4 &643446805
 Transform:
   m_ObjectHideFlags: 0
@@ -1461,7 +1464,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 474994487}
         m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
-        m_MethodName: changeStateJoinGamePanel
+        m_MethodName: ChangeStateJoinGamePanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3546,7 +3549,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 474994487}
         m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
-        m_MethodName: changeStateSettingsPanel
+        m_MethodName: ChangeStateSettingsPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
