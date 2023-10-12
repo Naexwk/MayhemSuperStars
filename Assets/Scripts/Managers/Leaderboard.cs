@@ -19,27 +19,12 @@ public class Leaderboard : MonoBehaviour
     [SerializeField] private TMP_Text[] playerNames;
     [SerializeField] private TMP_Text[] playerScores;
 
-    // Actualizar leaderboard al activar (al finalizar cada ronda)
-    void OnEnable()
-    {
-        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
-        updateLeaderboard(true, true);
-    }
-
-    // Escuchar cambios de leaderboard
-    void Start()
-    {
-        GameManager.handleLeaderboard.OnValueChanged += updateLeaderboard;
-    }
-
-    void OnDestroy()
-    {
-        GameManager.handleLeaderboard.OnValueChanged -= updateLeaderboard;
-    }
-
     // Actualizar información del leaderboard
-    public void updateLeaderboard(bool prev, bool curr){
-        // Encender espacios según el número de jugadores
+    public void UpdateLeaderboard(bool prev, bool curr){
+        // Buscar gameManager
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+
+        // Activar espacios según el número de jugadores
         if (GameManager.numberOfPlayers.Value >= 3) {
             player3.SetActive(true);
         }

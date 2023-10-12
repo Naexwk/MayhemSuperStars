@@ -94,7 +94,7 @@ public class BulletHandler : NetworkBehaviour
     [ClientRpc]
     void SpawnFakeBulletsClientRPC(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y/*, ClientRpcParams clientRpcParams = default*/){
         foreach (GameObject player in players) {
-            player.gameObject.GetComponent<PlayerController>().spawnFakeBullet( _bulletSpeed,  _direction,  _playerNumber,  _x,  _y);
+            player.gameObject.GetComponent<PlayerController>().SpawnFakeBullet( _bulletSpeed,  _direction,  _playerNumber,  _x,  _y);
         }
     }
 

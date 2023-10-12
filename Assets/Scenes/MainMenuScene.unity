@@ -1223,7 +1223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   transport: {fileID: 31812683}
-  gameManagerPrefab: {fileID: 0}
+  gameManagerPrefab: {fileID: 6218536917503192965, guid: dde1425fff0e7794d880853824aa2608, type: 3}
   hostJoinCode: 
   playerName: Anon
   tf_newName: {fileID: 2115573345}

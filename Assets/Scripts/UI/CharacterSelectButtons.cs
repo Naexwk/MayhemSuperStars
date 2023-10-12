@@ -42,6 +42,6 @@ public class CharacterSelectButtons : MonoBehaviour
 
     // Cambiar personaje del jugador al especificado por characterCode
     public void CallChangeCharacter(){
-        myPlayer.GetComponent<PlayerController>().changeCharacter(characterCode);
+        myPlayer.GetComponent<PlayerController>().ChangeCharacter(characterCode);
     }
 }

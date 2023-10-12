@@ -1986,7 +1986,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 901106355}
         m_TargetAssemblyTypeName: ItemController, Assembly-CSharp
-        m_MethodName: ButtonClicked
+        m_MethodName: StartNewPlacement
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3031,7 +3031,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 901106355}
         m_TargetAssemblyTypeName: ItemController, Assembly-CSharp
-        m_MethodName: ButtonClicked
+        m_MethodName: StartNewPlacement
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7092,7 +7092,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 901106355}
         m_TargetAssemblyTypeName: ItemController, Assembly-CSharp
-        m_MethodName: ButtonClicked
+        m_MethodName: StartNewPlacement
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

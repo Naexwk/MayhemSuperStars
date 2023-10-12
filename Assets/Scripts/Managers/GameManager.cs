@@ -7,7 +7,6 @@ using Unity.Netcode;
 using UnityEngine.SceneManagement;
 using Unity.Collections;
 
-// Controlador de estados de juego
 public class GameManager : NetworkBehaviour
 {
     #region Game Manager Variables
@@ -26,12 +25,12 @@ public class GameManager : NetworkBehaviour
     private GameObject[] cameraTargets;
 
     // Variables de control de estados de juego
-    private bool roundSection;
-    private bool leaderboardSection;
-    private bool purchasePhase;
+    public NetworkVariable<bool> roundSection = new NetworkVariable<bool>();
+    public NetworkVariable<bool> leaderboardSection = new NetworkVariable<bool>();
+    public NetworkVariable<bool> purchasePhase = new NetworkVariable<bool>();
 
     // Variables de tiempo de estados de juego
-    private float roundTime, leaderboardTime, purchaseTime;
+    [SerializeField] private float roundTime, leaderboardTime, purchaseTime;
 
     // Variables de tiempo
     public NetworkVariable<float> currentRoundTime = new NetworkVariable<float>();
@@ -150,7 +149,7 @@ public class GameManager : NetworkBehaviour
             for (i = 0; i < c; i++)
                 keys[i] = i;
 
-            System.Array.Sort(rg, keys /*, ... */);
+            System.Array.Sort(rg, keys);
         }
         return keys;
     }
@@ -167,6 +166,7 @@ public class GameManager : NetworkBehaviour
 
     public void Update()
     {
+        
         // Controlar si el juego inició
         if(gameStarted.Value){
             if(!startHandled){
@@ -176,7 +176,7 @@ public class GameManager : NetworkBehaviour
         }
 
         // Lógica de ronda de juego
-        if (roundSection)
+        if (roundSection.Value)
         {
             // Encontrar el timer
             TMP_Text timeText = FindTimerText();
@@ -207,14 +207,14 @@ public class GameManager : NetworkBehaviour
             {
                 GameManager.instance.UpdateGameState(GameState.Leaderboard);
                 if (IsOwner) {
-                    roundSection = false;
+                    roundSection.Value = false;
                 }
 
             }
         }
 
         // Lógica de leaderboard
-        if (leaderboardSection)
+        if (leaderboardSection.Value)
         {
             // Actualizar el tiempo de ronda
             if (IsOwner) {
@@ -232,13 +232,13 @@ public class GameManager : NetworkBehaviour
                     GameManager.instance.UpdateGameState(GameState.PurchasePhase);
                 }
                 if (IsOwner) {
-                    leaderboardSection = false;
+                    leaderboardSection.Value = false;
                 }
             }
         }
 
         // Lógica de fase de compra
-        if (purchasePhase)
+        if (purchasePhase.Value)
         {
             // Encontrar el timer
             TMP_Text timeText = FindTimerText();
@@ -260,7 +260,7 @@ public class GameManager : NetworkBehaviour
             if (currentPurchaseTime.Value <= 0)
             {
                 if (IsOwner) {
-                    purchasePhase = false;
+                    purchasePhase.Value = false;
                 }
                 ResetValues();
                 // Llamar al RPC
@@ -274,7 +274,6 @@ public class GameManager : NetworkBehaviour
         if (IsOwner) {
             state.Value = newState;
         }
-        Debug.Log("state: " + newState);
         switch(newState){
             case GameState.LanConnection:
                 break;
@@ -331,7 +330,7 @@ public class GameManager : NetworkBehaviour
             players = GameObject.FindGameObjectsWithTag("Player");
             foreach (GameObject player in players)
             {
-                player.GetComponent<PlayerController>().startCameraClientRpc();
+                player.GetComponent<PlayerController>().StartCameraClientRpc();
             }
             ResetValues();
         }
@@ -341,14 +340,14 @@ public class GameManager : NetworkBehaviour
     // Iniciar sección de ronda
     private void HandleRound(){
         if (IsOwner) {
-            roundSection = true;
+            roundSection.Value = true;
         }
     }
 
     // Iniciar sección de leaderboard y actualizar puntos
     void HandleLeaderboard(){
         if (IsOwner) {
-            leaderboardSection = true;
+            leaderboardSection.Value = true;
             UpdateScores();
         }
     }
@@ -356,7 +355,7 @@ public class GameManager : NetworkBehaviour
     // Iniciar sección de fase de compra
     void HandlepurchasePhase(){
         if (IsOwner) {
-            purchasePhase = true;
+            purchasePhase.Value = true;
         }
     }
     #endregion
