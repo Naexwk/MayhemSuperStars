@@ -233,6 +233,7 @@ MonoBehaviour:
   abilityDamage: 10
   isInvulnerable: 0
   invulnerabilityWindow: 1.5
+  invulnerableSargeNum: 5
   points: 0
   characterCode: cheeseman
   rig: {fileID: 4779941412160733341}

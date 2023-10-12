@@ -37,6 +37,7 @@ public class PlayerController : NetworkBehaviour
     public int abilityDamage;
     public bool isInvulnerable;
     public float invulnerabilityWindow;
+    public bool sargeActive = false;
     public int points = 0;
 
     // Variables de personaje
@@ -248,6 +249,33 @@ public class PlayerController : NetworkBehaviour
             bullethandler.GetComponent<BulletHandler>().spawnCheeseBulletServerRpc(direction, playerNumber, abilityDamage, transform.position.x, transform.position.y);
     }
 
+    private void SargeSA () {
+        
+            
+            animator.SetBool("takeDamage", true);
+            //this.sargeActive = true;
+            //this.isInvulnerable = true;
+            //StopCoroutine(recordInvulnerabiltyFrames());
+            StartCoroutine(invincibleSarge());
+            StartCoroutine(recordAnimatorHitFrames());
+            //this.sargeActive = false;
+            timeSinceLastAbility = Time.time;
+
+    }
+
+    IEnumerator invincibleSarge()
+    {
+        //this.isInvulnerable = true;
+        StopCoroutine(recordInvulnerabiltyFrames());
+        this.sargeActive = true;
+        //this.isInvulnerable = true;
+        Debug.Log("Invulnerable");
+        yield return new WaitForSeconds(5);
+        //this.isInvulnerable = false;
+        this.sargeActive = false;
+        Debug.Log("Vulnerable");
+    }
+
     // Función pública para hacer daño al jugador
     public void GetHit(){
         if (!IsOwner) {
@@ -255,7 +283,7 @@ public class PlayerController : NetworkBehaviour
         }
 
         // Si es invulnerable, ignorar
-        if (isInvulnerable) {
+        if (this.isInvulnerable || this.sargeActive) {
             return;
         }
 
@@ -265,7 +293,9 @@ public class PlayerController : NetworkBehaviour
             Die();
         } else {
             animator.SetBool("takeDamage", true);
+            Debug.Log("Got hit");
             StartCoroutine(recordInvulnerabiltyFrames());
+            Debug.Log("hitted");
             StartCoroutine(recordAnimatorHitFrames());
         }
     }
@@ -290,9 +320,15 @@ public class PlayerController : NetworkBehaviour
         SpriteRenderer bSquareRenderer = this.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
         renderer.color = new Color(1f, 1f, 1f, 0.5f);
         bSquareRenderer.color = new Color(1f, 1f, 1f, 0.5f);
-        isInvulnerable = true;
+        this.isInvulnerable = true;
+        /*
+        if (this.sargeActive){
+            Debug.Log("Sarge Activado");
+            yield break;
+        }
+        */
         yield return new WaitForSeconds(invulnerabilityWindow);
-        isInvulnerable = false;
+        this.isInvulnerable = false;
         renderer.color = new Color(1f, 1f, 1f, 1f);
         bSquareRenderer.color = new Color(1f, 1f, 1f, 1f);
     }
@@ -472,6 +508,7 @@ public class PlayerController : NetworkBehaviour
             char_maxHealth = 6;
             char_fireRate = 3; // en disparos por segundo
             char_bulletDamage = 3;
+            abilityCooldown = 5;
             specAb = new specialAbility(CheesemanSA);
             return;
         }
@@ -482,7 +519,8 @@ public class PlayerController : NetworkBehaviour
             char_maxHealth = 10;
             char_fireRate = 2; // en disparos por segundo
             char_bulletDamage = 4;
-            specAb = new specialAbility(CheesemanSA);
+            abilityCooldown = 15;
+            specAb = new specialAbility(SargeSA);
             return;
         }
     }
