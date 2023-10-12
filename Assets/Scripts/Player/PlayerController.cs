@@ -36,6 +36,7 @@ public class PlayerController : NetworkBehaviour
     public int abilityDamage;
     private bool isInvulnerable;
     [SerializeField] private float invulnerabilityWindow;
+    public bool sargeActive = false;
 
     // Variables de personaje
     public NetworkVariable<FixedString64Bytes> characterCode = new NetworkVariable<FixedString64Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -237,10 +238,37 @@ public class PlayerController : NetworkBehaviour
         timeSinceLastAbility = Time.time;
     }
 
+    private void SargeSA () {
+        
+            
+            animator.SetBool("takeDamage", true);
+            //this.sargeActive = true;
+            //this.isInvulnerable = true;
+            //StopCoroutine(recordInvulnerabiltyFrames());
+            StartCoroutine(invincibleSarge());
+            StartCoroutine(recordAnimatorHitFrames());
+            //this.sargeActive = false;
+            timeSinceLastAbility = Time.time;
+
+    }
+
+    IEnumerator invincibleSarge()
+    {
+        //this.isInvulnerable = true;
+        StopCoroutine(recordInvulnerabiltyFrames());
+        this.sargeActive = true;
+        //this.isInvulnerable = true;
+        Debug.Log("Invulnerable");
+        yield return new WaitForSeconds(5);
+        //this.isInvulnerable = false;
+        this.sargeActive = false;
+        Debug.Log("Vulnerable");
+    }
+
     // Función pública para hacer daño al jugador
     public void GetHit(){
         // Si es invulnerable o no es propietario de este jugador, ignorar
-        if (!IsOwner || isInvulnerable) {
+        if (!IsOwner || isInvulnerable || this.sargeActive) {
             return;
         }
 
@@ -250,7 +278,9 @@ public class PlayerController : NetworkBehaviour
             Die();
         } else {
             animator.SetBool("takeDamage", true);
+            Debug.Log("Got hit");
             StartCoroutine(recordInvulnerabiltyFrames());
+            Debug.Log("hitted");
             StartCoroutine(recordAnimatorHitFrames());
         }
     }
@@ -277,9 +307,15 @@ public class PlayerController : NetworkBehaviour
     // Hace al jugador invulnerable por invulnerabilityWindow segundos
     IEnumerator recordInvulnerabiltyFrames()
     {
-        isInvulnerable = true;
+        SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
+        SpriteRenderer bSquareRenderer = this.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        renderer.color = new Color(1f, 1f, 1f, 0.5f);
+        bSquareRenderer.color = new Color(1f, 1f, 1f, 0.5f);
+        this.isInvulnerable = true;
         yield return new WaitForSeconds(invulnerabilityWindow);
-        isInvulnerable = false;
+        this.isInvulnerable = false;
+        renderer.color = new Color(1f, 1f, 1f, 1f);
+        bSquareRenderer.color = new Color(1f, 1f, 1f, 1f);
     }
 
     // Función de espera para la animación de invulnerabilidad
@@ -467,6 +503,7 @@ public class PlayerController : NetworkBehaviour
             char_maxHealth = 6;
             char_fireRate = 3; // en disparos por segundo
             char_bulletDamage = 3;
+            abilityCooldown = 5;
             specAb = new specialAbility(CheesemanSA);
             changeAnimatorServerRpc(playerNumber, 0);
             return;
@@ -478,7 +515,8 @@ public class PlayerController : NetworkBehaviour
             char_maxHealth = 10;
             char_fireRate = 2; // en disparos por segundo
             char_bulletDamage = 4;
-            specAb = new specialAbility(CheesemanSA);
+            abilityCooldown = 15;
+            specAb = new specialAbility(SargeSA);
             changeAnimatorServerRpc(playerNumber, 1);
             return;
         }
