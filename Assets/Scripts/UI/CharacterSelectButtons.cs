@@ -60,11 +60,11 @@ public class CharacterSelectButtons : MonoBehaviour
     private void StatsSwapper() {
         if(characterCode == "cheeseman") {
             characterName.text = "cheeseman";
-            habilityDescription.text = "me huele la cola";
+            habilityDescription.text = "Selected Cheeseman";
             abilityImage.sprite = abilitysSprites;
         } else if (characterCode == "sarge") {
             characterName.text = "sarge";
-            habilityDescription.text = "a mi tambien";
+            habilityDescription.text = "Selected Sarge";
             abilityImage.sprite = abilitysSprites;
         }
     }
