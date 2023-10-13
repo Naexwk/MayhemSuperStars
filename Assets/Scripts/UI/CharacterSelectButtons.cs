@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
+using TMPro;
 
 // Controlador de botones de Character Select
 public class CharacterSelectButtons : MonoBehaviour
@@ -18,6 +19,15 @@ public class CharacterSelectButtons : MonoBehaviour
 
     // Jugador de este equipo
     private GameObject myPlayer;
+
+    // Mostrar estadisticas de personaje UI
+    public TMP_Text characterName;
+    public TMP_Text habilityDescription;
+    public Image abilityImage;
+    public Sprite abilitysSprites;
+
+    // Gameobject para mostrar personajes multiplayer
+    [SerializeField] private GameObject tvs;
 
     void Awake()
     {
@@ -41,7 +51,21 @@ public class CharacterSelectButtons : MonoBehaviour
     }
 
     // Cambiar personaje del jugador al especificado por characterCode
-    public void CallChangeCharacter(){
+    public void CallChangeCharacter() {
         myPlayer.GetComponent<PlayerController>().ChangeCharacter(characterCode);
+        tvs.GetComponent<UI_CS_ShowMultiplayers>().ChangeImagePlayer();
+    }
+
+    // Cambiar estadisticas de personaje UI
+    private void StatsSwapper() {
+        if(characterCode == "cheeseman") {
+            characterName.text = "cheeseman";
+            habilityDescription.text = "me huele la cola";
+            abilityImage.sprite = abilitysSprites;
+        } else if (characterCode == "sarge") {
+            characterName.text = "sarge";
+            habilityDescription.text = "a mi tambien";
+            abilityImage.sprite = abilitysSprites;
+        }
     }
 }

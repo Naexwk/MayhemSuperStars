@@ -16,6 +16,6 @@ public class RoomCode : MonoBehaviour
     void Start()
     {
         relayManager = GameObject.FindWithTag("RelayManager").GetComponent<LanBehaviour>();
-        roomCodeText.text = "Room Code: " + relayManager.hostJoinCode;
+        roomCodeText.text = relayManager.hostJoinCode;
     }
 }
