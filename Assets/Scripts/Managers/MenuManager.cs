@@ -169,7 +169,7 @@ public class MenuManager : NetworkBehaviour
     // Actualizar vida
     void Update (){ 
         if (IsOwner && startRecordingLife) {
-            _vidaText.GetComponent<TMP_Text>().text = ("Vida: " + myPlayerScript.currentHealth);
+            _vidaText.GetComponent<TMP_Text>().text = ("Health: " + myPlayerScript.currentHealth);
         }
         
     }
@@ -235,6 +235,7 @@ public class MenuManager : NetworkBehaviour
         }
     }
 
+    // Función para llamar la actualización del leaderboard
     private void UpdateLeaderboard(bool prev, bool curr){
         if (_leaderboard != null) {
             if(_leaderboard.activeSelf){
