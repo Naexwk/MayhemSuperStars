@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using Unity.Collections;
 using UnityEngine.UI;
 
-public class UI_CS_ShowMultiplayers : MonoBehaviour
+public class UI_CS_ShowMultiplayers : NetworkBehaviour
 {
     // Lista de jugadores
     private GameObject[] players;
@@ -40,16 +40,26 @@ public class UI_CS_ShowMultiplayers : MonoBehaviour
     }
 
     public void ChangeImagePlayer() {
+        //changeOtherPlayerImages();
+        changeImageServerRpc(myPlayer.GetComponent<PlayerController>().playerNumber);
+    }
+
+    public void changeOtherPlayerImages(){
+        StartCoroutine(timerChangeOtherPlayersImage());
+    }
+
+    IEnumerator timerChangeOtherPlayersImage() {
         int i = 0;
+        players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject player in players) {
             PlayerController script = player.GetComponent<PlayerController>();
             if (!player.GetComponent<NetworkObject>().IsOwner) {
+                Debug.Log("Called changeimage");
                 ChangeImage(i, script.characterCode.Value.ToString());
                 i++;
             }
-            changeImageServerRpc(script.playerNumber);
         }
-
+        yield return new WaitForSeconds(1);
     }
 
     // Llamar a cambiar el animador de un jugador en los clientes
@@ -63,14 +73,19 @@ public class UI_CS_ShowMultiplayers : MonoBehaviour
     public void changeImageClientRpc(ulong _playerNumber){
         GameObject[] players;
         players = GameObject.FindGameObjectsWithTag("Player");
-        int i = 0;
+        if (myPlayer.GetComponent<PlayerController>().playerNumber != _playerNumber) {
+            Debug.Log("found a mf");
+            changeOtherPlayerImages();
+        }
+        /*
         foreach (GameObject player in players) {
             PlayerController script = player.GetComponent<PlayerController>();
             if (!(script.playerNumber == _playerNumber)) {
-                ChangeImage(i, script.characterCode.Value.ToString());
-                i++;
+                // Se ejecuta en todos los clientes menos el de la señal
+                Debug.Log("Executing here");
+                changeOtherPlayerImages();
             }
-        }
+        }*/
         
     }
 
