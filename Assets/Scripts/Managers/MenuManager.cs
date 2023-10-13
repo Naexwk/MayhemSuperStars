@@ -169,7 +169,7 @@ public class MenuManager : NetworkBehaviour
     // Actualizar vida
     void Update (){ 
         if (IsOwner && startRecordingLife) {
-            _vidaText.GetComponent<TMP_Text>().text = ("Vida: " + myPlayerScript.currentHealth);
+            _vidaText.GetComponent<TMP_Text>().text = ("Health: " + myPlayerScript.currentHealth);
         }
         
     }
