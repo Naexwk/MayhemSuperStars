@@ -40,15 +40,14 @@ public class UI_CS_ShowMultiplayers : NetworkBehaviour
     }
 
     public void ChangeImagePlayer() {
-        //changeOtherPlayerImages();
-        changeImageServerRpc(myPlayer.GetComponent<PlayerController>().playerNumber);
+        ChangeImageServerRpc(myPlayer.GetComponent<PlayerController>().playerNumber);
     }
 
-    public void changeOtherPlayerImages(){
-        StartCoroutine(timerChangeOtherPlayersImage());
+    public void ChangeOtherPlayerImages(){
+        StartCoroutine(TimerChangeOtherPlayersImage());
     }
 
-    IEnumerator timerChangeOtherPlayersImage() {
+    IEnumerator TimerChangeOtherPlayersImage() {
         int i = 0;
         players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject player in players) {
@@ -64,7 +63,7 @@ public class UI_CS_ShowMultiplayers : NetworkBehaviour
 
     // Llamar a cambiar el animador de un jugador en los clientes
     [ServerRpc(RequireOwnership = false)]
-    public void changeImageServerRpc(ulong _playerNumber){
+    public void ChangeImageServerRpc(ulong _playerNumber){
         changeImageClientRpc(_playerNumber);
     }
 
@@ -75,7 +74,7 @@ public class UI_CS_ShowMultiplayers : NetworkBehaviour
         players = GameObject.FindGameObjectsWithTag("Player");
         if (myPlayer.GetComponent<PlayerController>().playerNumber != _playerNumber) {
             Debug.Log("found a mf");
-            changeOtherPlayerImages();
+            ChangeOtherPlayerImages();
         }
         /*
         foreach (GameObject player in players) {
@@ -83,7 +82,7 @@ public class UI_CS_ShowMultiplayers : NetworkBehaviour
             if (!(script.playerNumber == _playerNumber)) {
                 // Se ejecuta en todos los clientes menos el de la señal
                 Debug.Log("Executing here");
-                changeOtherPlayerImages();
+                ChangeOtherPlayerImages();
             }
         }*/
         
