@@ -39,8 +39,9 @@ public class PlayerController : NetworkBehaviour
     public bool sargeActive = false;
 
     // Variables de personaje
+    public GameObject bubble;
     public NetworkVariable<FixedString64Bytes> characterCode = new NetworkVariable<FixedString64Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    // public string characterCode = "cheeseman";
+
     specialAbility specAb;
 
     // Objetos para movimiento
@@ -91,6 +92,7 @@ public class PlayerController : NetworkBehaviour
     // Inicializar controladores de jugador
     void Start()
     {
+        bubble.GetComponent<SpriteRenderer>().enabled = false;
         rig = gameObject.GetComponent<Rigidbody2D>();
         GameObject gameManager = GameObject.FindWithTag("GameManager");
         mainCamera = Camera.main;
@@ -132,6 +134,13 @@ public class PlayerController : NetworkBehaviour
         if (scene.name == "SampleScene") {
             mainCamera = Camera.main;
             bullethandler = GameObject.FindWithTag("BulletHandler");
+            
+            //outline = gameObject.transform.GetChild(0).gameObject;
+
+            //Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
+            
+            // DEV 
+
             if (IsOwner) {
                 SpawnCameraTargetServerRpc(playerNumber);
                 SpawnMenuManagerServerRpc(playerNumber);
@@ -253,8 +262,11 @@ public class PlayerController : NetworkBehaviour
     {
         StopCoroutine(recordInvulnerabiltyFrames());
         this.sargeActive = true;
+        bubble.GetComponent<SpriteRenderer>().enabled = true;
+
         yield return new WaitForSeconds(5);
         this.sargeActive = false;
+        bubble.GetComponent<SpriteRenderer>().enabled = false;
     }
 
     // Función pública para hacer daño al jugador
