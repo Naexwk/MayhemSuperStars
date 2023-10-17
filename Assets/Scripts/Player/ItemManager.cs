@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 delegate void gameItem();
+
+// Controlador de sponsors del jugador
 public class ItemManager : MonoBehaviour
 {  
-    // Array de funciones
+    // Array de funciones de sponsors
     gameItem[] itemInventory = new gameItem[10];
-    // Número de objetos obtenidos en índice -1.
-    public int obtainedItemsNumber = -1;
 
-    // Aplicar los efectos de todos los items del jugador
+    // Número de objetos obtenidos en índice -1.
+    private int obtainedItemsNumber = -1;
+
+    // Aplicar los efectos de todos los sponsors del jugador
     // Las estadísticas del jugador deberían resetearse
-    // y los objetos deberían aplicarse cada ronda.
+    // y los sponsors deberían aplicarse cada ronda.
     public void applyItems () {
         for (int i = 0; i <= obtainedItemsNumber; i++) {
             itemInventory[i]();
@@ -20,6 +23,7 @@ public class ItemManager : MonoBehaviour
     }
 
     // Función para añadir lógica de objeto
+    // DEV: Será mejor reformular esto
     public void addItem(int itemID) {
         obtainedItemsNumber++;
         if (itemID == 1) {

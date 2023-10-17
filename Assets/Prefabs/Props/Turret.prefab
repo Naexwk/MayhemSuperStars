@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3275233722309896812}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: shootPointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 573989054130973791}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05, y: 2.96, z: 0}
+  m_LocalPosition: {x: -0.05, y: 3.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -41,7 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5593886754852471695}
   - component: {fileID: 4254013104228542154}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -130,9 +130,9 @@ GameObject:
   - component: {fileID: 5923272950577654911}
   - component: {fileID: -1798125622611711641}
   - component: {fileID: 3209636720380116236}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Turret
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -308,7 +308,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.03344834, y: -0.47558737}
+  m_Offset: {x: 0.06154251, y: -0.40066963}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -319,7 +319,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 5.126277, y: 4.1082067}
+  m_Size: {x: 4.358371, y: 3.1717362}
   m_EdgeRadius: 0
 --- !u!50 &3209636720380116236
 Rigidbody2D:
@@ -360,9 +360,9 @@ GameObject:
   - component: {fileID: 9216568956839555364}
   - component: {fileID: 6020664923961684529}
   - component: {fileID: 513891644272647169}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Cannon
-  m_TagString: Wall
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

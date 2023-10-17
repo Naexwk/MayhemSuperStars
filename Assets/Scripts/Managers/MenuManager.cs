@@ -4,27 +4,39 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
 using TMPro;
-
 using UnityEngine.SceneManagement;
 
+// Controlador de UI a nivel local
 public class MenuManager : NetworkBehaviour
 {
-    [SerializeField] private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI;
-    [SerializeField] private TMP_Text _vidaText;
-    [SerializeField] private GameObject _winScreen;
+    // Elementos de UI a cargar
+    private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI;
+    private TMP_Text _vidaText;
+    private GameObject _winScreen;
+
+    // Variables de control de fases
     private bool PurchasePhaseItems, PurchasePhaseTraps;  
     private bool purchased = false;
 
+    // Lista de jugadores
     private GameObject[] players;
     public GameObject myPlayer;
+
+    // Lista de objetivos de cámara
     private GameObject[] cameraTargets;
-    public GameObject myCameraTarget;
-    public GameObject UIHelper;
-    public bool loaded = false;
+    private GameObject myCameraTarget;
 
+    // Objeto que almacena los elementos de UI
+    [SerializeField] private UIHelper uiHelper;
+    private bool loaded = false;
+
+    // Script de mi jugador
     private PlayerController myPlayerScript;
-    bool startRecordingLife = false;
 
+    // Variable de control de seguimiento de vida
+    private bool startRecordingLife = false;
+
+    // Destruir al entrar al character select, se regenerará al entrar a la escena de juego.
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "GameRoom" && this != null) {
@@ -32,78 +44,72 @@ public class MenuManager : NetworkBehaviour
         }
     }
 
-
-    // Suscribirse al cambio de estado del GameManager
+    // Suscribirse al cambio de estado del GameManager, al cambio de handleLeaderboard,
+    // y a los cambios de escena
     void Awake(){
-        
-        GameManager.State.OnValueChanged += GameManagerOnGameStateChanged;
-        GameManager.handleLeaderboard.OnValueChanged += updateLeaderboard;
+        GameManager.state.OnValueChanged += GameManagerOnGameStateChanged;
+        GameManager.handleLeaderboard.OnValueChanged += UpdateLeaderboard;
         NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
         SceneManager.sceneLoaded += OnSceneLoaded;
         loaded = false;
     }
 
-    // Encuentra al jugador al que le corresponda este MenuManager
-    void Start()
-    {
-
-        
-    }
-
+    // Al entrar a escena de juego, cargar elementos de UI y gestionar al jugador
     void OnSceneEvent (SceneEvent sceneEvent) {
         if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted) {
-            //Debug.Log ("Called OnSync");
-            Debug.Log("Loaded Scene in MM");
-                if (SceneManager.GetActiveScene().name == "SampleScene" && this != null){
-                    Debug.Log("Started Loading in MM");
-                    startRecordingLife = true;
-                    UIHelper = GameObject.FindWithTag("UIHelper");
+            if (SceneManager.GetActiveScene().name == "SampleScene" && this != null){
+                // Desplegar vida
+                startRecordingLife = true;
 
-                    //_lanScreen = UIHelper.GetComponent<UIHelper>().LanScreen;
-                    _timer = UIHelper.GetComponent<UIHelper>().GameTimer;
-                    _leaderboard = UIHelper.GetComponent<UIHelper>().Leaderboard;
-                    _purchaseScreen = UIHelper.GetComponent<UIHelper>().PurchaseUI;
-                    _purchaseItemsUI = UIHelper.GetComponent<UIHelper>().PurchaseItems;
-                    _purchaseTrapsUI = UIHelper.GetComponent<UIHelper>().PurchaseTraps;
-                    _vidaText = UIHelper.GetComponent<UIHelper>().VidaText.GetComponent<TMP_Text>();
-                    _winScreen = UIHelper.GetComponent<UIHelper>().winScreen;
+                // Cargar elementos de UI
+                uiHelper = GameObject.FindWithTag("UIHelper").GetComponent<UIHelper>();
+                _timer = uiHelper.GameTimer;
+                _leaderboard = uiHelper.Leaderboard;
+                _purchaseScreen = uiHelper.PurchaseUI;
+                _purchaseItemsUI = uiHelper.PurchaseItems;
+                _purchaseTrapsUI = uiHelper.PurchaseTraps;
+                _vidaText = uiHelper.VidaText.GetComponent<TMP_Text>();
+                _winScreen = uiHelper.winScreen;
+                loaded = true;
+                
+                // Cargar acciones de botones
+                LoadButtonActions();
 
-                    loaded = true;
+                if (IsOwner) {
+                    // Encontrar al jugador local
+                    players = GameObject.FindGameObjectsWithTag("Player");
+                    foreach (GameObject player in players) {
+                        if (player.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
+                            myPlayer = player;
+                            myPlayerScript = player.GetComponent<PlayerController>();
+                        }
+                    }
                     
-
-                    loadButtonActions();
-
-                    if (IsOwner) {
-                        
-                        players = GameObject.FindGameObjectsWithTag("Player");
-                        foreach (GameObject player in players) {
-                            if (player.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
-                                myPlayer = player;
-                                myPlayerScript = player.GetComponent<PlayerController>();
-                            }
+                    // Encontrar cameraTarget local
+                    cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
+                    foreach (GameObject cameraTarget in cameraTargets) {
+                        if (cameraTarget.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
+                            myCameraTarget = cameraTarget;
                         }
+                    }
+                }
 
-                        cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
-                        foreach (GameObject cameraTarget in cameraTargets) {
-                            if (cameraTarget.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
-                                myCameraTarget = cameraTarget;
-                            }
-                        }
-                        //StartCoroutine(searchForCameraTarget());
-                    }
+                // Respawnear player
+                if (myPlayer != null) {
+                    myPlayer.GetComponent<PlayerController>().Respawn();
+                }
 
-                    if (myPlayer != null) {
-                        myPlayer.GetComponent<PlayerController>().Respawn();
-                    }
-                    if (myCameraTarget != null) {
-                        myCameraTarget.GetComponent<CameraTarget>().lockOnPlayer = true;
-                    }
+                // Lockear camera al jugador
+                if (myCameraTarget != null) {
+                    myCameraTarget.GetComponent<CameraTarget>().lockOnPlayer = true;
+                }
             }
         }
 
     }
 
-    void loadButtonActions(){
+    // Carga las acciones de los botones de seleccion de props y sponsors
+    void LoadButtonActions(){
         Button button;
         button = _purchaseScreen.transform.GetChild(0).GetComponent<Button>();
         button.onClick.AddListener(OnSelectedItems);
@@ -112,36 +118,33 @@ public class MenuManager : NetworkBehaviour
         button.onClick.AddListener(OnSelectedTraps);
 
         button = _purchaseItemsUI.transform.GetChild(0).GetComponent<Button>();
-        button.onClick.AddListener(() => selectObject(1));
+        button.onClick.AddListener(() => SelectObject(1));
 
         button = _purchaseItemsUI.transform.GetChild(1).GetComponent<Button>();
-        button.onClick.AddListener(() => selectObject(2));
+        button.onClick.AddListener(() => SelectObject(2));
 
         button = _purchaseItemsUI.transform.GetChild(2).GetComponent<Button>();
-        button.onClick.AddListener(() => selectObject(3));
+        button.onClick.AddListener(() => SelectObject(3));
 
         button = _purchaseTrapsUI.transform.GetChild(0).GetComponent<Button>();
-        button.onClick.AddListener(selectTrap);
+        button.onClick.AddListener(SelectTrap);
 
         button = _purchaseTrapsUI.transform.GetChild(1).GetComponent<Button>();
-        button.onClick.AddListener(selectTrap);
+        button.onClick.AddListener(SelectTrap);
 
         button = _purchaseTrapsUI.transform.GetChild(2).GetComponent<Button>();
-        button.onClick.AddListener(selectTrap);
+        button.onClick.AddListener(SelectTrap);
     }
-/*
-    void OnDestroy() {
-        GameManager.OnGameStateChanged -= GameManagerOnGameStateChanged;
-    }*/
 
-    // Funciones de objetos
-    public void OnSelectedItems(){
+
+    // Seleccionar sponsors
+    private void OnSelectedItems(){
         PurchasePhaseItems = true;
         GameManagerOnGameStateChanged(GameState.PurchasePhase, GameState.PurchasePhase);
     }
 
-    // Añade el objeto al jugador segun su ID
-    public void selectObject(int _objectID){
+    // Añade el sponsor al jugador segun su ID
+    private void SelectObject(int _objectID){
         if (IsOwner) {
             myPlayer.GetComponent<ItemManager>().addItem(_objectID);
             purchased = true;
@@ -149,30 +152,31 @@ public class MenuManager : NetworkBehaviour
         }
     }
 
-    public void OnSelectedTraps(){
+    // Seleccionar props
+    private void OnSelectedTraps(){
         PurchasePhaseTraps = true;
         GameManagerOnGameStateChanged(GameState.PurchasePhase, GameState.PurchasePhase);
-        //Codigo de trampas
     }
 
-    public void selectTrap(){
+    // Funcion para agregar prop a los botones de estos
+    private void SelectTrap(){
         if (IsOwner) {
             purchased = true;
             GameManagerOnGameStateChanged(GameState.PurchasePhase, GameState.PurchasePhase);
         }
     }
 
+    // Actualizar vida
     void Update (){ 
         if (IsOwner && startRecordingLife) {
-            _vidaText.GetComponent<TMP_Text>().text = ("Vida: " + myPlayerScript.currentHealth);
+            _vidaText.GetComponent<TMP_Text>().text = ("Health: " + myPlayerScript.currentHealth);
         }
         
     }
 
-
+    // Función de cambio de estado de juego
     private void GameManagerOnGameStateChanged(GameState prev, GameState curr){
         if (!loaded || !IsOwner) {
-            Debug.Log("Haven't Loaded!");
             return;
         }
 
@@ -180,15 +184,14 @@ public class MenuManager : NetworkBehaviour
             return;
         }
 
-        //_lanScreen.SetActive(curr == GameState.LanConnection);
+        // Activar o desactivar elementos de UI según el estado del juego
         _timer.SetActive(curr == GameState.StartGame || curr == GameState.Round || curr == GameState.PurchasePhase || curr == GameState.PurchasePhase);
         _leaderboard.SetActive(curr == GameState.Leaderboard);
         _winScreen.SetActive(curr == GameState.WinScreen);
-        /*if (curr == GameState.Leaderboard) {
-            _leaderboard.GetComponent<Leaderboard>().distributePoints();
-        }*/
         _vidaText.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
-        if(curr != GameState.Round && curr != GameState.StartGame) {;
+
+        // Administrar spawns del jugador y movimientos de cámara
+        if(curr != GameState.Round && curr != GameState.StartGame) {
             if (myPlayer != null) {
                 myPlayer.GetComponent<PlayerController>().Despawn();
             }
@@ -204,6 +207,7 @@ public class MenuManager : NetworkBehaviour
             }
         }
 
+        // Gestionar UI al seleccionar props o sponsors
         if (PurchasePhaseTraps || PurchasePhaseItems) {
             _purchaseScreen.SetActive(false);
             if(curr == GameState.PurchasePhase){
@@ -231,15 +235,13 @@ public class MenuManager : NetworkBehaviour
         }
     }
 
-
-    private void updateLeaderboard(bool prev, bool curr){
+    // Función para llamar la actualización del leaderboard
+    private void UpdateLeaderboard(bool prev, bool curr){
         if (_leaderboard != null) {
             if(_leaderboard.activeSelf){
-                _leaderboard.GetComponent<Leaderboard>().updateLeaderboard(true, true);
+                _leaderboard.GetComponent<Leaderboard>().UpdateLeaderboard(true, true);
             }
         }
         
     }
-
-
 }

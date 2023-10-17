@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Clase contenedora de objetos de UI, recibidos por el MenuManager
 public class UIHelper : MonoBehaviour
 {
     public GameObject LanScreen;

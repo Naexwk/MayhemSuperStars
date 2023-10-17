@@ -2,41 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-// This script handle the editable ghost so it can turn red when unplaceable and detect wheter it can be placed 
+// Controlador de colisiones de objeto colocable del modo edición
 public class TriggerEditModeController : MonoBehaviour
 {
+    // Renderer y color del objeto
     private Renderer tempRend;
     private Color currentColor;
+
     public bool placeable = true;  
 
+    // Inicializar renderer y color
     void Start()
     {
-        //Get the renderer and current color for future reference
         tempRend = GetComponent<Renderer>();
         currentColor = tempRend.material.color; 
     }
 
-    // Called when another object enters and stays the trigger collider attached to this object
-    // While the ghost editable stays inside a box collider it truns its color red and makes it unplaceable
+    // Mientras el prop a colocar se mantenga dentro del collider de un objeto colocado,
+    // cambiar su color a rojo y hacerlo no colocable
     void OnTriggerStay2D(Collider2D other)
     {
-        //Debug.Log("THE TYPE IS" + other.GetType() + "Triggered by: " + other.gameObject.name);
         if (other is BoxCollider2D )
         {
             placeable = false; 
-            //Debug.Log("Triggered by: " + other.gameObject.name);
             float newRed = 255f;
             tempRend.material.color = new Color(newRed, currentColor.g, currentColor.b, currentColor.a);
         } 
     }
 
-    // Called when another object exits the trigger collider attached to this object
-    // When the editable ghost isn't on top of a collider it turns into the normal color and makes it placeable 
+    // Al salir de otros colliders, hacer al objeto colocable y cambiar su color al normal
     void OnTriggerExit2D(Collider2D other)
     {
         placeable = true; 
-        //Debug.Log("No longer triggered by: " + other.gameObject.name);
         tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
     }
 }
