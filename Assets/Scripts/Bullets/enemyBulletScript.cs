@@ -2,20 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Controlador de las balas enemigas
 public class enemyBulletScript : MonoBehaviour
 {
-    
-    void OnTriggerEnter2D(Collider2D col) {
+    void OnTriggerEnter2D(Collider2D collision) {
         // Destruir al tocar un muro
-        if (col.gameObject.tag == "Wall")
+        if (collision.gameObject.tag == "Wall")
         {
             Destroy(this.gameObject);
         }
 
         // Hacer daño al jugador al tocarlo
-        if (col.gameObject.tag == "Player")
+        if (collision.gameObject.tag == "Player")
         {
-            col.gameObject.GetComponent<PlayerController>().GetHit();
+            collision.gameObject.GetComponent<PlayerController>().GetHit();
             Destroy(this.gameObject);
         }
     }

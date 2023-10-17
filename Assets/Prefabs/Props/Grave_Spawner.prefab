@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 7864183236530161483}
   - component: {fileID: 5868488511523595921}
   - component: {fileID: -6686071108586819697}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Grave_Spawner
   m_TagString: Spawner
   m_Icon: {fileID: 0}
@@ -102,7 +102,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fbf74b6f1c835742a94a1eba4973523, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isInPlay: 0
   zombiePrefab: {fileID: 2554199365530014469, guid: 6b91fe96c534e6f47ae8404754b525a0, type: 3}
   timeToSpawn: 2
 --- !u!114 &5391823485692510985

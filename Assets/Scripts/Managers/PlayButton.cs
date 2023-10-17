@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Controlador de boton de inicio de juego 
+// Deprecated
 public class PlayButton : MonoBehaviour
 {
     public GameObject gameManagerInstance;
-    // Busca al Game Manager y le asigna la función
-    // StartGame al boton
+
+    // Busca al GameManager y le añade la función Start Game a este botón
     void Update()
     {
         if (gameManagerInstance != null) {

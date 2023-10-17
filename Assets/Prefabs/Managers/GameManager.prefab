@@ -45,16 +45,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 386ac346d86052d4b903dccbf064a1a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameStarted:
+  gameStarted:
     m_InternalValue: 0
   startHandled: 0
-  RoundSection:
+  roundSection:
     m_InternalValue: 0
-  LeaderboardSection:
+  leaderboardSection:
     m_InternalValue: 0
-  PurchasePhase:
+  purchasePhase:
     m_InternalValue: 0
-  RoundTime: 30
+  roundTime: 30
   leaderboardTime: 5
   purchaseTime: 30
   currentRoundTime:

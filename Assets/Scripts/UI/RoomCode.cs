@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-
+// Controlador de despliegue de código de sala en la sala de juego
 public class RoomCode : MonoBehaviour
 {
-    public TMP_Text roomCodeText;
-    public LanBehaviour relayManager;
-    // Start is called before the first frame update
+    // Referencia al campo de texto donde desplegar
+    [SerializeField] private TMP_Text roomCodeText;
+
+    // Referencia al controlador de sesión de red
+    [SerializeField] private LanBehaviour relayManager;
+
+    // Actualizar código de sala de juego
     void Start()
     {
         relayManager = GameObject.FindWithTag("RelayManager").GetComponent<LanBehaviour>();
-        roomCodeText.text = "Room Code: " + relayManager.hostJoinCode;
+        roomCodeText.text = relayManager.hostJoinCode;
     }
 }

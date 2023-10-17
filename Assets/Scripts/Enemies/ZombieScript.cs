@@ -4,28 +4,34 @@ using UnityEngine;
 using UnityEngine.AI;
 using Unity.Netcode;
 
+// Controlador del enemigo "Zombie"
 public class ZombieScript : NetworkBehaviour
 {
-    public float updateTimer = 1f;
 
-    public float speed;
+    // Referencia a el objetivo del agente de navegación
     private Transform target;
+    // Referencia al agente de navegación
     private NavMeshAgent agent;
 
-    public NetworkVariable<int> health = new NetworkVariable<int>();
+    // Vida del zombie
+    private NetworkVariable<int> health = new NetworkVariable<int>();
 
     private Animator animator;
-    //public int health;
+    private SpriteRenderer m_SpriteRenderer;
 
     // Valores iniciales
     void Start()
     {
-        animator = GetComponentInChildren<Animator>();
+        animator = GetComponent<Animator>();
+        m_SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        // Aleatorizar el color del zombie
+        m_SpriteRenderer.color = new Color(1f, 1f, Random.Range(0f, 1f));
     }
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        // Inicializar vida
         health.Value = 5;
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
@@ -52,7 +58,6 @@ public class ZombieScript : NetworkBehaviour
                 ZombieGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage);
             }
             
-            
         }
     }
 
@@ -64,17 +69,6 @@ public class ZombieScript : NetworkBehaviour
             col.gameObject.GetComponent<PlayerController>().GetHit();
         }
     }
-
-    // Al entrar en contacto con una bala de queso, recibir daño
-    /*void OnCollisionEnter2D(Collision2D col)
-    {
-
-        // Funciona exclusivamente con la bala de queso porque es la única con Collider, no trigger
-        if (col.gameObject.tag == "PlayerBullet")
-        {
-            ZombieGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage);
-        }
-    }*/
     
     // Buscar al jugador más cercano
     void FindPlayer()
@@ -101,6 +95,7 @@ public class ZombieScript : NetworkBehaviour
         
     }
 
+    // Actualizar la vida en la red
     [ServerRpc(RequireOwnership = false)]
     public void ZombieGetHitServerRpc(int damage) {
         health.Value -= damage;

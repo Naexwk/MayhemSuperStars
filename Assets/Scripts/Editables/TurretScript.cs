@@ -92,7 +92,7 @@ public class TurretScript : MonoBehaviour
     // Llamar al bulletHandler para que instancie una bala
     void shoot(){
         if (bullethandler.GetComponent<NetworkObject>().IsOwner) {
-            bullethandler.GetComponent<BulletHandler>().spawnEnemyBulletServerRpc(force, Direction, shootPoint.position.x, shootPoint.position.y);
+            bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, Direction, shootPoint.position.x, shootPoint.position.y);
         }
     }
 }
