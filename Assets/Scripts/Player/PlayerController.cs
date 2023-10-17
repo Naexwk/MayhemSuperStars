@@ -101,7 +101,7 @@ public class PlayerController : NetworkBehaviour
         _mainCamera = Camera.main;
         bullethandler = GameObject.FindWithTag("BulletHandler");
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
-        outline = gameObject.transform.GetChild(0).gameObject;
+        //outline = gameObject.transform.GetChild(0).gameObject;
 
         //Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
         if (IsOwner){
@@ -109,7 +109,7 @@ public class PlayerController : NetworkBehaviour
         }
         
         
-        colorCodeToPlayer(outline, playerNumber);
+        //colorCodeToPlayer(outline, playerNumber);
         if (characterCode == "cheeseman") {
             specAb = new specialAbility(CheesemanSA);
         }
@@ -134,7 +134,7 @@ public class PlayerController : NetworkBehaviour
             _mainCamera = Camera.main;
             bullethandler = GameObject.FindWithTag("BulletHandler");
             
-            outline = gameObject.transform.GetChild(0).gameObject;
+            //outline = gameObject.transform.GetChild(0).gameObject;
 
             //Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
             
