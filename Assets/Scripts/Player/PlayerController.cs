@@ -42,6 +42,7 @@ public class PlayerController : NetworkBehaviour
 
     // Variables de personaje
     public string characterCode = "cheeseman";
+    public GameObject bubble;
     specialAbility specAb;
 
     // Objetos para movimiento
@@ -93,6 +94,8 @@ public class PlayerController : NetworkBehaviour
     // También asigna la función de habilidad especial a specAb
     void Start()
     {
+        //bubble = transform.GetChild(0).gameObject;
+        bubble.GetComponent<SpriteRenderer>().enabled = false;
         GameObject gameManager = GameObject.FindWithTag("GameManager");
         //gameManager.GetComponent<GameManager>().AddPlayer(name);
         _mainCamera = Camera.main;
@@ -252,12 +255,12 @@ public class PlayerController : NetworkBehaviour
     private void SargeSA () {
         
             
-            animator.SetBool("takeDamage", true);
+            //animator.SetBool("takeDamage", true);
             //this.sargeActive = true;
             //this.isInvulnerable = true;
             //StopCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(invincibleSarge());
-            StartCoroutine(recordAnimatorHitFrames());
+            //StartCoroutine(recordAnimatorHitFrames());
             //this.sargeActive = false;
             timeSinceLastAbility = Time.time;
 
@@ -268,11 +271,13 @@ public class PlayerController : NetworkBehaviour
         //this.isInvulnerable = true;
         StopCoroutine(recordInvulnerabiltyFrames());
         this.sargeActive = true;
+        bubble.GetComponent<SpriteRenderer>().enabled = true;
         //this.isInvulnerable = true;
         Debug.Log("Invulnerable");
         yield return new WaitForSeconds(5);
         //this.isInvulnerable = false;
         this.sargeActive = false;
+        bubble.GetComponent<SpriteRenderer>().enabled = false;
         Debug.Log("Vulnerable");
     }
 
