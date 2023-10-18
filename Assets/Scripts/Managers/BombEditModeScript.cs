@@ -54,7 +54,7 @@ public class BombEditModeScript : NetworkBehaviour
         }
     }
     public void BlowUp(){
-        Debug.Log("BOMB BLOW UP RPC");
+        Debug.Log("BOMB BLOW UP");
         BlowUpServerRpc();
     }
     //This function will call the animation and destroy the objects
