@@ -55,7 +55,9 @@ public class ItemController : MonoBehaviour
 
             // Añadir el script TriggerEditModeController para que el objeto cambie de color al 
             // entrar en contacto con otro objeto, indicando que no tiene permiso de colocación
-            TriggerEditModeController triggerEditModeController = tempObject.AddComponent<TriggerEditModeController>();
+            if(tempObject.tag != "Bomb"){
+                TriggerEditModeController triggerEditModeController = tempObject.AddComponent<TriggerEditModeController>();
+            } 
             
             // Convirte al objeto en transparente
             tempRend = tempObject.GetComponent<Renderer>();
@@ -82,10 +84,17 @@ public class ItemController : MonoBehaviour
             tempObject.transform.position = worldPosition;
 
             // Al hacer clic con el mouse, aparecer el objeto si es colocable
-            if(Input.GetMouseButtonDown(0) && tempObject.GetComponent<TriggerEditModeController>().placeable){
+            if(tempObject.tag != "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<TriggerEditModeController>().placeable){
                 editor.SpawnProp();
                 Destroy(tempObject);
                 StartNewPlacement(id);
+            } else if(Input.GetMouseButtonDown(0) && tempObject.GetComponent<BombEditModeScript>().placeable && tempObject.tag == "Bomb") {
+                Debug.Log("I AM PLACING A BOMB");
+                tempObject.GetComponent<BombEditModeScript>().BlowUp();
+                //Destroy(tempObject);
+                /*editor.SpawnProp(); //this is probably  gonna change 
+                Destroy(tempObject); // probably add the enume to this or maybe
+                StartNewPlacement(id); //I am probably gonna delete this */
             }
         }
     }
