@@ -9,6 +9,7 @@ public class BlowingUpScript : NetworkBehaviour
         if(other.gameObject.tag != "Bomb"){
             Debug.Log("On Trigger Stay " + other.gameObject);
             Destroy(other.gameObject);
+            Destroy(this.gameObject);
         }
     }
 }

@@ -90,6 +90,7 @@ public class ItemController : MonoBehaviour
                 StartNewPlacement(id);
             } else if(tempObject.tag == "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<BombEditModeScript>().placeable){
                 editor.SpawnProp();
+                Destroy(tempObject);
             }
         }
     }
