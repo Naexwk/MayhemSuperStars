@@ -5,9 +5,10 @@ using Unity.Netcode;
 
 public class BlowingUpScript : NetworkBehaviour
 {
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log("ON COLLISION ENTER");
-        Destroy(collision.gameObject);
+    void OnTriggerStay2D(Collider2D other){
+        if(other.gameObject.tag != "Bomb"){
+            Debug.Log("On Trigger Stay " + other.gameObject);
+            Destroy(other.gameObject);
+        }
     }
 }

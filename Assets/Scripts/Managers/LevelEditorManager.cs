@@ -11,6 +11,7 @@ public class LevelEditorManager : NetworkBehaviour
 
     // Referencia a props colocados
     public GameObject[] ItemPrefabs;
+    public GameObject bombExplosion;
 
     // Id de objeto seleccionado
     public int id;
@@ -20,10 +21,20 @@ public class LevelEditorManager : NetworkBehaviour
         Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
         Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
         if(itemController.tempObject != null){
-            EditModeSpawnerServerRpc(worldPosition.x, worldPosition.y, id);
+            if(itemController.tempObject.tag != "Bomb"){
+                EditModeSpawnerServerRpc(worldPosition.x, worldPosition.y, id);
+            } else{
+                BombServerRpc(worldPosition.x, worldPosition.y);
+            }
         }
     }
-
+    [ServerRpc (RequireOwnership=false)] 
+    void BombServerRpc(float x, float y){
+        Debug.Log("Bomb Server Rpc");
+        GameObject spawnedObject;
+        spawnedObject = Instantiate(bombExplosion, new Vector3(x, y, 0), Quaternion.identity);
+        BombClientRpc(x, y);
+    }
     // Llamada al server para spawnear el objeto como objeto de network o como duplicado local
     [ServerRpc (RequireOwnership=false)] 
     void EditModeSpawnerServerRpc(float x, float y, int index){
@@ -42,6 +53,12 @@ public class LevelEditorManager : NetworkBehaviour
     void EditModeSpawnerClientRpc(float x, float y, int index){
         if(!IsServer){
             Instantiate(ItemPrefabs[index], new Vector3(x, y, 0), Quaternion.identity);
+        }
+    }
+    [ClientRpc]
+    void BombClientRpc(float x, float y){
+        if(!IsServer){
+            Instantiate(bombExplosion, new Vector3(x, y, 0), Quaternion.identity);
         }
     }
 }

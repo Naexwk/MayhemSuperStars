@@ -88,13 +88,8 @@ public class ItemController : MonoBehaviour
                 editor.SpawnProp();
                 Destroy(tempObject);
                 StartNewPlacement(id);
-            } else if(Input.GetMouseButtonDown(0) && tempObject.GetComponent<BombEditModeScript>().placeable && tempObject.tag == "Bomb") {
-                Debug.Log("I AM PLACING A BOMB");
-                tempObject.GetComponent<BombEditModeScript>().BlowUp();
-                //Destroy(tempObject);
-                /*editor.SpawnProp(); //this is probably  gonna change 
-                Destroy(tempObject); // probably add the enume to this or maybe
-                StartNewPlacement(id); //I am probably gonna delete this */
+            } else if(tempObject.tag == "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<BombEditModeScript>().placeable){
+                editor.SpawnProp();
             }
         }
     }

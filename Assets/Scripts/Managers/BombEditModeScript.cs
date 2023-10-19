@@ -53,23 +53,5 @@ public class BombEditModeScript : NetworkBehaviour
             colliders.Remove(other);
         }
     }
-    public void BlowUp(){
-        Debug.Log("BOMB BLOW UP");
-        BlowUpServerRpc();
-    }
-    //This function will call the animation and destroy the objects
-    [ServerRpc (RequireOwnership = false)]
-    public void BlowUpServerRpc(){
-        //Server RPC, INstantiate, OnCollision EnterDestroy 
-        Debug.Log("BOMB SERVER RPC");
-        BlowUpClientRpc();
-
-    }
-    [ClientRpc]
-    public void BlowUpClientRpc(){
-        //Instatiate
-        Debug.Log("BOMB CLIENT RPC");
-        GameObject explosion = Instantiate(bombExplosion, transform.position, Quaternion.identity);
-    }
 }
 
