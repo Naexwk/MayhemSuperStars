@@ -81,6 +81,7 @@ public class LanBehaviour : NetworkBehaviour
 	public async void JoinRelay(string joinCode){
 		try {
 			// Entrar a sesión de juego
+			hostJoinCode = joinCode.ToUpper();
 			JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 			RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
 			NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);

@@ -51,9 +51,8 @@ public class CharacterSelectButtons : MonoBehaviour
     }
 
     // Cambiar personaje del jugador al especificado por characterCode
-    public void CallChangeCharacter() {
-        myPlayer.GetComponent<PlayerController>().ChangeCharacter(characterCode);
-        tvs.GetComponent<UI_CS_ShowMultiplayers>().ChangeImagePlayer();
+    public async void CallChangeCharacter() {
+        await myPlayer.GetComponent<PlayerController>().ChangeCharacter(characterCode);
     }
 
     // Cambiar estadisticas de personaje UI

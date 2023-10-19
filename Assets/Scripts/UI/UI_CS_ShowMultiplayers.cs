@@ -20,17 +20,21 @@ public class UI_CS_ShowMultiplayers : NetworkBehaviour
     // Imagen que contiene al jugador
     public Image[] characterImages;
     
+    // Buscar players y escuchar nuevas conexiones
     void Awake()
     {
         StartCoroutine(SearchMyPlayer());
+        NetworkManager.OnClientConnectedCallback += OnClientConnected;
     }
 
-    // Búsqueda de jugador local
+    // Búsqueda de jugadores
     IEnumerator SearchMyPlayer() {
         players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject player in players) {
             if (player.GetComponent<NetworkObject>().IsOwner) {
                 myPlayer = player;
+            } else {
+                player.GetComponent<PlayerController>().characterCode.OnValueChanged += OnCharacterCodeChanged;
             }
         }
         yield return new WaitForSeconds(1);
@@ -39,56 +43,36 @@ public class UI_CS_ShowMultiplayers : NetworkBehaviour
         }
     }
 
-    public void ChangeImagePlayer() {
-        ChangeImageServerRpc(myPlayer.GetComponent<PlayerController>().playerNumber);
+    // Al entrar un nuevo cliente
+    private void OnClientConnected(ulong clientId)
+    {
+        players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players) {
+            if (player.GetComponent<PlayerController>().playerNumber == clientId) {
+                player.GetComponent<PlayerController>().characterCode.OnValueChanged += OnCharacterCodeChanged;
+            }
+        }
     }
 
-    public void ChangeOtherPlayerImages(){
-        StartCoroutine(TimerChangeOtherPlayersImage());
+    // Al cambiar el characterCode de alguno de los jugadores, actualizar pantallas
+    private void OnCharacterCodeChanged(FixedString64Bytes prev, FixedString64Bytes curr){
+        CallChangeImage(myPlayer.GetComponent<PlayerController>().playerNumber);
     }
 
-    IEnumerator TimerChangeOtherPlayersImage() {
+    // Actualizar pantallas, usando a los demás players
+    public void CallChangeImage(ulong _playerNumber){
         int i = 0;
         players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject player in players) {
             PlayerController script = player.GetComponent<PlayerController>();
             if (!player.GetComponent<NetworkObject>().IsOwner) {
-                Debug.Log("Called changeimage");
                 ChangeImage(i, script.characterCode.Value.ToString());
                 i++;
             }
         }
-        yield return new WaitForSeconds(1);
     }
 
-    // Llamar a cambiar el animador de un jugador en los clientes
-    [ServerRpc(RequireOwnership = false)]
-    public void ChangeImageServerRpc(ulong _playerNumber){
-        changeImageClientRpc(_playerNumber);
-    }
-
-    // Cambiar el animador de un jugador en todos los clientes
-    [ClientRpc]
-    public void changeImageClientRpc(ulong _playerNumber){
-        GameObject[] players;
-        players = GameObject.FindGameObjectsWithTag("Player");
-        if (myPlayer.GetComponent<PlayerController>().playerNumber != _playerNumber) {
-            Debug.Log("found a mf");
-            ChangeOtherPlayerImages();
-        }
-        /*
-        foreach (GameObject player in players) {
-            PlayerController script = player.GetComponent<PlayerController>();
-            if (!(script.playerNumber == _playerNumber)) {
-                // Se ejecuta en todos los clientes menos el de la señal
-                Debug.Log("Executing here");
-                ChangeOtherPlayerImages();
-            }
-        }*/
-        
-    }
-
-    // Cambiar la imagen correspondiente al "televisor" y su respectivo personaje UI
+    // Cambiar imagen según el characterCode
     private void ChangeImage(int image, string characterCode) {
         if (characterCode == "cheeseman") {
             characterImages[image].sprite = characterSprites[0];

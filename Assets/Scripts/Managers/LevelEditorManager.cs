@@ -40,12 +40,7 @@ public class LevelEditorManager : NetworkBehaviour
     void EditModeSpawnerServerRpc(float x, float y, int index){
         GameObject spawnedObject;
         spawnedObject = Instantiate(ItemPrefabs[index], new Vector3(x, y, 0), Quaternion.identity);
-        if (spawnedObject.tag == "Spawner") {
-            spawnedObject.GetComponent<NetworkObject>().Spawn();
-        } else {
-            EditModeSpawnerClientRpc(x, y, index);
-        }
-        
+        EditModeSpawnerClientRpc(x, y, index);
     }
 
     // Llamada a los clientes para spawnear el objeto como duplicado local

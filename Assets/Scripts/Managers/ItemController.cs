@@ -15,6 +15,11 @@ public class ItemController : MonoBehaviour
     public GameObject tempObject;
     private Renderer tempRend;
 
+    // Escuchar cambios de estado de juego
+    private void Awake() {
+        GameManager.state.OnValueChanged += StateChange;
+    }
+
     // Encontrar al LevelEditorManager
     void Start()
     {
@@ -75,7 +80,6 @@ public class ItemController : MonoBehaviour
         
     }
 
-    
     void Update(){
         if(tempObject != null){
             // Seguir el mouse con el objeto fantasma
@@ -90,6 +94,15 @@ public class ItemController : MonoBehaviour
                 StartNewPlacement(id);
             } else if(tempObject.tag == "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<BombEditModeScript>().placeable){
                 editor.SpawnProp();
+                Destroy(tempObject);
+            }
+        }
+    }
+
+    // Terminar modo edición al acabar el tiempo
+    private void StateChange(GameState prev, GameState curr){
+        if (this != null) {
+            if (curr == GameState.Round || curr == GameState.StartGame) {
                 Destroy(tempObject);
             }
         }
