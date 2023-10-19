@@ -32,10 +32,12 @@ public class ZombieScript : NetworkBehaviour
     {
         base.OnNetworkSpawn();
         // Inicializar vida
-        health.Value = 5;
-        agent = GetComponent<NavMeshAgent>();
-        agent.updateRotation = false;
-        agent.updateUpAxis = false;
+        if (NetworkManager.Singleton.IsServer) {
+            health.Value = 5;
+            agent = GetComponent<NavMeshAgent>();
+            agent.updateRotation = false;
+            agent.updateUpAxis = false;
+        }
     }
 
     // Moverse a su target

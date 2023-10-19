@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using UnityEngine.SceneManagement;
 using Unity.Collections;
+using System.Threading.Tasks;
 
 delegate void specialAbility();
 public class PlayerController : NetworkBehaviour
@@ -60,7 +61,7 @@ public class PlayerController : NetworkBehaviour
     
     // Spawn points
     // DEV: Hacer GameObjects para modificarlos en escena
-    private Vector3[] spawnPositions = { new Vector3(15f,4.5f,0f), new Vector3(16f,-9.23f,0f), new Vector3(-12.5f,-10f,0f), new Vector3(-18f,6.85f,0f) };
+    private Vector3[] spawnPositions = { new Vector3(65.83f,36.37f,0f), new Vector3(67f,22.5f,0f), new Vector3(38.24f,21.71f,0f), new Vector3(32.7f,38.65f,0f) };
 
     // Función para colorear objetos según el número del jugador
     void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
@@ -89,7 +90,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     // Inicializar controladores de jugador
-    void Start()
+    async void Start()
     {
         rig = gameObject.GetComponent<Rigidbody2D>();
         GameObject gameManager = GameObject.FindWithTag("GameManager");
@@ -107,7 +108,7 @@ public class PlayerController : NetworkBehaviour
         ColorCodeToPlayer(outline, playerNumber);
         if (IsOwner) {
             // Inicializar como personaje default (cheeseman)
-            ChangeCharacter("cheeseman");
+            await ChangeCharacter("cheeseman");
         }
 
         // Recibir personajes de los jugadores que ya están en escena
@@ -116,7 +117,7 @@ public class PlayerController : NetworkBehaviour
         foreach (GameObject player in players) {
             PlayerController script = player.GetComponent<PlayerController>();
             if (script.playerNumber != this.playerNumber) {
-                script.ChangeCharacter(script.characterCode.Value.ToString());
+                await script.ChangeCharacter(script.characterCode.Value.ToString());
             }
         }
     }
@@ -124,6 +125,7 @@ public class PlayerController : NetworkBehaviour
     // Escuchar cambios de escena
     private void Awake() {
         SceneManager.sceneLoaded += OnSceneLoaded;
+        GameManager.state.OnValueChanged += StateChange;
     }
 
     // Ejecutar funciones de escena de juego
@@ -135,6 +137,17 @@ public class PlayerController : NetworkBehaviour
             if (IsOwner) {
                 SpawnCameraTargetServerRpc(playerNumber);
                 SpawnMenuManagerServerRpc(playerNumber);
+            }
+            
+        }
+    }
+
+    // Función de cambio de estado de juego
+    private void StateChange(GameState prev, GameState curr){
+        // Si empieza una ronda de juego, permitir al jugador usar su habilidad especial
+        if (this != null) {
+            if (curr == GameState.Round || curr == GameState.StartGame) {
+                timeSinceLastAbility = Time.time - abilityCooldown;
             }
         }
     }
@@ -270,9 +283,7 @@ public class PlayerController : NetworkBehaviour
             Die();
         } else {
             animator.SetBool("takeDamage", true);
-            Debug.Log("Got hit");
             StartCoroutine(recordInvulnerabiltyFrames());
-            Debug.Log("hitted");
             StartCoroutine(recordAnimatorHitFrames());
         }
     }
@@ -367,7 +378,7 @@ public class PlayerController : NetworkBehaviour
     // Usada para las fases de compra/edicion
     public void Despawn(){
         // Enviar fuera de la vista de la cámara
-        gameObject.transform.position = new Vector3(0f,50f,0f);
+        gameObject.transform.position = new Vector3(0f,100f,0f);
 
         // Desactivar rigidbody y controles
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
@@ -486,7 +497,7 @@ public class PlayerController : NetworkBehaviour
 
     // Cambiar personaje del jugador
     // DEV: No, no estamos orgullosos de esta solución, pero se reformulará
-    public void ChangeCharacter(string _characterCode){
+    public async Task ChangeCharacter(string _characterCode){
         characterCode.Value = _characterCode;
         if (_characterCode == "cheeseman") {
             animator.runtimeAnimatorController = characterAnimators[0];
@@ -498,7 +509,7 @@ public class PlayerController : NetworkBehaviour
             abilityCooldown = 5;
             specAb = new specialAbility(CheesemanSA);
             changeAnimatorServerRpc(playerNumber, 0);
-            return;
+            await Task.Yield();
         }
         if (_characterCode == "sarge") {
             animator.runtimeAnimatorController = characterAnimators[1];
@@ -510,7 +521,7 @@ public class PlayerController : NetworkBehaviour
             abilityCooldown = 15;
             specAb = new specialAbility(SargeSA);
             changeAnimatorServerRpc(playerNumber, 1);
-            return;
+            await Task.Yield();
         }
     }
 
