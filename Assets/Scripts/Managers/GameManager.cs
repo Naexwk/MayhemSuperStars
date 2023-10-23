@@ -68,6 +68,9 @@ public class GameManager : NetworkBehaviour
     // Variable de control para llamar a actualizar el leaderboard
     public static NetworkVariable<bool> handleLeaderboard = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone);
 
+    // Variable para acceder al animator del timer
+    private GameObject textMeshProObject;
+
     // Inicializar valores
     void Awake() {
         instance = this;
@@ -180,6 +183,13 @@ public class GameManager : NetworkBehaviour
         {
             // Encontrar el timer
             TMP_Text timeText = FindTimerText();
+            Material timeTextMaterial = timeText.materialForRendering;
+            //timeText.enableVertexGradient = false;
+            timeText.color = Color.white;
+            timeText.fontSize = 60f;
+            Color colorOutline = new Color(49f / 255f, 49f / 255f, 49f / 255f);
+            timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorOutline);
+            timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.5f);
 
             // Actualizar el tiempo de ronda
             if (IsOwner) {
@@ -192,12 +202,15 @@ public class GameManager : NetworkBehaviour
             }
             
             // Cambiar el formato del texto al quedar menos 10 segundos
-            if(currentRoundTime.Value <= 10.1)
+            if(currentRoundTime.Value <= 10.6) //9.6
             {
+                textMeshProObject.GetComponent<Animator>().Play("timerAnim");
                 if (timeText != null) {
-                    timeText.text = Mathf.Round(currentRoundTime.Value ).ToString();
-                    timeText.color = Color.red;
-                    timeText.fontSize = 70;
+                    timeText.text = Mathf.Round(currentRoundTime.Value).ToString();
+                    timeText.color = new Color(197f / 255f, 22f / 255f, 55f / 255f);
+                    Color colorCountdown = new Color(27f / 255f, 0f / 255f, 8f / 255f);
+                    timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.3f);
+                    timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorCountdown);
                 }
                 
             }
@@ -243,8 +256,12 @@ public class GameManager : NetworkBehaviour
             // Encontrar el timer
             TMP_Text timeText = FindTimerText();
             // Modificar el texto
+            Color colorOutline = new Color(49f / 255f, 49f / 255f, 49f / 255f);
+            Material timeTextMaterial = timeText.materialForRendering;
+            timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorOutline);
+            timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.5f);
             timeText.color = Color.white;
-            timeText.fontSize = 50;
+            timeText.fontSize = 60f;
 
             // Actualizar el tiempo de fase de compra
             if (IsOwner) {
@@ -372,7 +389,7 @@ public class GameManager : NetworkBehaviour
     // Función para encontrar el timer
     public TMP_Text FindTimerText()
     {
-        GameObject textMeshProObject = GameObject.FindWithTag("Timer");
+        textMeshProObject = GameObject.FindWithTag("Timer");
         if (textMeshProObject != null)
         {
             TMP_Text textMeshProComponent = textMeshProObject.GetComponent<TMP_Text>();

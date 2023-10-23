@@ -13,5 +13,7 @@ public class UIHelper : MonoBehaviour
     public GameObject PurchaseTraps;
     public GameObject VidaText;
     public GameObject winScreen;
+    public GameObject HealthHearts;
+    public GameObject SpecialAbility;
 
 }
