@@ -32,7 +32,7 @@ public class PlayerController : NetworkBehaviour
     public float currentHealth;
     private float timeSinceLastFire;
     public float abilityCooldown; // en segundos
-    private float timeSinceLastAbility;
+    public float timeSinceLastAbility;
     public int abilityDamage;
     private bool isInvulnerable;
     [SerializeField] private float invulnerabilityWindow;

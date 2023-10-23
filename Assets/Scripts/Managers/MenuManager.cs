@@ -10,9 +10,11 @@ using UnityEngine.SceneManagement;
 public class MenuManager : NetworkBehaviour
 {
     // Elementos de UI a cargar
-    private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI;
+    private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI, _healthHeartsUI, _specialAbilityUI;
     private TMP_Text _vidaText;
     private GameObject _winScreen;
+    public GameObject heartPrefab;
+    List<HealthHeart> hearts = new List<HealthHeart>();
 
     // Variables de control de fases
     private bool PurchasePhaseItems, PurchasePhaseTraps;  
@@ -34,6 +36,9 @@ public class MenuManager : NetworkBehaviour
     private PlayerController myPlayerScript;
 
     // Variable de control de seguimiento de vida
+    
+    private Image cooldownRadial;
+    //
     private bool startRecordingLife = false;
 
     // Destruir al entrar al character select, se regenerará al entrar a la escena de juego.
@@ -68,8 +73,10 @@ public class MenuManager : NetworkBehaviour
                 _purchaseScreen = uiHelper.PurchaseUI;
                 _purchaseItemsUI = uiHelper.PurchaseItems;
                 _purchaseTrapsUI = uiHelper.PurchaseTraps;
+                _healthHeartsUI = uiHelper.HealthHearts;
                 _vidaText = uiHelper.VidaText.GetComponent<TMP_Text>();
                 _winScreen = uiHelper.winScreen;
+                _specialAbilityUI = uiHelper.SpecialAbility;
                 loaded = true;
                 
                 // Cargar acciones de botones
@@ -169,7 +176,9 @@ public class MenuManager : NetworkBehaviour
     // Actualizar vida
     void Update (){ 
         if (IsOwner && startRecordingLife) {
-            _vidaText.GetComponent<TMP_Text>().text = ("Health: " + myPlayerScript.currentHealth);
+            //_vidaText.GetComponent<TMP_Text>().text = ("Health: " + myPlayerScript.currentHealth);
+            DrawHearts();
+            specialAbility();
         }
         
     }
@@ -188,7 +197,7 @@ public class MenuManager : NetworkBehaviour
         _timer.SetActive(curr == GameState.StartGame || curr == GameState.Round || curr == GameState.PurchasePhase || curr == GameState.PurchasePhase);
         _leaderboard.SetActive(curr == GameState.Leaderboard);
         _winScreen.SetActive(curr == GameState.WinScreen);
-        _vidaText.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
+        _healthHeartsUI.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
 
         // Administrar spawns del jugador y movimientos de cámara
         if(curr != GameState.Round && curr != GameState.StartGame) {
@@ -244,4 +253,59 @@ public class MenuManager : NetworkBehaviour
         }
         
     }
+
+    public void DrawHearts()
+    {
+        ClearHearts();
+
+        float maxHealthReminder = myPlayerScript.maxHealth % 2;
+        int heartsToMake = (int)((myPlayerScript.maxHealth /2) + maxHealthReminder);
+
+        for(int i = 0; i< heartsToMake; i++)
+        {
+            CreateEmptyHeart();
+        }
+
+        for(int i = 0; i< hearts.Count; i++)
+        {
+            int heartStatusRemainder = (int)Mathf.Clamp(myPlayerScript.currentHealth - (i*2), 0, 2);
+            hearts[i].SetHeartImage((HeartStatus)heartStatusRemainder);
+        }
+    }
+
+    public void CreateEmptyHeart()
+    {
+        GameObject newHeart = Instantiate(heartPrefab);
+        newHeart.transform.SetParent(_healthHeartsUI.transform);
+
+        HealthHeart heartCompenent = newHeart.GetComponent<HealthHeart>();
+        heartCompenent.SetHeartImage(HeartStatus.Empty);
+        hearts.Add(heartCompenent);
+    }
+
+    public void ClearHearts()
+    {
+        foreach(Transform t in _healthHeartsUI.transform)
+        {
+            Destroy(t.gameObject);
+        }
+        hearts = new List<HealthHeart>();
+    }
+
+    public void specialAbility()
+    {
+        cooldownRadial = _specialAbilityUI.transform.GetChild(0).gameObject.GetComponent<Image>();
+        float radialFillAmount = ((Time.time - myPlayerScript.timeSinceLastAbility)/myPlayerScript.abilityCooldown);
+        
+        cooldownRadial.fillAmount = radialFillAmount;
+
+        GameObject  specialAbiliyImage = _specialAbilityUI.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
+        UI_SpecialAb specialAbComponent= specialAbiliyImage.GetComponent<UI_SpecialAb>();
+        string charCode = myPlayerScript.characterCode.Value.ToString();
+
+        Debug.Log(radialFillAmount);
+
+        specialAbComponent.SetSpecialAbImage(charCode, radialFillAmount);
+    }
+
 }

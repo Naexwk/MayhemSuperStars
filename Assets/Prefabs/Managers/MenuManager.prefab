@@ -45,18 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ac7c01b277ace645a07c5ad8b105548, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _lanScreen: {fileID: 0}
-  _timer: {fileID: 0}
-  _leaderboard: {fileID: 0}
-  _purchaseScreen: {fileID: 0}
-  _purchaseItemsUI: {fileID: 0}
-  _purchaseTrapsUI: {fileID: 0}
-  _vidaText: {fileID: 0}
-  _winScreen: {fileID: 0}
+  heartPrefab: {fileID: 5311016506453886116, guid: b2a912000c03a484f8f505c7a62d066a, type: 3}
   myPlayer: {fileID: 0}
-  myCameraTarget: {fileID: 0}
-  UIHelper: {fileID: 0}
-  loaded: 0
+  uiHelper: {fileID: 0}
 --- !u!114 &8486584028174393965
 MonoBehaviour:
   m_ObjectHideFlags: 0
