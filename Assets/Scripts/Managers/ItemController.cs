@@ -12,6 +12,7 @@ public class ItemController : MonoBehaviour
     // Cantidad a colocar de props
     private int quantity = 1;
     private LevelEditorManager editor; 
+    private OptionsSelector optionsSelector; 
     public GameObject tempObject;
     private Renderer tempRend;
 
@@ -24,6 +25,7 @@ public class ItemController : MonoBehaviour
     void Start()
     {
         editor = GameObject.FindWithTag("LevelEditorManager").GetComponent<LevelEditorManager>();
+        optionsSelector = GameObject.FindWithTag("OptionsSelector").GetComponent<OptionsSelector>();
     }
 
     // Función para designar la cantidad de props a colocar
@@ -34,7 +36,12 @@ public class ItemController : MonoBehaviour
 
     public void StartNewPlacement(int _id)
     {   
-        id = _id;
+        id = optionsSelector.propOptions[_id][0];
+        quantity = optionsSelector.propOptions[_id][1];
+        PlaceProp();
+    }
+
+    private void PlaceProp(){
         if(quantity > 0 ){
             // Encontrar posición para spawnear
             Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
@@ -77,7 +84,6 @@ public class ItemController : MonoBehaviour
             quantity--;
             
         }
-        
     }
 
     void Update(){
@@ -91,15 +97,15 @@ public class ItemController : MonoBehaviour
                 Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
                 tempObject.transform.position = worldPosition;
 
-                // Al hacer clic con el mouse, aparecer el objeto si es colocable
-                if(tempObject.tag != "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<TriggerEditModeController>().placeable){
-                    editor.SpawnProp();
-                    Destroy(tempObject);
-                    StartNewPlacement(id);
-                } else if(tempObject.tag == "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<BombEditModeScript>().placeable){
-                    editor.SpawnProp();
-                    Destroy(tempObject);
-            }
+            // Al hacer clic con el mouse, aparecer el objeto si es colocable
+            if(tempObject.tag != "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<TriggerEditModeController>().placeable){
+                editor.SpawnProp();
+                Destroy(tempObject);
+                PlaceProp();
+            } else if(tempObject.tag == "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<BombEditModeScript>().placeable){
+                editor.SpawnProp();
+                Destroy(tempObject);
+
             }
         }
     }

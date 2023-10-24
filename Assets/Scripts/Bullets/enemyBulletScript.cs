@@ -7,7 +7,7 @@ public class enemyBulletScript : MonoBehaviour
 {
     void OnTriggerEnter2D(Collider2D collision) {
         // Destruir al tocar un muro
-        if (collision.gameObject.tag == "Wall")
+        if (collision.gameObject.tag == "Wall" || collision.gameObject.tag == "MapBorders")
         {
             Destroy(this.gameObject);
         }

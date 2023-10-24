@@ -11,7 +11,7 @@ public class FakePlayerBullet : MonoBehaviour
     // Al tocar un muro o enemigo, destruir el objeto.
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Enemy")
+        if (collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "MapBorders")
         {
             Destroy(this.gameObject);
         }

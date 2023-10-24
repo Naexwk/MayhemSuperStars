@@ -50,7 +50,7 @@ public class GameManager : NetworkBehaviour
     private int[] points = {4,8,8,16,32};
 
     // Variables de control de rondas
-    private int currentRound;
+    public int currentRound;
     private int maxRounds = 5;
 
     // Arrays de ayuda para almacenar y ordenar los puntos del jugador
