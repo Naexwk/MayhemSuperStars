@@ -88,10 +88,14 @@ public class ItemController : MonoBehaviour
 
     void Update(){
         if(tempObject != null){
-            // Seguir el mouse con el objeto fantasma
-            Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
-            tempObject.transform.position = worldPosition;
+            if(tempObject.tag == "Bomb"){
+                Debug.Log(tempObject.GetComponent<BombEditModeScript>().placeable);
+            }
+            if(tempObject != null){
+                // Seguir el mouse con el objeto fantasma
+                Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+                tempObject.transform.position = worldPosition;
 
             // Al hacer clic con el mouse, aparecer el objeto si es colocable
             if(tempObject.tag != "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<TriggerEditModeController>().placeable){
@@ -101,6 +105,7 @@ public class ItemController : MonoBehaviour
             } else if(tempObject.tag == "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<BombEditModeScript>().placeable){
                 editor.SpawnProp();
                 Destroy(tempObject);
+
             }
         }
     }

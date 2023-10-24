@@ -13,21 +13,22 @@ public class BombEditModeScript : NetworkBehaviour
     public bool placeable = false;  
 
     private List<Collider2D> colliders = new List<Collider2D>();
-    public List<Collider2D> GetColliders () { return colliders; }
+    private List<Color> colors = new List<Color>();
 
-    public GameObject bombExplosion;
-
-    // Inicializar renderer y color
+    // Inicializar renderer y color propio
     void Start()
     {
         tempRend = GetComponent<Renderer>();
         currentColor = tempRend.material.color; 
     }
-    // Add to list of Colliders if not MapBorders
+    // Add to list of Colliders if not MapBorders, changes the colors for the other objects
     private void OnTriggerEnter2D (Collider2D other) {
         if (!colliders.Contains(other) && other.gameObject.tag != "MapBorders")
         {
             colliders.Add(other);
+            Renderer rend = other.gameObject.GetComponent<Renderer>();
+            colors.Add(rend.material.color);
+            rend.material.color = new Color(255f, rend.material.color.g, rend.material.color.b, rend.material.color.a);
         }
     }
 
@@ -48,8 +49,10 @@ public class BombEditModeScript : NetworkBehaviour
     void OnTriggerExit2D(Collider2D other)
     {
         if(other.gameObject.tag != "MapBorders"){
-            placeable = true; 
+            placeable = false; 
             tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+            other.gameObject.GetComponent<Renderer>().material.color = colors[colliders.IndexOf(other)];
+            colors.RemoveAt(colliders.IndexOf(other));
             colliders.Remove(other);
         }
     }
