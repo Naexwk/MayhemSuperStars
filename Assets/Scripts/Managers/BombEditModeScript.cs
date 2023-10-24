@@ -49,7 +49,7 @@ public class BombEditModeScript : NetworkBehaviour
     void OnTriggerExit2D(Collider2D other)
     {
         if(other.gameObject.tag != "MapBorders"){
-            placeable = true; 
+            placeable = false; 
             tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
             other.gameObject.GetComponent<Renderer>().material.color = colors[colliders.IndexOf(other)];
             colors.RemoveAt(colliders.IndexOf(other));
