@@ -104,7 +104,8 @@ public class CameraTarget : NetworkBehaviour
             gameObject.transform.position = pos;
         } else {
             // Si no debe seguir al jugador, o no existe, quedarse al centro
-            gameObject.transform.position = new Vector3(50.8f, 31.8f, 0f);
+            gameObject.transform.position = new Vector3(0f, 0f, 0f);
+            //gameObject.transform.position = new Vector3(50.8f, 31.8f, 0f);
         }
     }
 
