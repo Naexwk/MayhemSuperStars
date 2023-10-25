@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6291182669189944844}
   - component: {fileID: 8961357238014381744}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 5898357974761557835}
   - component: {fileID: 5835660279538114746}
   - component: {fileID: 7506008625836523556}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: regular_zombie
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -450,7 +450,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9042067381079013697}
   - component: {fileID: 8079931556462585351}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: regular_zombie_face
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -534,7 +534,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1152969120541839574}
   - component: {fileID: 6690962030350130622}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: regular_zombie
   m_TagString: Untagged
   m_Icon: {fileID: 0}
