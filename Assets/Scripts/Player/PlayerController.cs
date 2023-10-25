@@ -61,7 +61,7 @@ public class PlayerController : NetworkBehaviour
     
     // Spawn points
     // DEV: Hacer GameObjects para modificarlos en escena
-    private Vector3[] spawnPositions = { new Vector3(15f,4.5f,0f), new Vector3(16f,-9f,0f), new Vector3(-12.5f,-10f,0f), new Vector3(-18f,6.5f,0f) };
+    private Vector3[] spawnPositions = { new Vector3(56.5f,28f,0f), new Vector3(57.5f,14.5f,0f), new Vector3(29f,13.5f,0f), new Vector3(23.5f,30f,0f) };
     //private Vector3[] spawnPositions = { new Vector3(65.83f,36.37f,0f), new Vector3(67f,22.5f,0f), new Vector3(38.24f,21.71f,0f), new Vector3(32.7f,38.65f,0f) };
 
     // Función para colorear objetos según el número del jugador

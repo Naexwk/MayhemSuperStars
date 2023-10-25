@@ -305,8 +305,6 @@ public class MenuManager : NetworkBehaviour
         UI_SpecialAb specialAbComponent= specialAbiliyImage.GetComponent<UI_SpecialAb>();
         string charCode = myPlayerScript.characterCode.Value.ToString();
 
-        Debug.Log(radialFillAmount);
-
         specialAbComponent.SetSpecialAbImage(charCode, radialFillAmount);
     }
 
