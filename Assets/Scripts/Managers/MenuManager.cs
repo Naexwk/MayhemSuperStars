@@ -155,6 +155,9 @@ public class MenuManager : NetworkBehaviour
     // Añade el sponsor al jugador segun su ID
     private void SelectObject(int _objectID){
         if (IsOwner) {
+            GameObject gm;
+            gm = GameObject.FindGameObjectWithTag("GameManager");
+            gm.GetComponent<GameManager>().done++;
             myPlayer.GetComponent<ItemManager>().addItem(_optionsSelector.GetComponent<OptionsSelector>().sponsorOptions[_objectID]);
             purchased = true;
             GameManagerOnGameStateChanged(GameState.PurchasePhase, GameState.PurchasePhase);

@@ -83,6 +83,10 @@ public class ItemController : MonoBehaviour
             // Reducir la cantidad de props a colocar
             quantity--;
             
+        } else {
+            GameObject gm;
+            gm = GameObject.FindGameObjectWithTag("GameManager");
+            gm.GetComponent<GameManager>().done++;
         }
     }
 
@@ -105,7 +109,9 @@ public class ItemController : MonoBehaviour
                 } else if(tempObject.tag == "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<BombEditModeScript>().placeable){
                     editor.SpawnProp();
                     Destroy(tempObject);
-
+                    GameObject gm;
+                    gm = GameObject.FindGameObjectWithTag("GameManager");
+                    gm.GetComponent<GameManager>().done++;
                 }
             }
         }
