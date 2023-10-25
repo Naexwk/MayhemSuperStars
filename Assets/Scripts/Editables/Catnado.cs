@@ -32,14 +32,15 @@ public class Catnado : NetworkBehaviour
         // iniciar una corutina nueva de spawn de zombies
         if (this != null) {
             if (curr == GameState.Round || curr == GameState.StartGame) {
-                // Asegurarse que no tenga colisiones
-                //GetComponent<Rigidbody2D>().simulated = false;
+
                 enableControl = true;
                 transform.position = startingPos;
+                gameObject.GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = false;
             } else {
                 enableControl = false;
                 transform.position = startingPos;
-               // GetComponent<Rigidbody2D>().simulated = true;
+                gameObject.GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = true;
+                
             }
         }
     }
