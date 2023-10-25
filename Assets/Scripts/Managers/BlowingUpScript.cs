@@ -11,7 +11,7 @@ public class BlowingUpScript : NetworkBehaviour
         {
             Debug.Log("On Trigger Stay " + other.gameObject);
             Destroy(other.gameObject);
-            Invoke("DestroyGameObject", 25.0f);
+            Invoke("DestroyGameObject", 0.1f);
         }
     }
 
