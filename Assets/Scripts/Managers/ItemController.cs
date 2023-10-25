@@ -97,15 +97,16 @@ public class ItemController : MonoBehaviour
                 Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
                 tempObject.transform.position = worldPosition;
 
-            // Al hacer clic con el mouse, aparecer el objeto si es colocable
-            if(tempObject.tag != "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<TriggerEditModeController>().placeable){
-                editor.SpawnProp();
-                Destroy(tempObject);
-                PlaceProp();
-            } else if(tempObject.tag == "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<BombEditModeScript>().placeable){
-                editor.SpawnProp();
-                Destroy(tempObject);
+                // Al hacer clic con el mouse, aparecer el objeto si es colocable
+                if(tempObject.tag != "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<TriggerEditModeController>().placeable){
+                    editor.SpawnProp();
+                    Destroy(tempObject);
+                    PlaceProp();
+                } else if(tempObject.tag == "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<BombEditModeScript>().placeable){
+                    editor.SpawnProp();
+                    Destroy(tempObject);
 
+                }
             }
         }
     }
