@@ -24,6 +24,8 @@ public class PlayerController : NetworkBehaviour
     public int fireRate; // en disparos por segundo
     public int bulletDamage;
 
+    public float aiPriority = 1;
+
     //Animacion
     [SerializeField] private RuntimeAnimatorController[] characterAnimators;
     [SerializeField] private Animator animator;
@@ -368,6 +370,8 @@ public class PlayerController : NetworkBehaviour
 
     // Función que reinicia las stats del jugador (para aplicar los items)
     private void ResetStats(){
+        gameObject.transform.localScale = new Vector3 (0.5f,0.5f,0.5f);
+        aiPriority = 1f;
         playerSpeed = char_playerSpeed;
         bulletSpeed = char_bulletSpeed;
         maxHealth = char_maxHealth;

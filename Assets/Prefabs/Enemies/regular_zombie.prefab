@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6291182669189944844}
   - component: {fileID: 8961357238014381744}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 1457224737242071980}
   - component: {fileID: 5499936393201802720}
   - component: {fileID: 8572051317912480545}
+  - component: {fileID: 5898357974761557835}
   - component: {fileID: 5835660279538114746}
   - component: {fileID: 7506008625836523556}
   m_Layer: 6
@@ -211,10 +212,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3190adcad0b5b9c4d89550d0ac3e46bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateTimer: 0
-  speed: 0
-  health:
-    m_InternalValue: 0
 --- !u!195 &794491109718888550
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -395,6 +392,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5898357974761557835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2554199365530014469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad774f33cb6b4104b80749149ec0b788, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
 --- !u!95 &5835660279538114746
 Animator:
   serializedVersion: 5
@@ -440,7 +450,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9042067381079013697}
   - component: {fileID: 8079931556462585351}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: regular_zombie_face
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -524,7 +534,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1152969120541839574}
   - component: {fileID: 6690962030350130622}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: regular_zombie
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -233,7 +233,7 @@ public class OptionsSelector : NetworkBehaviour
         propOptions[2] = propDefaults[2];
         sponsorOptions[0] = 1;
         sponsorOptions[1] = 2;
-        sponsorOptions[2] = 3;
+        sponsorOptions[2] = 6;
     }
 
     void ReshuffleSponsors(int[] arraySponsors)
