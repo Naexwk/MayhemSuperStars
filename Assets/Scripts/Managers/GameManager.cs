@@ -48,7 +48,7 @@ public class GameManager : NetworkBehaviour
 
     // Puntos por ronda
     private int[] points = {4,8,8,16,32};
-    public int done = 0;
+    public NetworkVariable<int> done = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone);
 
     // Variables de control de rondas
     public int currentRound;
@@ -267,9 +267,9 @@ public class GameManager : NetworkBehaviour
             // Actualizar el tiempo de fase de compra
             if (IsOwner) { 
                 // CHANGE NEEDED HERE
-                if(done == numberOfPlayers.Value){
+                if(done.Value == numberOfPlayers.Value){
                     currentPurchaseTime.Value = 0.0f;
-                    done = 0;
+                    done.Value = 0;
                 } else {
                     currentPurchaseTime.Value -= Time.deltaTime;
                 }

@@ -86,7 +86,7 @@ public class ItemController : MonoBehaviour
         } else {
             GameObject gm;
             gm = GameObject.FindGameObjectWithTag("GameManager");
-            gm.GetComponent<GameManager>().done++;
+            gm.GetComponent<GameManager>().done.Value++;
         }
     }
 
@@ -111,7 +111,7 @@ public class ItemController : MonoBehaviour
                     Destroy(tempObject);
                     GameObject gm;
                     gm = GameObject.FindGameObjectWithTag("GameManager");
-                    gm.GetComponent<GameManager>().done++;
+                    gm.GetComponent<GameManager>().done.Value++;
                 }
             }
         }

@@ -157,7 +157,7 @@ public class MenuManager : NetworkBehaviour
         if (IsOwner) {
             GameObject gm;
             gm = GameObject.FindGameObjectWithTag("GameManager");
-            gm.GetComponent<GameManager>().done++;
+            gm.GetComponent<GameManager>().done.Value++;
             myPlayer.GetComponent<ItemManager>().addItem(_optionsSelector.GetComponent<OptionsSelector>().sponsorOptions[_objectID]);
             purchased = true;
             GameManagerOnGameStateChanged(GameState.PurchasePhase, GameState.PurchasePhase);
