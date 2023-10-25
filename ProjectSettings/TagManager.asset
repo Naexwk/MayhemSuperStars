@@ -23,6 +23,7 @@ TagManager:
   - Bomb
   - MapBorders
   - OptionsSelector
+  - PropEnemy
   layers:
   - Default
   - TransparentFX
