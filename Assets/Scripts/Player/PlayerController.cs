@@ -24,6 +24,8 @@ public class PlayerController : NetworkBehaviour
     public int fireRate; // en disparos por segundo
     public int bulletDamage;
 
+    public float aiPriority = 1;
+
     //Animacion
     [SerializeField] private RuntimeAnimatorController[] characterAnimators;
     [SerializeField] private Animator animator;
@@ -61,7 +63,8 @@ public class PlayerController : NetworkBehaviour
     
     // Spawn points
     // DEV: Hacer GameObjects para modificarlos en escena
-    private Vector3[] spawnPositions = { new Vector3(65.83f,36.37f,0f), new Vector3(67f,22.5f,0f), new Vector3(38.24f,21.71f,0f), new Vector3(32.7f,38.65f,0f) };
+    private Vector3[] spawnPositions = { new Vector3(56.5f,28f,0f), new Vector3(57.5f,14.5f,0f), new Vector3(29f,13.5f,0f), new Vector3(23.5f,30f,0f) };
+    //private Vector3[] spawnPositions = { new Vector3(65.83f,36.37f,0f), new Vector3(67f,22.5f,0f), new Vector3(38.24f,21.71f,0f), new Vector3(32.7f,38.65f,0f) };
 
     // Función para colorear objetos según el número del jugador
     void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
@@ -367,6 +370,8 @@ public class PlayerController : NetworkBehaviour
 
     // Función que reinicia las stats del jugador (para aplicar los items)
     private void ResetStats(){
+        gameObject.transform.localScale = new Vector3 (0.5f,0.5f,0.5f);
+        aiPriority = 1f;
         playerSpeed = char_playerSpeed;
         bulletSpeed = char_bulletSpeed;
         maxHealth = char_maxHealth;

@@ -14,7 +14,7 @@ public class PlayerBullet : NetworkBehaviour
     // La funcion de recibir daño esta en el script del enemigo
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Enemy")
+        if (collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "MapBorders")
         {
             Destroy(this.gameObject);
         }

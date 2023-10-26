@@ -22,6 +22,8 @@ TagManager:
   - RelayManager
   - Bomb
   - MapBorders
+  - OptionsSelector
+  - PropEnemy
   layers:
   - Default
   - TransparentFX

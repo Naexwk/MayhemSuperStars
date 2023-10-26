@@ -15,6 +15,8 @@ public class MenuManager : NetworkBehaviour
     private GameObject _winScreen;
 
     //Variables UI Health Hearts
+
+    private GameObject _optionsSelector;
     public GameObject heartPrefab;
     List<HealthHeart> hearts = new List<HealthHeart>();
 
@@ -83,6 +85,7 @@ public class MenuManager : NetworkBehaviour
                 _healthHeartsUI = uiHelper.HealthHearts;
                 _vidaText = uiHelper.VidaText.GetComponent<TMP_Text>();
                 _winScreen = uiHelper.winScreen;
+                _optionsSelector = uiHelper.optionsSelector;
                 _specialAbilityUI = uiHelper.SpecialAbility;
                 _sponsorsUI = uiHelper.Sponsors;
                 loaded = true;
@@ -134,13 +137,13 @@ public class MenuManager : NetworkBehaviour
         button.onClick.AddListener(OnSelectedTraps);
 
         button = _purchaseItemsUI.transform.GetChild(0).GetComponent<Button>();
-        button.onClick.AddListener(() => SelectObject(1));
+        button.onClick.AddListener(() => SelectObject(0));
 
         button = _purchaseItemsUI.transform.GetChild(1).GetComponent<Button>();
-        button.onClick.AddListener(() => SelectObject(2));
+        button.onClick.AddListener(() => SelectObject(1));
 
         button = _purchaseItemsUI.transform.GetChild(2).GetComponent<Button>();
-        button.onClick.AddListener(() => SelectObject(3));
+        button.onClick.AddListener(() => SelectObject(2));
 
         button = _purchaseTrapsUI.transform.GetChild(0).GetComponent<Button>();
         button.onClick.AddListener(SelectTrap);
@@ -162,7 +165,7 @@ public class MenuManager : NetworkBehaviour
     // Añade el sponsor al jugador segun su ID
     private void SelectObject(int _objectID){
         if (IsOwner) {
-            myPlayer.GetComponent<ItemManager>().addItem(_objectID);
+            myPlayer.GetComponent<ItemManager>().addItem(_optionsSelector.GetComponent<OptionsSelector>().sponsorOptions[_objectID]);
             purchased = true;
             GameManagerOnGameStateChanged(GameState.PurchasePhase, GameState.PurchasePhase);
         }
