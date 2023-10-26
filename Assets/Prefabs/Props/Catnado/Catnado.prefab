@@ -18,6 +18,8 @@ GameObject:
   - component: {fileID: 1579621229451046917}
   - component: {fileID: 2936997543119387074}
   - component: {fileID: 1584134512855825168}
+  - component: {fileID: 3586795587367959941}
+  - component: {fileID: 1344481705021257632}
   m_Layer: 6
   m_Name: Catnado
   m_TagString: PropEnemy
@@ -260,6 +262,41 @@ MonoBehaviour:
   succccc: 125
   fireRate: 0.5
   force: 300
+--- !u!95 &3586795587367959941
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550598751626481641}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 71425f1f048639c488b2d54f27d33966, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1344481705021257632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550598751626481641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 3586795587367959941}
 --- !u!1 &8768617522592815280
 GameObject:
   m_ObjectHideFlags: 0
