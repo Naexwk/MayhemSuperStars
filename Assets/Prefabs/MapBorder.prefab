@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 921494705423828646}
   m_Layer: 0
   m_Name: MapBorder
-  m_TagString: Wall
+  m_TagString: MapBorders
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

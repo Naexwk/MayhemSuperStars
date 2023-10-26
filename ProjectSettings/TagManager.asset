@@ -20,6 +20,10 @@ TagManager:
   - UIHelper
   - Spawner
   - RelayManager
+  - Bomb
+  - MapBorders
+  - OptionsSelector
+  - PropEnemy
   layers:
   - Default
   - TransparentFX
@@ -40,9 +44,9 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - PropNoEnemyBulletCollision
   - CheeseBullet
-  - 
+  - EnemyBullet
   - 
   - 
   - 

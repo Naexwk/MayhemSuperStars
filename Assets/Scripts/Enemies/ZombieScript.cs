@@ -1,46 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using Unity.Netcode;
 
+// Controlador del enemigo "Zombie"
 public class ZombieScript : NetworkBehaviour
 {
-    public float updateTimer = 1f;
-
-    public float speed;
-    private Transform target;
-    private NavMeshAgent agent;
-
-    public NetworkVariable<int> health = new NetworkVariable<int>();
+    // Vida del zombie
+    private NetworkVariable<int> health = new NetworkVariable<int>();
 
     private Animator animator;
     private SpriteRenderer m_SpriteRenderer;
-    //public int health;
 
     // Valores iniciales
     void Start()
     {
         animator = GetComponent<Animator>();
         m_SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        // Aleatorizar el color del zombie
         m_SpriteRenderer.color = new Color(1f, 1f, Random.Range(0f, 1f));
     }
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        health.Value = 5;
-        agent = GetComponent<NavMeshAgent>();
-        agent.updateRotation = false;
-        agent.updateUpAxis = false;
-    }
-
-    // Moverse a su target
-    void Update()
-    {
-        FindPlayer();
-        if (target != null){
-            agent.SetDestination(target.position);
+        // Inicializar vida
+        if (NetworkManager.Singleton.IsServer) {
+            health.Value = 5;
         }
     }
 
@@ -55,7 +41,6 @@ public class ZombieScript : NetworkBehaviour
                 ZombieGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage);
             }
             
-            
         }
     }
 
@@ -68,47 +53,20 @@ public class ZombieScript : NetworkBehaviour
         }
     }
 
-    // Al entrar en contacto con una bala de queso, recibir daño
-    /*void OnCollisionEnter2D(Collision2D col)
-    {
-
-        // Funciona exclusivamente con la bala de queso porque es la única con Collider, no trigger
-        if (col.gameObject.tag == "PlayerBullet")
-        {
-            ZombieGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage);
-        }
-    }*/
-    
-    // Buscar al jugador más cercano
-    void FindPlayer()
-    {
-        if (IsOwner) {
-            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-            // Si no hay jugadores, no moverse
-            if (players.Length == 0) {
-                target = transform;
-                animator.SetBool("isMoving", false);
-            } else {
-                float closestDistance = Mathf.Infinity;
-                foreach(GameObject p in players){
-                    float distance = Vector2.Distance(transform.position, p.transform.position);
-                    animator.SetBool("isMoving", true);
-                    if (distance < closestDistance){
-                        closestDistance = distance;
-                        target = p.transform;
-                    }
-                }
-            }
-        }
-        
-        
-    }
-
+    // Actualizar la vida en la red
     [ServerRpc(RequireOwnership = false)]
     public void ZombieGetHitServerRpc(int damage) {
         health.Value -= damage;
         if (health.Value <= 0) {
             Destroy(this.gameObject);
+        }
+    }
+
+    private void Update() {
+        if (this.gameObject.GetComponent<RunnerAI>().target == transform) {
+            animator.SetBool("isMoving", false);
+        } else {
+            animator.SetBool("isMoving", true);
         }
     }
 }

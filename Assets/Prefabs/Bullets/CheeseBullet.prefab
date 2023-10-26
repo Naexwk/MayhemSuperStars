@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 2884037565188089884}
   - component: {fileID: 8910047068622793692}
   - component: {fileID: 4384788678047636707}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: CheeseBullet
   m_TagString: PlayerBullet
   m_Icon: {fileID: 0}
@@ -106,8 +106,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletDamage: 3
-  rb: {fileID: 0}
-  isFake: 0
 --- !u!114 &2875766899543974655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390,7 +388,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3601593133953745747}
   - component: {fileID: 678881118353957323}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}

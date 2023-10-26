@@ -3,65 +3,79 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
+// Controlador del prop "Turret"
 public class TurretScriptV2 : MonoBehaviour
 {
-    public GameObject alertLight;
-    public GameObject canonGun;
-    public Transform shootPoint;
+    // Referencias a partes de la torreta
+    [SerializeField] private GameObject alertLight;
+    [SerializeField] private GameObject canonGun;
+    [SerializeField] private Transform shootPoint;
 
     private GameObject[] players;
     private GameObject target;
 
-    public float distanceThreshold = 25f;
-    public float fireRate;
+    // Rango máximo de disparo
+    [SerializeField] private float distanceThreshold = 25f;
+
+    // Velocidad de disparo
+    [SerializeField] private float fireRate;
+
+    // Variable de control para la velocidad de disparo
     private float timeSinceLastFire;
 
+    // Referencia al objeto que maneja las balas de red
     private GameObject bullethandler;
+
+    // Fuerza y dirección de las balas
     private Vector2 Direction;
-    public float force;
+    [SerializeField] private float force;
 
 
     void Start () {
         bullethandler = GameObject.FindWithTag("BulletHandler");
     }
 
-    // Update is called once per frame
     void Update()
     {
         float closestDistance = Mathf.Infinity;
+        // Actualizar lista de jugadores
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+        // Revisando uno por uno, encontrar al más cercano y designarlo como target
         foreach(GameObject player in players){
-            
             float distance = Vector2.Distance(transform.position, player.transform.position);
             if (distance < closestDistance && distance < distanceThreshold){
                 closestDistance = distance;
-                //Debug.Log("Closest distance: " + closestDistance);
                 target = player.gameObject;
             }
         }
 
+        // Si no se encontró a un jugador, borrar el target y apagar la luz de alerta
         if (closestDistance == Mathf.Infinity) {
             target = null;
             alertLight.GetComponent<SpriteRenderer>().color = Color.black;
         }
 
+        // Si hay target, apuntarle con el cañón y disparar
         if (target != null) {
             alertLight.GetComponent<SpriteRenderer>().color = Color.red;
             Direction = target.transform.position - transform.position;
             Direction.Normalize();
             canonGun.transform.up = Direction;
 
+            // Revisar si ya pasó el tiempo de espera de la velocidad de disparo
             if ((Time.time - timeSinceLastFire) > (fireRate)) {
                 timeSinceLastFire = Time.time;
-                shoot();
+                Shoot();
             }
         }
         
     }
 
-    void shoot(){
+    // Llamar al Bullet Handler para que cree una bala de red
+    void Shoot(){
         if (bullethandler.GetComponent<NetworkObject>().IsOwner) {
-            bullethandler.GetComponent<BulletHandler>().spawnEnemyBulletServerRpc(force, Direction, shootPoint.position.x, shootPoint.position.y);
+            bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, Direction, shootPoint.position.x, shootPoint.position.y);
         }
     }
 }

@@ -4,12 +4,12 @@ using Unity.Netcode;
 using System;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using Unity.Collections;
+using System.Threading.Tasks;
 
 delegate void specialAbility();
 public class PlayerController : NetworkBehaviour
 {
-
-
     // Estadísticas del personaje
     private float char_playerSpeed = 8f;
     private float char_bulletSpeed = 30f;
@@ -24,48 +24,51 @@ public class PlayerController : NetworkBehaviour
     public int fireRate; // en disparos por segundo
     public int bulletDamage;
 
+    public float aiPriority = 1;
+
     //Animacion
-    public RuntimeAnimatorController[] characterAnimators;
-    public Animator animator;
+    [SerializeField] private RuntimeAnimatorController[] characterAnimators;
+    [SerializeField] private Animator animator;
 
     // Variables de control
-    public bool enableControl = false;
+    private bool enableControl = false;
     public float currentHealth;
     private float timeSinceLastFire;
     public float abilityCooldown; // en segundos
-    private float timeSinceLastAbility;
+    public float timeSinceLastAbility;
     public int abilityDamage;
-    public bool isInvulnerable;
-    public float invulnerabilityWindow;
+    private bool isInvulnerable;
+    [SerializeField] private float invulnerabilityWindow;
     public bool sargeActive = false;
-    public int points = 0;
 
     // Variables de personaje
-    public string characterCode = "cheeseman";
     public GameObject bubble;
+    public NetworkVariable<FixedString64Bytes> characterCode = new NetworkVariable<FixedString64Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    // public string characterCode = "cheeseman";
     specialAbility specAb;
 
     // Objetos para movimiento
-    public Rigidbody2D rig;
+    private Rigidbody2D rig;
 
     // Objetos de cámara
-    private Camera _mainCamera;
-    public GameObject cameraTargetPrefab;
+    private Camera mainCamera;
+    [SerializeField] private GameObject cameraTargetPrefab;
 
     // Objetos de Network
     public ulong playerNumber;
     private GameObject bullethandler;
-    public GameObject prefabMenuManager;
+    [SerializeField] private GameObject prefabMenuManager;
 
     // Variables visuales
     private GameObject outline;
     
     // Spawn points
-    // hardcodeado porque unity me odia
-    private Vector3[] spawnPositions = { new Vector3(15f,4.5f,0f), new Vector3(16f,-9.23f,0f), new Vector3(-12.5f,-10f,0f), new Vector3(-18f,6.85f,0f) };
+    // DEV: Hacer GameObjects para modificarlos en escena
+    private Vector3[] spawnPositions = { new Vector3(56.5f,28f,0f), new Vector3(57.5f,14.5f,0f), new Vector3(29f,13.5f,0f), new Vector3(23.5f,30f,0f) };
+    //private Vector3[] spawnPositions = { new Vector3(65.83f,36.37f,0f), new Vector3(67f,22.5f,0f), new Vector3(38.24f,21.71f,0f), new Vector3(32.7f,38.65f,0f) };
 
     // Función para colorear objetos según el número del jugador
-    void colorCodeToPlayer (GameObject go, ulong playerNumber) {
+    void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
         if (playerNumber == 0) {
             go.GetComponent<Renderer>().material.color = Color.red;
         }
@@ -80,149 +83,159 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    // Conseguir numero de jugador
     public override void OnNetworkSpawn() {
         base.OnNetworkSpawn();
         DontDestroyOnLoad(this.gameObject);
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
-        //if (IsOwner){
-            //Debug.Log("player number: " + playerNumber);
-            //spawnMenuManagerServerRpc(playerNumber);
-        //}
+        if (IsOwner) {
+            characterCode.Value = "cheeseman";
+        }
     }
 
-    // Obtener su cámara, generador de balas, número de jugador y colorear su outline
-    // También asigna la función de habilidad especial a specAb
-    void Start()
+    // Inicializar controladores de jugador
+    async void Start()
     {
         //bubble = transform.GetChild(0).gameObject;
         bubble.GetComponent<SpriteRenderer>().enabled = false;
+        rig = gameObject.GetComponent<Rigidbody2D>();
         GameObject gameManager = GameObject.FindWithTag("GameManager");
-        //gameManager.GetComponent<GameManager>().AddPlayer(name);
-        _mainCamera = Camera.main;
-        bullethandler = GameObject.FindWithTag("BulletHandler");
+        mainCamera = Camera.main;
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
-        outline = gameObject.transform.GetChild(0).gameObject;
-
-        //Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
         if (IsOwner){
-            spawnMenuManagerServerRpc(playerNumber);
-        }
-        
-        
-        if (characterCode == "cheeseman") {
-            specAb = new specialAbility(CheesemanSA);
-        }
-        if (IsOwner) {
+            // Añadir nombre del jugador al server
             GameObject relayManager = GameObject.FindWithTag("RelayManager");
             string name = relayManager.GetComponent<LanBehaviour>().playerName;
-            addPlayerServerRpc(name);
+            AddPlayerServerRpc(name);
         }
 
-        changeCharacter("cheeseman");
-        //colorCodeToPlayer(outline, playerNumber);
+        // DEV: Reañadir outline
+        outline = gameObject.transform.GetChild(0).gameObject;
+        ColorCodeToPlayer(outline, playerNumber);
+        if (IsOwner) {
+            // Inicializar como personaje default (cheeseman)
+            await ChangeCharacter("cheeseman");
+        }
+
+        // Recibir personajes de los jugadores que ya están en escena
+        GameObject[] players;
+        players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players) {
+            PlayerController script = player.GetComponent<PlayerController>();
+            if (script.playerNumber != this.playerNumber) {
+                await script.ChangeCharacter(script.characterCode.Value.ToString());
+            }
+        }
     }
 
+    // Escuchar cambios de escena
     private void Awake() {
         SceneManager.sceneLoaded += OnSceneLoaded;
+        GameManager.state.OnValueChanged += StateChange;
     }
 
-
+    // Ejecutar funciones de escena de juego
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "SampleScene") {
-            _mainCamera = Camera.main;
+            mainCamera = Camera.main;
             bullethandler = GameObject.FindWithTag("BulletHandler");
-            
-            outline = gameObject.transform.GetChild(0).gameObject;
-
-            //Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
-            
-            // DEV 
-            
-
             if (IsOwner) {
-                spawnCameraTargetServerRpc(playerNumber);
-                spawnMenuManagerServerRpc(playerNumber);
+                SpawnCameraTargetServerRpc(playerNumber);
+                SpawnMenuManagerServerRpc(playerNumber);
+            }
+            
+        }
+    }
+
+    // Función de cambio de estado de juego
+    private void StateChange(GameState prev, GameState curr){
+        // Si empieza una ronda de juego, permitir al jugador usar su habilidad especial
+        if (this != null) {
+            if (curr == GameState.Round || curr == GameState.StartGame) {
+                timeSinceLastAbility = Time.time - abilityCooldown;
             }
         }
     }
 
     void Update()
     {
-        // Si no es dueño de este script, ignorar
-        if (!IsOwner) {
+        // Si no es dueño de este script o no está habilitado
+        // el  control, ignorar
+        if (!IsOwner || !enableControl) {
             return;
         }
 
-        // Si no está habilitado el control, ignorar
-        if (!enableControl){
-            return;
-        }
-
+        // Disparar con el clic izquierdo
         if (Input.GetKey(KeyCode.Mouse0))
         {
             Shoot();
         }
 
+        // Usar habilidad especial con el clic derecho
         if (Input.GetKey(KeyCode.Mouse1))
         {
-            castSpecialAbility();
+            CastSpecialAbility();
         }
     }
 
     private void FixedUpdate(){
-
-        // Si no es dueño de este script, ignorar
-        if (!IsOwner) {
-            return;
-        }
-
-        // Si no está habilitado el control, ignorar
-        if (!enableControl){
+        // Si no es dueño de este script o no está habilitado
+        // el  control, ignorar
+        if (!IsOwner || !enableControl) {
             return;
         }
 
         Move();
-        
     }
 
     // Maneja el movimiento del jugador
     private void Move(){
+        // Obtener input de jugador
+        // Escucha WASD y flechas
         float xInput = Input.GetAxisRaw("Horizontal");
         float yInput = Input.GetAxisRaw("Vertical");
 
-        //Debug.Log("X: " + xInput + " - Y: " + yInput);
-
+        // Mover según el input, normalizado
         if (xInput == 0 || yInput == 0) {
             rig.velocity = new Vector2(xInput * playerSpeed, yInput * playerSpeed);
         } else {
             rig.velocity = new Vector2(xInput * playerSpeed * 0.707f, yInput * playerSpeed* 0.707f);
         }
 
+        // Añadir velocidad al animador según la velocidad
         animator.SetFloat("Speed", Mathf.Abs(rig.velocity.magnitude));
     } 
 
     // Dispara una bala si ya se cumplió el tiempo de espera del firerate.
     private void Shoot(){
         if ((Time.time - timeSinceLastFire) > (1f/fireRate)) {
-            Vector3 worldMousePos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            // Obtener dirección de disparo
+            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2 direction = worldMousePos - transform.position;
             direction.Normalize();
-            bullethandler.GetComponent<BulletHandler>().spawnBulletServerRpc(bulletSpeed, direction, playerNumber, transform.position.x, transform.position.y);
-            timeSinceLastFire = Time.time;
 
+            // Disparar en red
+            bullethandler.GetComponent<BulletHandler>().SpawnBulletServerRpc(bulletSpeed, direction, playerNumber, transform.position.x, transform.position.y);
+
+            // Disparar a nivel local
             GameObject clone;
             clone = Instantiate(bullethandler.GetComponent<BulletHandler>().prefabBullet, transform.position, transform.rotation);
             clone.GetComponent<PlayerBullet>().bulletDamage = bulletDamage;
             clone.GetComponent<PlayerBullet>().bulletSpeed = bulletSpeed;
             clone.GetComponent<PlayerBullet>().bulletDirection = direction;
             clone.GetComponent<Rigidbody2D>().velocity = (direction) * (bulletSpeed);
-            colorCodeToPlayer(clone, playerNumber);
+
+            // Colorear según el jugador
+            ColorCodeToPlayer(clone, playerNumber);
+
+            // Actualizar
+            timeSinceLastFire = Time.time;
         }
     }
 
-    // Castea la habilidad especial, que depende del personaje
-    private void castSpecialAbility(){
+    // Usa la habilidad especial, que depende del personaje
+    private void CastSpecialAbility(){
         if ((Time.time - timeSinceLastAbility) > (abilityCooldown)) {
             specAb();
         }
@@ -232,62 +245,43 @@ public class PlayerController : NetworkBehaviour
 
     // Cheeseman: Aparece una bola de queso que daña a los enemigos
     private void CheesemanSA () {
+        // Encontrar dirección de disparo
+        Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 direction = worldMousePos - transform.position;
+        direction.Normalize();
+
+        // Instanciar bala en red
+        bullethandler.GetComponent<BulletHandler>().SpawnCheeseBulletServerRpc(direction, playerNumber, abilityDamage, transform.position.x, transform.position.y);
         
-            Vector3 worldMousePos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 direction = worldMousePos - transform.position;
-            direction.Normalize();
-            timeSinceLastAbility = Time.time;
-
-            // DEV: Esto es para crear una bala client-side. Es muy poco confiable, entonces opté por
-            // una bala server-side, aunque se vea con un poco de lag.
-            /*if (!IsServer){
-                GameObject clone;
-                clone = Instantiate(prefabCheeseBullet, transform.position, transform.rotation);
-                Physics2D.IgnoreCollision(clone.transform.GetComponent<Collider2D>(), GetComponent<Collider2D>());
-                clone.GetComponent<CheeseBullet>().bulletDamage = 3;
-                clone.GetComponent<Rigidbody2D>().velocity = (direction) * (10f);
-            }*/
-
-            bullethandler.GetComponent<BulletHandler>().spawnCheeseBulletServerRpc(direction, playerNumber, abilityDamage, transform.position.x, transform.position.y);
+        // Actualizar tiempo de cooldown
+        timeSinceLastAbility = Time.time;
     }
 
+    // Sarge: Hacer invulnerable por 5 segundos
     private void SargeSA () {
-        
-            
-            //animator.SetBool("takeDamage", true);
-            //this.sargeActive = true;
-            //this.isInvulnerable = true;
-            //StopCoroutine(recordInvulnerabiltyFrames());
+            animator.SetBool("takeDamage", true);
             StartCoroutine(invincibleSarge());
-            //StartCoroutine(recordAnimatorHitFrames());
-            //this.sargeActive = false;
+            StartCoroutine(recordAnimatorHitFrames());
             timeSinceLastAbility = Time.time;
 
     }
 
+    // Función de conteo de invulnerabilidad para la habilidad especial de Sarge
+    // DEV: Reformular para no usar sargeActive, sino isInvulnerable
     IEnumerator invincibleSarge()
     {
-        //this.isInvulnerable = true;
         StopCoroutine(recordInvulnerabiltyFrames());
         this.sargeActive = true;
         bubble.GetComponent<SpriteRenderer>().enabled = true;
-        //this.isInvulnerable = true;
-        Debug.Log("Invulnerable");
         yield return new WaitForSeconds(5);
-        //this.isInvulnerable = false;
         this.sargeActive = false;
         bubble.GetComponent<SpriteRenderer>().enabled = false;
-        Debug.Log("Vulnerable");
     }
 
     // Función pública para hacer daño al jugador
     public void GetHit(){
-        if (!IsOwner) {
-            return;
-        }
-
-        // Si es invulnerable, ignorar
-        if (this.isInvulnerable || this.sargeActive) {
+        // Si es invulnerable o no es propietario de este jugador, ignorar
+        if (!IsOwner || isInvulnerable || this.sargeActive) {
             return;
         }
 
@@ -297,27 +291,31 @@ public class PlayerController : NetworkBehaviour
             Die();
         } else {
             animator.SetBool("takeDamage", true);
-            Debug.Log("Got hit");
             StartCoroutine(recordInvulnerabiltyFrames());
-            Debug.Log("hitted");
             StartCoroutine(recordAnimatorHitFrames());
         }
     }
 
-    // El jugador cae de lado, y se le quita el control
-    public void Die(){
-        
-        //transform.rotation = Quaternion.Euler(new Vector3(0,0,90));
+    // Función para morir
+    private void Die(){
+        // Deshabilitar controles
         enableControl = false;
-        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
+
+        // Cambiar a estado de muerte
         gameObject.tag = "Dead Player";
-        gameObject.GetComponent<Rigidbody2D>().simulated = false;
-        changeDeadStateServerRpc(true, playerNumber);
+        ChangeDeadStateServerRpc(true, playerNumber);
         animator.SetBool("dead", true);
+
+        // Deshabilitar Rigidbody
+        gameObject.GetComponent<Rigidbody2D>().simulated = false;
+
+        // Eliminar movimiento
+        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
+        
     }
 
-    // Se miden unos segundos igual a invulnerabilityWindow,
-    // durante este tiempo el jugador es transparente e invulnerable
+    // Función de conteo de invulnerabilidad
+    // Hace al jugador invulnerable por invulnerabilityWindow segundos
     IEnumerator recordInvulnerabiltyFrames()
     {
         SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
@@ -325,61 +323,60 @@ public class PlayerController : NetworkBehaviour
         renderer.color = new Color(1f, 1f, 1f, 0.5f);
         bSquareRenderer.color = new Color(1f, 1f, 1f, 0.5f);
         this.isInvulnerable = true;
-        /*
-        if (this.sargeActive){
-            Debug.Log("Sarge Activado");
-            yield break;
-        }
-        */
         yield return new WaitForSeconds(invulnerabilityWindow);
         this.isInvulnerable = false;
         renderer.color = new Color(1f, 1f, 1f, 1f);
         bSquareRenderer.color = new Color(1f, 1f, 1f, 1f);
     }
 
+    // Función de espera para la animación de invulnerabilidad
     IEnumerator recordAnimatorHitFrames()
     {
         yield return new WaitForSeconds(0.16f);
         animator.SetBool("takeDamage", false);
     }
 
-    public void givePoints(int _points){
-        points += _points;
-    }
-
-
-    // Ignora las colisiones con otros jugadores
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Dead Player")
-        {
-            Physics2D.IgnoreCollision(collision.transform.GetComponent<Collider2D>(), GetComponent<Collider2D>());
-        }
-    }
-
     // Función para respawnear al jugador
-    // DEV: Añadir reset de estadísticas
     public void Respawn(){
+        // Reiniciar estadísticas para reaplicar sponsors
         ResetStats();
-        animator.SetBool("dead", false);
         GetComponent<ItemManager>().applyItems();
+
+        // Reiniciar animador
+        animator.SetBool("dead", false);
+        
+        // Reiniciar tag
         gameObject.tag = "Player";
+
+        // Reiniciar vida
         currentHealth = maxHealth;
+
+        // Devolver control
         enableControl = true;
-        changeDeadStateServerRpc(false, playerNumber);
+
+        // Informar a la red el nuevo estado del jugador
+        ChangeDeadStateServerRpc(false, playerNumber);
+
+        // Dar periodo de invulnerabilidad
         StartCoroutine(recordInvulnerabiltyFrames());
-        transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
+
+        // Ir a posición inicial
         gameObject.transform.position = spawnPositions[Convert.ToInt32(playerNumber)];
+
+        // Reiniciar rigidbody
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
         gameObject.GetComponent<Rigidbody2D>().simulated = true;
+
+        // Funciones de red
         if (IsServer) {
             RespawnServerRpc();
         }
-        //spawnPlayerClientRpc();
     }
 
     // Función que reinicia las stats del jugador (para aplicar los items)
-    public void ResetStats(){
+    private void ResetStats(){
+        gameObject.transform.localScale = new Vector3 (0.5f,0.5f,0.5f);
+        aiPriority = 1f;
         playerSpeed = char_playerSpeed;
         bulletSpeed = char_bulletSpeed;
         maxHealth = char_maxHealth;
@@ -390,74 +387,75 @@ public class PlayerController : NetworkBehaviour
     // Función para Despawnear
     // Usada para las fases de compra/edicion
     public void Despawn(){
-        gameObject.transform.position = new Vector3(0f,50f,0f);
+        // Enviar fuera de la vista de la cámara
+        gameObject.transform.position = new Vector3(0f,100f,0f);
+
+        // Desactivar rigidbody y controles
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
         gameObject.GetComponent<Rigidbody2D>().simulated = false;
         enableControl = false;
-
-        // DEV: Move to the Shadow Realm
     }
 
-    public void spawnFakeBullet(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y){
+    // Funciones de red
+    // DEV: Reformular en un nuevo script para liberar espacio del PlayerController
+
+    // Aparece una bala falsa local
+    public void SpawnFakeBullet(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y){
         if (IsOwner && playerNumber != _playerNumber) {
             GameObject clone;
             clone = Instantiate(bullethandler.GetComponent<BulletHandler>().prefabFakeBullet, new Vector3 (_x, _y, 0f), transform.rotation);
             clone.GetComponent<FakePlayerBullet>().bulletSpeed = _bulletSpeed;
             clone.GetComponent<Rigidbody2D>().velocity = (_direction) * (_bulletSpeed);
-            colorCodeToPlayer(clone, _playerNumber);
+            ColorCodeToPlayer(clone, _playerNumber);
         }
     }
 
     // Se ejecuta en el servidor
-    // Aparece un target que sigue al jugador
+    // Aparece un objetivo de camara que sigue al jugador
     [ServerRpc(RequireOwnership = false)]
-    public void spawnCameraTargetServerRpc(ulong _playerNumber){
-        //Debug.Log("Called from " + _playerNumber);
+    public void SpawnCameraTargetServerRpc(ulong _playerNumber){
         GameObject spawnCam;
         spawnCam = Instantiate(cameraTargetPrefab, new Vector3(0f,0f,0f), transform.rotation);
         spawnCam.GetComponent<NetworkObject>().SpawnWithOwnership(_playerNumber);
-        
     }
 
     // Se ejecuta en todos los clientes
     // Le dota su objetivo a la cámara
     [ClientRpc]
-    public void startCameraClientRpc(){
-        //Debug.Log("Called here");
+    public void StartCameraClientRpc(){
         GameObject mainCam;
         mainCam = GameObject.FindWithTag("MainCamera");
-        
-        
         GameObject[] cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
         foreach (GameObject cameraTarget in cameraTargets)
         {
             if(cameraTarget.GetComponent<NetworkObject>().IsOwner){
-                mainCam.GetComponent<CameraMovement>().setCameraTarget(cameraTarget.transform);
+                mainCam.GetComponent<CameraMovement>().SetCameraTarget(cameraTarget.transform);
                 cameraTarget.GetComponent<CameraTarget>().StartCam();
             }
         }
         
     }
 
-    
+    // Se ejecuta en el servidor
+    // Aparece un MenuManager para un jugador
     [ServerRpc(RequireOwnership = false)]
-    public void spawnMenuManagerServerRpc(ulong _playerNumber){
-        //Debug.Log("Called from " + _playerNumber);
+    public void SpawnMenuManagerServerRpc(ulong _playerNumber){
         GameObject spawnMM;
         spawnMM = Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
         DontDestroyOnLoad(spawnMM);
         spawnMM.GetComponent<NetworkObject>().SpawnWithOwnership(_playerNumber);
-        
-        
     }
 
+    // Se ejecuta en el servidor
+    // Cambia el estado del jugador a muerto o vivo
+    // DEV: Reformulable para simplificar la lógica
     [ServerRpc(RequireOwnership = false)]
-    public void changeDeadStateServerRpc(bool isDead, ulong _playerNumber){
-        //Debug.Log("Called from " + _playerNumber + " with IsDead = " + isDead);
+    private void ChangeDeadStateServerRpc(bool isDead, ulong _playerNumber){
         GameObject[] players;
-        GameObject[] deadplayers;
+        GameObject[] deadPlayers;
         players = GameObject.FindGameObjectsWithTag("Player");
-        deadplayers = GameObject.FindGameObjectsWithTag("Dead Player");
+        deadPlayers = GameObject.FindGameObjectsWithTag("Dead Player");
+        // Buscar al jugador entre los jugadores vivos y actualizar su tag
         foreach (GameObject player in players) {
             if (player.GetComponent<PlayerController>().playerNumber == _playerNumber) {
                 if (isDead) {
@@ -467,8 +465,8 @@ public class PlayerController : NetworkBehaviour
                 }
             }
         }
-
-        foreach (GameObject deadplayer in deadplayers) {
+        // Buscar al jugador entre los jugadores muertos y actualizar su tag
+        foreach (GameObject deadplayer in deadPlayers) {
             if (deadplayer.GetComponent<PlayerController>().playerNumber == _playerNumber) {
                 if (isDead) {
                     deadplayer.tag = "Dead Player";
@@ -480,16 +478,19 @@ public class PlayerController : NetworkBehaviour
         
     }
 
+    // Reaparecer jugadores en el host
     [ServerRpc]
-    public void RespawnServerRpc(){
-        GameObject[] deadplayers;
-        deadplayers = GameObject.FindGameObjectsWithTag("Dead Player");
-        foreach (GameObject deadplayer in deadplayers) {
+    private void RespawnServerRpc(){
+        // Cambiar tag de los jugadores muertos
+        GameObject[] deadPlayers;
+        deadPlayers = GameObject.FindGameObjectsWithTag("Dead Player");
+        foreach (GameObject deadplayer in deadPlayers) {
             deadplayer.tag = "Player";
         }
+
+        // Reiniciar colisiones y animadores en host
         GameObject[] players;
         players = GameObject.FindGameObjectsWithTag("Player");
-        //Debug.Log(players.Length);
         foreach (GameObject player in players) {
             player.gameObject.GetComponent<Animator>().SetBool("dead", false);
             gameObject.GetComponent<Rigidbody2D>().simulated = true;
@@ -497,14 +498,17 @@ public class PlayerController : NetworkBehaviour
         
     }
 
+    // Añadir jugador a la lista del GameManager
     [ServerRpc(RequireOwnership = false)]
-    public void addPlayerServerRpc(string _name){
+    private void AddPlayerServerRpc(string _name){
         GameObject gameManager = GameObject.FindWithTag("GameManager");
         gameManager.GetComponent<GameManager>().AddPlayer(_name);
     }
 
-    public void changeCharacter(string _characterCode){
-        characterCode = _characterCode;
+    // Cambiar personaje del jugador
+    // DEV: No, no estamos orgullosos de esta solución, pero se reformulará
+    public async Task ChangeCharacter(string _characterCode){
+        characterCode.Value = _characterCode;
         if (_characterCode == "cheeseman") {
             animator.runtimeAnimatorController = characterAnimators[0];
             char_playerSpeed = 8f;
@@ -514,7 +518,8 @@ public class PlayerController : NetworkBehaviour
             char_bulletDamage = 3;
             abilityCooldown = 5;
             specAb = new specialAbility(CheesemanSA);
-            return;
+            changeAnimatorServerRpc(playerNumber, 0);
+            await Task.Yield();
         }
         if (_characterCode == "sarge") {
             animator.runtimeAnimatorController = characterAnimators[1];
@@ -525,11 +530,29 @@ public class PlayerController : NetworkBehaviour
             char_bulletDamage = 4;
             abilityCooldown = 15;
             specAb = new specialAbility(SargeSA);
-            return;
+            changeAnimatorServerRpc(playerNumber, 1);
+            await Task.Yield();
         }
     }
 
+    // Llamar a cambiar el animador de un jugador en los clientes
+    [ServerRpc(RequireOwnership = false)]
+    public void changeAnimatorServerRpc(ulong _playerNumber, int _characterAnimatorNumber){
+        changeAnimatorClientRpc(_playerNumber, _characterAnimatorNumber);
+    }
 
-
-
+    // Cambiar el animador de un jugador en todos los clientes
+    [ClientRpc]
+    public void changeAnimatorClientRpc(ulong _playerNumber, int _characterAnimatorNumber){
+        GameObject[] players;
+        PlayerController script;
+        players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players) {
+            script = player.GetComponent<PlayerController>();
+            if (script.playerNumber == _playerNumber) {
+                script.animator.runtimeAnimatorController = characterAnimators[_characterAnimatorNumber];
+            }
+        }
+        
+    }
 }
