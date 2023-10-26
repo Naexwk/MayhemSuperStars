@@ -86,7 +86,7 @@ public class ItemController : MonoBehaviour
         } else {
             GameObject gm;
             gm = GameObject.FindGameObjectWithTag("GameManager");
-            gm.GetComponent<GameManager>().done.Value++;
+            gm.GetComponent<GameManager>().DoneWithPurchase();
         }
     }
 

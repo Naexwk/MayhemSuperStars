@@ -105,6 +105,9 @@ public class GameManager : NetworkBehaviour
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Add(name);
     }
+    public void DoneWithPurchase(){
+        done.Value++;
+    }
 
     // Actualizar los puntos de los jugadores
     private void UpdateScores(){
