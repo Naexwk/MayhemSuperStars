@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-delegate void gameItem();
+public delegate void gameItem();
 
 // Controlador de sponsors del jugador
 public class ItemManager : MonoBehaviour
 {  
     // Array de funciones de sponsors
-    gameItem[] itemInventory = new gameItem[10];
+    public gameItem[] itemInventory = new gameItem[10];
+    public int[] itemIDs = new int[10];
 
     // Número de objetos obtenidos en índice -1.
     private int obtainedItemsNumber = -1;
@@ -28,16 +29,19 @@ public class ItemManager : MonoBehaviour
         obtainedItemsNumber++;
         if (itemID == 1) {
             itemInventory[obtainedItemsNumber] = new gameItem(SausageHeart);
+            itemIDs[obtainedItemsNumber] = 1;
             return;
         }
 
         if (itemID == 2) {
             itemInventory[obtainedItemsNumber] = new gameItem(Fosfofosfo);
+            itemIDs[obtainedItemsNumber] = 2;
             return;
         }
 
         if (itemID == 3) {
             itemInventory[obtainedItemsNumber] = new gameItem(Cheese);
+            itemIDs[obtainedItemsNumber] = 3;
             return;
         }
     }
