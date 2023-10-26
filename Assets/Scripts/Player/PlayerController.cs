@@ -109,7 +109,6 @@ public class PlayerController : NetworkBehaviour
         }
         
         
-        colorCodeToPlayer(outline, playerNumber);
         if (characterCode == "cheeseman") {
             specAb = new specialAbility(CheesemanSA);
         }
