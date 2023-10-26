@@ -24,6 +24,7 @@ public class Leaderboard : MonoBehaviour
     [SerializeField] private string[] characterCodes;
     // Lista de jugadores
     private GameObject[] players;
+    private GameObject[] deadplayers;
 
 
     // void Update() {
@@ -65,7 +66,22 @@ public class Leaderboard : MonoBehaviour
             float fillAmountProgressBar = gameManager.networkPoints[gameManager.networkLeaderboard[i]]/maxValue;
             playerProgress[i].fillAmount = fillAmountProgressBar;
 
-            ProgressBarColorChanger(players[i].GetComponent<PlayerController>().characterCode.Value.ToString(), playerProgress[i]);
+            players = GameObject.FindGameObjectsWithTag("Player");
+            deadplayers = GameObject.FindGameObjectsWithTag("Dead Player");
+
+            foreach (GameObject player in players)
+            {
+                if (Convert.ToInt32(player.GetComponent<PlayerController>().playerNumber) == gameManager.networkLeaderboard[i]) {
+                    ProgressBarColorChanger(player.GetComponent<PlayerController>().characterCode.Value.ToString(), playerProgress[i]);
+                }
+            }
+
+            foreach (GameObject deadPlayer in deadplayers)
+            {
+                if (Convert.ToInt32(deadPlayer.GetComponent<PlayerController>().playerNumber) == gameManager.networkLeaderboard[i]) {
+                    ProgressBarColorChanger(deadPlayer.GetComponent<PlayerController>().characterCode.Value.ToString(), playerProgress[i]);
+                }
+            }
         }
     }
 
