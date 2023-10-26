@@ -48,6 +48,7 @@ public class GameManager : NetworkBehaviour
 
     // Puntos por ronda
     private int[] points = {4,8,8,16,32};
+    public NetworkVariable<int> done = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone);
 
     // Variables de control de rondas
     public int currentRound;
@@ -103,6 +104,13 @@ public class GameManager : NetworkBehaviour
         numberOfPlayers.Value++;
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Add(name);
+    }
+    public void DoneWithPurchase(){
+        done.Value++;
+    }
+    [ServerRpc(RequireOwnership = false)]
+    public void DoneWithPurchaseServerRpc(){
+        DoneWithPurchase();
     }
 
     // Actualizar los puntos de los jugadores
@@ -264,8 +272,14 @@ public class GameManager : NetworkBehaviour
             timeText.fontSize = 60f;
 
             // Actualizar el tiempo de fase de compra
-            if (IsOwner) {
-                currentPurchaseTime.Value -= Time.deltaTime;
+            if (IsOwner) { 
+                // CHANGE NEEDED HERE
+                if(done.Value == numberOfPlayers.Value){
+                    currentPurchaseTime.Value = 0.0f;
+                    done.Value = 0;
+                } else {
+                    currentPurchaseTime.Value -= Time.deltaTime;
+                }
             }
 
             // Actualizar el texto del timer
