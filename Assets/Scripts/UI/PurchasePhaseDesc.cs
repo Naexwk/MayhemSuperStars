@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using TMPro;
 using UnityEngine.UI;
 
-public class PurchasePhaseIcons : MonoBehaviour
+public class PurchasePhaseDesc : MonoBehaviour
 {
-    [SerializeField] private Sprite[] sponsorIcons;
-    [SerializeField] private Sprite[] propIcons;
+    [SerializeField] private string[] sponsorDesc;
+    [SerializeField] private string[] propDesc;
 
     [SerializeField] private bool IsSponsor;
     [SerializeField] private int index;
@@ -19,10 +20,10 @@ public class PurchasePhaseIcons : MonoBehaviour
         optionsSelector = GameObject.FindWithTag("OptionsSelector").GetComponent<OptionsSelector>();
         
         if (IsSponsor) {
-            gameObject.GetComponent<Image>().sprite = sponsorIcons[optionsSelector.sponsorOptions[index]-1];
+            gameObject.GetComponent<TMP_Text>().text = sponsorDesc[optionsSelector.sponsorOptions[index]-1];
 
         } else {
-            gameObject.GetComponent<Image>().sprite = propIcons[optionsSelector.propOptions[index][0]];
+            gameObject.GetComponent<TMP_Text>().text = propDesc[optionsSelector.propOptions[index][0]];
         }
         
     }
