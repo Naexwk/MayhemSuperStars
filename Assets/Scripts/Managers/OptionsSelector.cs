@@ -168,7 +168,6 @@ public class OptionsSelector : NetworkBehaviour
         ReshuffleSponsors(sponsorDefaults);
         ReshuffleProps(propDefaults);
         bool firstTime = true;
-
         // Obtener sponsors
         for (int i = 0; i < lists.Length; i++) {
             if (Array.IndexOf(usedLists, lists[i]) != -1) {
@@ -182,15 +181,16 @@ public class OptionsSelector : NetworkBehaviour
                 if (helperSponsorArray == sponsorDefaults) {
                     if (!firstTime) {
                         index++;
-                        firstTime = false;
                     }
                     sponsorOptions[i] = helperSponsorArray[index];
                     usedLists[i] = 0;
+                    firstTime = false;
                 } else {
                     ReshuffleSponsors(helperSponsorArray);
                     sponsorOptions[i] = helperSponsorArray[0];
                     usedLists[i] = lists[i];
                 }
+                
             }
         }
 
@@ -214,10 +214,10 @@ public class OptionsSelector : NetworkBehaviour
                 if (helperPropArray == propDefaults) {
                     if (!firstTime) {
                         index++;
-                        firstTime = false;
                     }
                     propOptions[i] = helperPropArray[index];
                     usedLists[i] = 0;
+                    firstTime = false;
                 } else {
                     ReshuffleProps(helperPropArray);
                     propOptions[i] = helperPropArray[0];
@@ -228,12 +228,12 @@ public class OptionsSelector : NetworkBehaviour
 
         // Hardcodeado para volver a defaults
         // Eliminar ya que existan los objetos
-        propOptions[0] = propDefaults[0];
+        /*propOptions[0] = propDefaults[0];
         propOptions[1] = propDefaults[1];
         propOptions[2] = propDefaults[2];
         sponsorOptions[0] = 1;
         sponsorOptions[1] = 2;
-        sponsorOptions[2] = 6;
+        sponsorOptions[2] = 6;*/
     }
 
     void ReshuffleSponsors(int[] arraySponsors)

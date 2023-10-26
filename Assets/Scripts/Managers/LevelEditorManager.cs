@@ -30,7 +30,6 @@ public class LevelEditorManager : NetworkBehaviour
     }
     [ServerRpc (RequireOwnership=false)] 
     void BombServerRpc(float x, float y){
-        Debug.Log("Bomb Server Rpc");
         GameObject spawnedObject;
         spawnedObject = Instantiate(bombExplosion, new Vector3(x, y, 0), Quaternion.identity);
         BombClientRpc(x, y);

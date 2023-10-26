@@ -25,8 +25,8 @@ public class ItemManager : NetworkBehaviour
         allItems[1] = new gameItem(Fosfofosfo);
         allItems[2] = new gameItem(Cheese);
         allItems[3] = new gameItem(Testosterone);
-        allItems[4] = new gameItem(RugileoPepsi);
-        allItems[5] = new gameItem(CodersSmell);
+        allItems[4] = new gameItem(CodersSmell);
+        allItems[5] = new gameItem(RugileoPepsi);
         allItems[6] = new gameItem(Vampire);
     }
 

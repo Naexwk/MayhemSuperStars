@@ -91,9 +91,6 @@ public class ItemController : MonoBehaviour
     }
     void Update(){
         if(tempObject != null){
-            if(tempObject.tag == "Bomb"){
-                Debug.Log(tempObject.GetComponent<BombEditModeScript>().placeable);
-            }
             if(tempObject != null){
                 // Seguir el mouse con el objeto fantasma
                 Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
