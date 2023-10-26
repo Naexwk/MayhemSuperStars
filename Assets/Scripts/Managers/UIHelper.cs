@@ -16,4 +16,5 @@ public class UIHelper : MonoBehaviour
     public GameObject optionsSelector;
     public GameObject HealthHearts;
     public GameObject SpecialAbility;
+    public GameObject Sponsors;
 }

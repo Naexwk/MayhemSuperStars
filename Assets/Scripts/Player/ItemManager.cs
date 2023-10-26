@@ -1,16 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using Unity.Netcode;
 
 delegate void gameItem();
+
 
 // Controlador de sponsors del jugador
 public class ItemManager : NetworkBehaviour
 {  
     [SerializeField] private GameObject codersSmellParticles;
     // Array de funciones de sponsors
+
+    public int[] itemIDs = new int[10];
     gameItem[] allItems = new gameItem[7];
     // Array de sponsors de jugador
     gameItem[] itemInventory = new gameItem[10];
@@ -44,6 +46,7 @@ public class ItemManager : NetworkBehaviour
     public void addItem(int itemID) {
         obtainedItemsNumber++;
         itemInventory[obtainedItemsNumber] = allItems[itemID-1];
+        itemIDs[obtainItemsNumber] = itemID;
     }
 
     // Funciones de items

@@ -10,12 +10,19 @@ using UnityEngine.SceneManagement;
 public class MenuManager : NetworkBehaviour
 {
     // Elementos de UI a cargar
-    private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI, _healthHeartsUI, _specialAbilityUI;
+    private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI, _healthHeartsUI, _specialAbilityUI, _sponsorsUI;
     private TMP_Text _vidaText;
     private GameObject _winScreen;
+
+    //Variables UI Health Hearts
+
     private GameObject _optionsSelector;
     public GameObject heartPrefab;
     List<HealthHeart> hearts = new List<HealthHeart>();
+
+    //Variables UI Sponsors
+    public GameObject sponsorPrefab;
+    List<UI_Sponsors> sponsors = new List<UI_Sponsors>();
 
     // Variables de control de fases
     private bool PurchasePhaseItems, PurchasePhaseTraps;  
@@ -35,6 +42,7 @@ public class MenuManager : NetworkBehaviour
 
     // Script de mi jugador
     private PlayerController myPlayerScript;
+    private ItemManager itemManagerScript;
 
     // Variable de control de seguimiento de vida
     
@@ -79,6 +87,7 @@ public class MenuManager : NetworkBehaviour
                 _winScreen = uiHelper.winScreen;
                 _optionsSelector = uiHelper.optionsSelector;
                 _specialAbilityUI = uiHelper.SpecialAbility;
+                _sponsorsUI = uiHelper.Sponsors;
                 loaded = true;
                 
                 // Cargar acciones de botones
@@ -91,6 +100,7 @@ public class MenuManager : NetworkBehaviour
                         if (player.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
                             myPlayer = player;
                             myPlayerScript = player.GetComponent<PlayerController>();
+                            itemManagerScript = player.GetComponent<ItemManager>();
                         }
                     }
                     
@@ -180,6 +190,7 @@ public class MenuManager : NetworkBehaviour
         if (IsOwner && startRecordingLife) {
             //_vidaText.GetComponent<TMP_Text>().text = ("Health: " + myPlayerScript.currentHealth);
             DrawHearts();
+            DrawSponsor();
             specialAbility();
         }
         
@@ -200,6 +211,8 @@ public class MenuManager : NetworkBehaviour
         _leaderboard.SetActive(curr == GameState.Leaderboard);
         _winScreen.SetActive(curr == GameState.WinScreen);
         _healthHeartsUI.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
+        _specialAbilityUI.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
+        _sponsorsUI.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
 
         // Administrar spawns del jugador y movimientos de cámara
         if(curr != GameState.Round && curr != GameState.StartGame) {
@@ -253,9 +266,9 @@ public class MenuManager : NetworkBehaviour
                 _leaderboard.GetComponent<Leaderboard>().UpdateLeaderboard(true, true);
             }
         }
-        
     }
 
+    //Health Hearts Functions
     public void DrawHearts()
     {
         ClearHearts();
@@ -292,6 +305,44 @@ public class MenuManager : NetworkBehaviour
             Destroy(t.gameObject);
         }
         hearts = new List<HealthHeart>();
+    }
+
+
+
+    //Sponsors Functions
+    public void DrawSponsor()
+    {
+        ClearSponsors();
+        int sponsorsToMake; 
+        sponsorsToMake = itemManagerScript.itemIDs.Length;
+
+        for(int i = 0; i< sponsorsToMake; i++)
+        {
+            CreateEmptySponsor();
+        }
+
+        for(int i=0; i< sponsors.Count; i++){
+            sponsors[i].SetSponsorImg((SponsorStatus)itemManagerScript.itemIDs[i]);
+        }
+    }
+
+    public void CreateEmptySponsor()
+    {
+        GameObject newSponsor = Instantiate(sponsorPrefab);
+        newSponsor.transform.SetParent(_sponsorsUI.transform);
+
+        UI_Sponsors sponsorComponent = newSponsor.GetComponent<UI_Sponsors>();
+        sponsorComponent.SetSponsorImg(SponsorStatus.SausageHeart);
+        sponsors.Add(sponsorComponent);
+    }
+
+    public void ClearSponsors()
+    {
+        foreach(Transform t in _sponsorsUI.transform)
+        {
+            Destroy(t.gameObject);
+        }
+        sponsors = new List<UI_Sponsors>();
     }
 
     public void specialAbility()
