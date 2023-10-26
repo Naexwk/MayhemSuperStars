@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class UI_Sponsors : MonoBehaviour
 {
-    public Sprite empty,sausageHeart, fosfofosfo, cheese, testosterone, rugileoPepsi, coderSmell, vampire;
+    public Sprite empty,sausageHeart, fosfofosfo, cheese, testosterone, coderSmell, rugileoPepsi, vampire;
     
     Image sponsorImage;
 
@@ -13,6 +13,7 @@ public class UI_Sponsors : MonoBehaviour
     {
         sponsorImage = GetComponent<Image>();
     }
+
     public void SetSponsorImg(SponsorStatus status)
     {
         switch (status)
@@ -52,8 +53,8 @@ public enum SponsorStatus
     Fosfofosfo = 2,
     Cheese = 3,
     Testosterone = 4,
-    RugileoPepsi =5,
-    CodersSmell= 6,
+    CodersSmell= 5,
+    RugileoPepsi = 6,
     Vampire=7
 }
 

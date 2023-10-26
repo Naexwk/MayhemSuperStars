@@ -39,6 +39,9 @@ public class Dropship : NetworkBehaviour
                 GetComponent<Rigidbody2D>().simulated = false;
             } else {
                 StopAllCoroutines();
+                isMoving = false;
+                canMove = false;
+                transform.position = initialPosition;
                 GetComponent<Rigidbody2D>().simulated = true;
             }
         }

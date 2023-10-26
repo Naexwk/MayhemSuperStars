@@ -7,11 +7,10 @@ public class BlowingUpScript : NetworkBehaviour
 {
     void OnTriggerStay2D(Collider2D other)
     {
-        if (other.gameObject.tag != "Bomb")
+        if (other.gameObject.tag != "Bomb" && GetComponent<Collider2D>().GetType().ToString() == "UnityEngine.BoxCollider2D")
         {
-            Debug.Log("On Trigger Stay " + other.gameObject);
             Destroy(other.gameObject);
-            Invoke("DestroyGameObject", 0.1f);
+            Invoke("DestroyGameObject", 0.5f);
         }
     }
 

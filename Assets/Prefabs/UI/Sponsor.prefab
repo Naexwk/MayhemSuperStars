@@ -113,3 +113,7 @@ MonoBehaviour:
   sausageHeart: {fileID: 21300000, guid: e0e012558b44a9a4c855abbb2cb81868, type: 3}
   fosfofosfo: {fileID: 21300000, guid: ccd1965662cfcc74eb630f1cccb2f7cd, type: 3}
   cheese: {fileID: 21300000, guid: f393d411870d7a2438ca6c296dffa16e, type: 3}
+  testosterone: {fileID: 21300000, guid: 30ad812c241330d4299fb0a6b5a706c5, type: 3}
+  rugileoPepsi: {fileID: 21300000, guid: 045729febecbc6e499aa82d0a0907286, type: 3}
+  coderSmell: {fileID: 21300000, guid: d6cd46fa75939314281e4a867e5b53a8, type: 3}
+  vampire: {fileID: 21300000, guid: c1f20308f0660684497a1714cfac971a, type: 3}
