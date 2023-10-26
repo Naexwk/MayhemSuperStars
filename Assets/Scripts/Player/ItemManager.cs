@@ -46,7 +46,7 @@ public class ItemManager : NetworkBehaviour
     public void addItem(int itemID) {
         obtainedItemsNumber++;
         itemInventory[obtainedItemsNumber] = allItems[itemID-1];
-        itemIDs[obtainItemsNumber] = itemID;
+        itemIDs[obtainedItemsNumber] = itemID;
     }
 
     // Funciones de items

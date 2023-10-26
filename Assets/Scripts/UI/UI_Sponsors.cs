@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class UI_Sponsors : MonoBehaviour
 {
-    public Sprite empty,sausageHeart, fosfofosfo, cheese;
+    public Sprite empty,sausageHeart, fosfofosfo, cheese, testosterone, rugileoPepsi, coderSmell, vampire;
     
     Image sponsorImage;
 
@@ -29,6 +29,18 @@ public class UI_Sponsors : MonoBehaviour
             case SponsorStatus.Cheese:
                 sponsorImage.sprite = cheese;
                 break; 
+            case SponsorStatus.Testosterone:
+                sponsorImage.sprite = testosterone;
+                break;
+            case SponsorStatus.RugileoPepsi:
+                sponsorImage.sprite = rugileoPepsi;
+                break; 
+            case SponsorStatus.CodersSmell:
+                sponsorImage.sprite = coderSmell;
+                break;
+            case SponsorStatus.Vampire:
+                sponsorImage.sprite = vampire;
+                break; 
         }
     }
 }
@@ -38,6 +50,10 @@ public enum SponsorStatus
     EmptySponsor = 0,
     SausageHeart = 1,
     Fosfofosfo = 2,
-    Cheese = 3
+    Cheese = 3,
+    Testosterone = 4,
+    RugileoPepsi =5,
+    CodersSmell= 6,
+    Vampire=7
 }
 

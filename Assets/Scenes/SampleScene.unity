@@ -1442,9 +1442,7 @@ MonoBehaviour:
   - {fileID: 8112366325697439444, guid: d49307185b298974085e552fb7e7f2b2, type: 3}
   - {fileID: 1412632871092107711, guid: 97d6bfc3b58145a4b9e7615edb8b3da3, type: 3}
   - {fileID: 6104055297058947148, guid: dfb4cf8fa61ec9d43bd7d6c2df26b2db, type: 3}
-
   bombExplosion: {fileID: 4835361795895488171, guid: 7365f7fb41e05a243888dd8a921ee56d, type: 3}
-  
   id: 0
 --- !u!4 &277407375
 Transform:
