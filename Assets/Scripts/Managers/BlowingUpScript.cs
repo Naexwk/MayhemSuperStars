@@ -9,6 +9,10 @@ public class BlowingUpScript : NetworkBehaviour
     {
         if (other.gameObject.tag != "Bomb" && GetComponent<Collider2D>().GetType().ToString() == "UnityEngine.BoxCollider2D")
         {
+            if (other.gameObject.GetComponent<NetworkObject>() != null && IsServer) {
+                Debug.Log("a");
+                other.gameObject.GetComponent<NetworkObject>().Despawn();
+            }
             Destroy(other.gameObject);
             Invoke("DestroyGameObject", 0.5f);
         }

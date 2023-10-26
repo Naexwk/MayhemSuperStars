@@ -386,6 +386,7 @@ public class GameManager : NetworkBehaviour
     // Iniciar sección de fase de compra
     void HandlepurchasePhase(){
         if (IsOwner) {
+            done.Value = 0;
             purchasePhase.Value = true;
         }
     }

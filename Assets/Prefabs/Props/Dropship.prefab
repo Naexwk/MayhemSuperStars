@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 3088125933930241007}
   - component: {fileID: 6946268040951311394}
   - component: {fileID: 4892086872314521595}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Dropship
   m_TagString: Spawner
   m_Icon: {fileID: 0}

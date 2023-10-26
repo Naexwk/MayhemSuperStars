@@ -15,18 +15,23 @@ public class TriggerEditModeController : MonoBehaviour
     void Start()
     {
         tempRend = GetComponent<Renderer>();
-        currentColor = tempRend.material.color; 
+        if (tempRend != null) {
+            currentColor = tempRend.material.color; 
+        }
     }
 
     // Mientras el prop a colocar se mantenga dentro del collider de un objeto colocado,
     // cambiar su color a rojo y hacerlo no colocable
     void OnTriggerStay2D(Collider2D other)
     {
-        if (other is BoxCollider2D )
+        if (other is BoxCollider2D)
         {
             placeable = false; 
             float newRed = 255f;
-            tempRend.material.color = new Color(newRed, currentColor.g, currentColor.b, currentColor.a);
+            if (tempRend != null) {
+                tempRend.material.color = new Color(newRed, currentColor.g, currentColor.b, currentColor.a);
+            }
+            
         } 
     }
 
@@ -34,7 +39,9 @@ public class TriggerEditModeController : MonoBehaviour
     void OnTriggerExit2D(Collider2D other)
     {
         placeable = true; 
-        tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+        if (tempRend != null) {
+            tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
+        }
     }
 }
 

@@ -23,7 +23,7 @@ public class LevelEditorManager : NetworkBehaviour
         if(itemController.tempObject != null){
             if(itemController.tempObject.tag != "Bomb"){
                 EditModeSpawnerServerRpc(worldPosition.x, worldPosition.y, id);
-            } else{
+            } else {
                 BombServerRpc(worldPosition.x, worldPosition.y);
             }
         }
@@ -39,7 +39,11 @@ public class LevelEditorManager : NetworkBehaviour
     void EditModeSpawnerServerRpc(float x, float y, int index){
         GameObject spawnedObject;
         spawnedObject = Instantiate(ItemPrefabs[index], new Vector3(x, y, 0), Quaternion.identity);
-        EditModeSpawnerClientRpc(x, y, index);
+        if (spawnedObject.tag == "Spawner") {
+            spawnedObject.GetComponent<NetworkObject>().Spawn();
+        } else {
+            EditModeSpawnerClientRpc(x, y, index);
+        }
     }
 
     // Llamada a los clientes para spawnear el objeto como duplicado local

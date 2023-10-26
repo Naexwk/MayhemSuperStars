@@ -60,7 +60,7 @@ public class ItemController : MonoBehaviour
             }
 
             // Convierte el collider a trigger
-            BoxCollider2D boxCollider = tempObject.GetComponent<BoxCollider2D >();
+            BoxCollider2D boxCollider = tempObject.GetComponent<BoxCollider2D>();
             if(boxCollider != null){
                 boxCollider.isTrigger = true; 
             }
@@ -72,11 +72,14 @@ public class ItemController : MonoBehaviour
             } 
             
             // Convirte al objeto en transparente
+            
             tempRend = tempObject.GetComponent<Renderer>();
-            Color currentColor = tempRend.material.color; 
-            float newAlpha = 0.5f;
-            tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, newAlpha);
-
+            if (tempRend != null) {
+                Color currentColor = tempRend.material.color; 
+                float newAlpha = 0.5f;
+                tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, newAlpha);
+            }
+            
             // Cambiar el objeto seleccionado del LevelEditorManager
             editor.id = id;
 
@@ -107,7 +110,7 @@ public class ItemController : MonoBehaviour
                     Destroy(tempObject);
                     GameObject gm;
                     gm = GameObject.FindGameObjectWithTag("GameManager");
-                    gm.GetComponent<GameManager>().done.Value++;
+                    gm.GetComponent<GameManager>().DoneWithPurchaseServerRpc();
                 }
             }
         }

@@ -28,7 +28,7 @@ public class Dropship : NetworkBehaviour
     private void StateChange(GameState prev, GameState curr){
         // Si empieza una ronda de juego, parar todas las corutinas de spawns de zombies e
         // iniciar una corutina nueva de spawn de zombies
-        if (this != null) {
+        if (this != null && IsServer) {
             if (curr == GameState.Round || curr == GameState.StartGame) {
                 StopAllCoroutines();
                 isMoving = false;
@@ -72,14 +72,16 @@ public class Dropship : NetworkBehaviour
     }
 
     private void Update() {
-        if (isMoving && canMove) {
-            transform.position = Vector2.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
-        }
+        if (IsServer) {
+            if (isMoving && canMove) {
+                transform.position = Vector2.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+            }
 
-        if (transform.position == targetPosition) {
-            if (!WaitingToSpawn) {
-                WaitingToSpawn = true;
-                StartCoroutine(WaitToSpawn());
+            if (transform.position == targetPosition) {
+                if (!WaitingToSpawn) {
+                    WaitingToSpawn = true;
+                    StartCoroutine(WaitToSpawn());
+                }
             }
         }
     }
@@ -103,7 +105,7 @@ public class Dropship : NetworkBehaviour
     }
 
     private void SpawnAlien(){
-        if (this != null && NetworkManager.Singleton.IsServer) {
+        if (this != null && IsServer) {
             GameObject clone;
             clone = Instantiate(alienPrefab, helperSpawnPosition, transform.rotation);
             clone.GetComponent<NetworkObject>().Spawn();

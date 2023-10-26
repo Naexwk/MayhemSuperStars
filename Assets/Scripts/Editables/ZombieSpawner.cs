@@ -53,7 +53,7 @@ public class ZombieSpawner : NetworkBehaviour
             hasCoroutines = true;
             yield return new WaitForSeconds(timeToSpawn);
             GameObject clone;
-            clone = Instantiate(zombiePrefab, transform.position, transform.rotation);
+            clone = Instantiate(zombiePrefab, transform.position, Quaternion.identity);
             clone.GetComponent<NetworkObject>().Spawn();
             StartCoroutine(SpawnZombie());
         }
