@@ -111,7 +111,6 @@ public class PlayerController : NetworkBehaviour
 
         // DEV: Reañadir outline
         outline = gameObject.transform.GetChild(0).gameObject;
-        ColorCodeToPlayer(outline, playerNumber);
         if (IsOwner) {
             // Inicializar como personaje default (cheeseman)
             await ChangeCharacter("cheeseman");

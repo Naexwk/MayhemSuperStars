@@ -275,7 +275,7 @@ public class GameManager : NetworkBehaviour
             if (IsOwner) { 
                 // CHANGE NEEDED HERE
                 if(done.Value == numberOfPlayers.Value){
-                    currentPurchaseTime.Value = 0.0f;
+                    currentPurchaseTime.Value = 3.0f;
                     done.Value = 0;
                 } else {
                     currentPurchaseTime.Value -= Time.deltaTime;

@@ -151,7 +151,7 @@ MonoBehaviour:
   spawnRange: 15
   spawnTime: 5
   speed: 5
-  alienPrefab: {fileID: 1053176046078630370, guid: 7ae0bc779d91d4647a99cbcd0f5c0f60, type: 3}
+  alienPrefab: {fileID: 9150818363841136571, guid: 2b154384e7abd8341877b86bc1e19452, type: 3}
 --- !u!114 &-3907310023002441277
 MonoBehaviour:
   m_ObjectHideFlags: 0
