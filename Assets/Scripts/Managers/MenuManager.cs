@@ -121,10 +121,10 @@ public class MenuManager : NetworkBehaviour
     void LoadButtonActions(){
         Button button;
         button = _purchaseScreen.transform.GetChild(0).GetComponent<Button>();
-        button.onClick.AddListener(OnSelectedItems);
+        button.onClick.AddListener(OnSelectedTraps);
 
         button = _purchaseScreen.transform.GetChild(1).GetComponent<Button>();
-        button.onClick.AddListener(OnSelectedTraps);
+        button.onClick.AddListener(OnSelectedItems);
 
         button = _purchaseItemsUI.transform.GetChild(0).GetComponent<Button>();
         button.onClick.AddListener(() => SelectObject(0));
