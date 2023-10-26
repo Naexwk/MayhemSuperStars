@@ -86,10 +86,9 @@ public class ItemController : MonoBehaviour
         } else {
             GameObject gm;
             gm = GameObject.FindGameObjectWithTag("GameManager");
-            gm.GetComponent<GameManager>().DoneWithPurchase();
+            gm.GetComponent<GameManager>().DoneWithPurchaseServerRpc();
         }
     }
-
     void Update(){
         if(tempObject != null){
             if(tempObject.tag == "Bomb"){

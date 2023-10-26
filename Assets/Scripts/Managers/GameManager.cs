@@ -108,6 +108,10 @@ public class GameManager : NetworkBehaviour
     public void DoneWithPurchase(){
         done.Value++;
     }
+    [ServerRpc(RequireOwnership = false)]
+    public void DoneWithPurchaseServerRpc(){
+        DoneWithPurchase();
+    }
 
     // Actualizar los puntos de los jugadores
     private void UpdateScores(){
