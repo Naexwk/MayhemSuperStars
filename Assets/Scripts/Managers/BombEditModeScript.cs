@@ -59,7 +59,7 @@ public class BombEditModeScript : NetworkBehaviour
             colliders.Remove(other);
         }
     }
-     Renderer GetARenderer(Collider2D other){
+    Renderer GetARenderer(Collider2D other){
         Renderer rend = null;
         if(other.gameObject.GetComponent<Renderer>() != null){
             rend = other.gameObject.GetComponent<Renderer>();
