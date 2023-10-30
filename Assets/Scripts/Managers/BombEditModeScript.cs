@@ -23,12 +23,15 @@ public class BombEditModeScript : NetworkBehaviour
     }
     // Add to list of Colliders if not MapBorders, changes the colors for the other objects
     private void OnTriggerEnter2D (Collider2D other) {
-        if (!colliders.Contains(other) && other.gameObject.tag != "MapBorders" && other.gameObject.GetComponent<Renderer>() != null)
+        
+        if (!colliders.Contains(other) && other.gameObject.tag != "MapBorders" && GetARenderer(other) != null && other is BoxCollider2D) 
         {
+            Renderer rend = GetARenderer(other);
             colliders.Add(other);
-            Renderer rend = other.gameObject.GetComponent<Renderer>();
-            colors.Add(rend.material.color);
-            rend.material.color = new Color(255f, rend.material.color.g, rend.material.color.b, rend.material.color.a);
+            if(rend != null){
+                colors.Add(rend.material.color);
+                rend.material.color = new Color(255f, rend.material.color.g, rend.material.color.b, rend.material.color.a);
+            }
         }
     }
 
@@ -36,7 +39,7 @@ public class BombEditModeScript : NetworkBehaviour
     // cambiar su color a rojo y hacerlo no colocable
     void OnTriggerStay2D(Collider2D other)
     {
-        if (other is BoxCollider2D && other.gameObject.tag != "MapBorders" && other.gameObject.GetComponent<Renderer>() != null)
+        if (other is BoxCollider2D && other.gameObject.tag != "MapBorders" && GetARenderer(other)!= null)
         {
             placeable = true; 
             float newGreen = 255f;
@@ -48,13 +51,23 @@ public class BombEditModeScript : NetworkBehaviour
     // Al salir de otros colliders, hacer al objeto colocable y cambiar su color al normal
     void OnTriggerExit2D(Collider2D other)
     {
-        if(other.gameObject.tag != "MapBorders" && other.gameObject.GetComponent<Renderer>() != null){
+        if(other is BoxCollider2D && other.gameObject.tag != "MapBorders" && GetARenderer(other) != null){
             placeable = false; 
             tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-            other.gameObject.GetComponent<Renderer>().material.color = colors[colliders.IndexOf(other)];
+            GetARenderer(other).material.color = colors[colliders.IndexOf(other)];
             colors.RemoveAt(colliders.IndexOf(other));
             colliders.Remove(other);
         }
+    }
+     Renderer GetARenderer(Collider2D other){
+        Renderer rend = null;
+        if(other.gameObject.GetComponent<Renderer>() != null){
+            rend = other.gameObject.GetComponent<Renderer>();
+            return rend;
+        } else if (other.gameObject.transform.GetChild(0).gameObject.GetComponent<Renderer>() != null){
+            return other.gameObject.transform.GetChild(0).gameObject.GetComponent<Renderer>();
+        }
+        return null; 
     }
 }
 
