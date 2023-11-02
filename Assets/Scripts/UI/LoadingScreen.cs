@@ -14,6 +14,7 @@ public class LoadingScreen : MonoBehaviour
     }
 
     private void OnDisable() {
+        dotNumber = 3;
         StopAllCoroutines();
     }
 
