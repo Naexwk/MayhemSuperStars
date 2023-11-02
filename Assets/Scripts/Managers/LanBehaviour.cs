@@ -34,6 +34,8 @@ public class LanBehaviour : NetworkBehaviour
 	// Referencia a campo de texto para recibir código de sala de juego
 	[SerializeField] TMP_InputField joinCodeText;
 
+	[SerializeField] private GameObject loadingPanel;
+
 	void Awake () {
 		DontDestroyOnLoad(this.gameObject);
 	}
@@ -53,6 +55,7 @@ public class LanBehaviour : NetworkBehaviour
 	// Hostea un juego y añade un GameManager
 	public async void CreateRelay(){
 		try {
+			loadingPanel.SetActive(true);
 			// Crear sesión de juego y obtener código de sala de juego
 			Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
 			string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
@@ -67,6 +70,7 @@ public class LanBehaviour : NetworkBehaviour
 			// Cambiar de escena
 			ChangeScene("GameRoom");
 		} catch (RelayServiceException e){
+			loadingPanel.SetActive(false);
 			Debug.Log(e);
 		}
 	}
@@ -80,6 +84,7 @@ public class LanBehaviour : NetworkBehaviour
 
 	public async void JoinRelay(string joinCode){
 		try {
+			loadingPanel.SetActive(true);
 			// Entrar a sesión de juego
 			hostJoinCode = joinCode.ToUpper();
 			JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
@@ -87,6 +92,7 @@ public class LanBehaviour : NetworkBehaviour
 			NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 			NetworkManager.Singleton.StartClient();
 		} catch (RelayServiceException e){
+			loadingPanel.SetActive(false);
 			Debug.Log(e);
 		}
 	}
