@@ -53,7 +53,9 @@ public class TurretScriptV2 : MonoBehaviour
         // Si no se encontró a un jugador, borrar el target y apagar la luz de alerta
         if (closestDistance == Mathf.Infinity) {
             target = null;
-            alertLight.GetComponent<SpriteRenderer>().color = Color.black;
+            if (alertLight != null) {
+                alertLight.GetComponent<SpriteRenderer>().color = Color.black;
+            }
         }
 
         // Si hay target, apuntarle con el cañón y disparar

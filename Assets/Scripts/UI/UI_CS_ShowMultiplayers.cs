@@ -25,6 +25,17 @@ public class UI_CS_ShowMultiplayers : NetworkBehaviour
     {
         StartCoroutine(SearchMyPlayer());
         NetworkManager.OnClientConnectedCallback += OnClientConnected;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    // Ejecutar funciones de escena de juego
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "GameRoom") {
+            if (this != null) {
+                StartCoroutine(SearchMyPlayer());
+            }
+        }
     }
 
     // Búsqueda de jugadores
@@ -40,6 +51,8 @@ public class UI_CS_ShowMultiplayers : NetworkBehaviour
         yield return new WaitForSeconds(1);
         if (myPlayer == null) {
             StartCoroutine(SearchMyPlayer());
+        } else {
+            OnCharacterCodeChanged("","");
         }
     }
 
@@ -74,11 +87,15 @@ public class UI_CS_ShowMultiplayers : NetworkBehaviour
 
     // Cambiar imagen según el characterCode
     private void ChangeImage(int image, string characterCode) {
-        if (characterCode == "cheeseman") {
-            characterImages[image].sprite = characterSprites[0];
-        } else if (characterCode == "sarge") {
-            characterImages[image].sprite = characterSprites[1];
+        if (characterImages[image] != null) {
+            if (characterCode == "cheeseman") {
+                characterImages[image].sprite = characterSprites[0];
+            } else if (characterCode == "sarge") {
+                characterImages[image].sprite = characterSprites[1];
+            }
+            characterImages[image].transform.position = new Vector3 (characterImages[image].transform.position.x, 885f, characterImages[image].transform.position.z);
         }
+        
     }
 
 }
