@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LEMONMILK-Bold SDF 1
+  m_Name: TimesUpMat
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
   m_Parent: {fileID: 2100000, guid: de042ecf2fd1f7a43b4a1264fc4ad6f1, type: 2}
   m_ModifiedSerializedProperties: 0
@@ -22,11 +22,21 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _OutlineTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _OutlineWidth: 0.3
-    - _ScaleRatioA: 0.8333333
+    - _FaceDilate: 0.65
+    - _OutlineSoftness: 0
+    - _OutlineUVSpeedX: 0
+    - _OutlineWidth: 0.553
+    - _ScaleRatioA: 0.59930485
+    - _ScaleRatioB: 0.13541667
+    - _ScaleRatioC: 0.13541667
     m_Colors:
-    - _OutlineColor: {r: 0.105882354, g: 0, b: 0.03137255, a: 1}
+    - _FaceColor: {r: 0.6117647, g: 0.04011069, b: 0, a: 1}
+    - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
