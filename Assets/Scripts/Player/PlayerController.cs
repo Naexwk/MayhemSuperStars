@@ -67,6 +67,8 @@ public class PlayerController : NetworkBehaviour
     private Vector3[] spawnPositions = { new Vector3(56.5f,28f,0f), new Vector3(57.5f,14.5f,0f), new Vector3(29f,13.5f,0f), new Vector3(23.5f,30f,0f) };
     //private Vector3[] spawnPositions = { new Vector3(65.83f,36.37f,0f), new Vector3(67f,22.5f,0f), new Vector3(38.24f,21.71f,0f), new Vector3(32.7f,38.65f,0f) };
 
+    private GameManager gameManager;
+
     // Función para colorear objetos según el número del jugador
     void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
         if (playerNumber == 0) {
@@ -99,7 +101,7 @@ public class PlayerController : NetworkBehaviour
         //bubble = transform.GetChild(0).gameObject;
         bubble.GetComponent<SpriteRenderer>().enabled = false;
         rig = gameObject.GetComponent<Rigidbody2D>();
-        GameObject gameManager = GameObject.FindWithTag("GameManager");
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         mainCamera = Camera.main;
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
         if (IsOwner){
@@ -140,6 +142,9 @@ public class PlayerController : NetworkBehaviour
             mainCamera = Camera.main;
             bullethandler = GameObject.FindWithTag("BulletHandler");
             if (IsOwner) {
+                animator.SetBool("dead", false);
+                gameObject.tag = "Player";
+                ChangeDeadStateServerRpc(false, playerNumber);
                 SpawnCameraTargetServerRpc(playerNumber);
                 SpawnMenuManagerServerRpc(playerNumber);
             }
@@ -310,7 +315,9 @@ public class PlayerController : NetworkBehaviour
 
         // Eliminar movimiento
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
-        
+
+        // Decirle al server que un jugador murio
+        gameManager.PlayerDiedServerRpc();
     }
 
     // Función de conteo de invulnerabilidad
@@ -500,7 +507,6 @@ public class PlayerController : NetworkBehaviour
     // Añadir jugador a la lista del GameManager
     [ServerRpc(RequireOwnership = false)]
     private void AddPlayerServerRpc(string _name){
-        GameObject gameManager = GameObject.FindWithTag("GameManager");
         gameManager.GetComponent<GameManager>().AddPlayer(_name);
     }
 

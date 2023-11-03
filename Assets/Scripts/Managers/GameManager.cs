@@ -52,6 +52,7 @@ public class GameManager : NetworkBehaviour
     // Puntos por ronda
     private int[] points = {4,8,8,16,32};
     public NetworkVariable<int> done = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone);
+    public NetworkVariable<int> deadPlayers = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone);
 
     // Variables de control de rondas
     public int currentRound;
@@ -111,9 +112,19 @@ public class GameManager : NetworkBehaviour
     public void DoneWithPurchase(){
         done.Value++;
     }
+
     [ServerRpc(RequireOwnership = false)]
     public void DoneWithPurchaseServerRpc(){
         DoneWithPurchase();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void PlayerDiedServerRpc(){
+        PlayerDied();
+    }
+
+    public void PlayerDied(){
+        deadPlayers.Value++;
     }
 
     // Actualizar los puntos de los jugadores
@@ -196,6 +207,10 @@ public class GameManager : NetworkBehaviour
             // Actualizar el tiempo de ronda
             if (IsOwner) {
                 currentRoundTime.Value -= Time.deltaTime;
+                if (deadPlayers.Value >= numberOfPlayers.Value && currentRoundTime.Value > 3.6f) {
+                    currentRoundTime.Value = 3.6f;
+                    deadPlayers.Value = 0;
+                }
             }
             // Encontrar el timer
                 TMP_Text timeText = FindTimerText();
@@ -389,6 +404,7 @@ public class GameManager : NetworkBehaviour
     // Iniciar sección de ronda
     private void HandleRound(){
         if (IsOwner) {
+            deadPlayers.Value = 0;
             roundSection.Value = true;
         }
     }
