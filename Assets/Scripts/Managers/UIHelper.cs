@@ -17,4 +17,5 @@ public class UIHelper : MonoBehaviour
     public GameObject HealthHearts;
     public GameObject SpecialAbility;
     public GameObject Sponsors;
+    public GameObject Countdown;
 }

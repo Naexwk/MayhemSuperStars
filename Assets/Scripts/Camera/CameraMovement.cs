@@ -39,7 +39,7 @@ public class CameraMovement : NetworkBehaviour
     // Cambiar la visión de la cámara para ver al jugador de cerca durante la ronda,
     // o para ver todo el mapa en el resto de estados de juego.
     private void ChangeZoomByGameState(GameState prev, GameState curr){
-        if (curr == GameState.Round || curr == GameState.StartGame) {
+        if (curr == GameState.Round || curr == GameState.StartGame || curr == GameState.Countdown || curr== GameState.TimesUp) {
             Camera.main.orthographicSize = 9;
         } else {
             Camera.main.orthographicSize = 17;

@@ -31,13 +31,13 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private Animator animator;
 
     // Variables de control
-    private bool enableControl = false;
+    public bool enableControl = false;
     public float currentHealth;
     private float timeSinceLastFire;
     public float abilityCooldown; // en segundos
     public float timeSinceLastAbility;
     public int abilityDamage;
-    private bool isInvulnerable;
+    public  bool isInvulnerable;
     [SerializeField] private float invulnerabilityWindow;
     public bool sargeActive = false;
 

@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 public class MenuManager : NetworkBehaviour
 {
     // Elementos de UI a cargar
-    private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI, _healthHeartsUI, _specialAbilityUI, _sponsorsUI;
+    private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI, _healthHeartsUI, _specialAbilityUI, _sponsorsUI, _countdownUI;
     private TMP_Text _vidaText;
     private GameObject _winScreen;
 
@@ -88,6 +88,7 @@ public class MenuManager : NetworkBehaviour
                 _optionsSelector = uiHelper.optionsSelector;
                 _specialAbilityUI = uiHelper.SpecialAbility;
                 _sponsorsUI = uiHelper.Sponsors;
+                _countdownUI = uiHelper.Countdown;
                 loaded = true;
                 
                 // Cargar acciones de botones
@@ -201,6 +202,10 @@ public class MenuManager : NetworkBehaviour
 
     // Función de cambio de estado de juego
     private void GameManagerOnGameStateChanged(GameState prev, GameState curr){
+        GameObject gm;
+        gm = GameObject.FindGameObjectWithTag("GameManager");
+        GameManager gameManager = gm.GetComponent<GameManager>();
+
         if (!loaded || !IsOwner) {
             return;
         }
@@ -216,9 +221,9 @@ public class MenuManager : NetworkBehaviour
         _healthHeartsUI.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
         _specialAbilityUI.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
         _sponsorsUI.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
-
+        _countdownUI.gameObject.SetActive(curr == GameState.Countdown || curr == GameState.TimesUp);
         // Administrar spawns del jugador y movimientos de cámara
-        if(curr != GameState.Round && curr != GameState.StartGame) {
+        if(curr != GameState.Round && curr != GameState.StartGame && curr != GameState.Countdown && curr != GameState.TimesUp) {
             if (myPlayer != null) {
                 myPlayer.GetComponent<PlayerController>().Despawn();
             }
