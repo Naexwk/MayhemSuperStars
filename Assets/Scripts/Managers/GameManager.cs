@@ -28,7 +28,6 @@ public class GameManager : NetworkBehaviour
     public NetworkVariable<bool> roundSection = new NetworkVariable<bool>();
     public NetworkVariable<bool> leaderboardSection = new NetworkVariable<bool>();
     public NetworkVariable<bool> purchasePhase = new NetworkVariable<bool>();
-    public NetworkVariable<bool> countdownPhase = new NetworkVariable<bool>();
 
     // Variables de tiempo de estados de juego
     [SerializeField] private float roundTime, leaderboardTime, purchaseTime, countdownTime;
@@ -37,7 +36,6 @@ public class GameManager : NetworkBehaviour
     public NetworkVariable<float> currentRoundTime = new NetworkVariable<float>();
     public NetworkVariable<float> currentLeaderboardTime = new NetworkVariable<float>();
     public NetworkVariable<float> currentPurchaseTime = new NetworkVariable<float>();
-    public NetworkVariable<float> currentCountdownTime = new NetworkVariable<float>();
 
     // Timer de rondas
     private TMP_Text timeText;
@@ -195,38 +193,35 @@ public class GameManager : NetworkBehaviour
         // Lógica de ronda de juego
         if (roundSection.Value)
         {
-                // Actualizar el tiempo de ronda
-                if (IsOwner) {
-                    currentRoundTime.Value -= Time.deltaTime;
-                }
-                // Encontrar el timer
-                if(currentRoundTime.Value <= roundTime )
-                {
-                    TMP_Text timeText = FindTimerText();
-                    Material timeTextMaterial = timeText.materialForRendering;
-                    //timeText.enableVertexGradient = false;
-                    timeText.color = Color.white;
-                    timeText.fontSize = 60f;
-                    Color colorOutline = new Color(49f / 255f, 49f / 255f, 49f / 255f);
-                    timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorOutline);
-                    timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.5f);
+            // Actualizar el tiempo de ronda
+            if (IsOwner) {
+                currentRoundTime.Value -= Time.deltaTime;
+            }
+            // Encontrar el timer
+                TMP_Text timeText = FindTimerText();
+                Material timeTextMaterial = timeText.materialForRendering;
+                //timeText.enableVertexGradient = false;
+                timeText.color = Color.white;
+                timeText.fontSize = 60f;
+                Color colorOutline = new Color(49f / 255f, 49f / 255f, 49f / 255f);
+                timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorOutline);
+                timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.5f);
 
-                    // Actualizar el texto según el tiempo
+                // Actualizar el texto según el tiempo
+                if (timeText != null) {
+                    timeText.text = (Mathf.Round(currentRoundTime.Value * 10.0f) / 10.0f).ToString();
+                }
+                
+                // Cambiar el formato del texto al quedar menos 10 segundos
+                if(currentRoundTime.Value <= 10.6) 
+                {
+                    textMeshProObject.GetComponent<Animator>().Play("timerAnim");
                     if (timeText != null) {
-                        timeText.text = (Mathf.Round(currentRoundTime.Value * 10.0f) / 10.0f).ToString();
-                    }
-                    
-                    // Cambiar el formato del texto al quedar menos 10 segundos
-                    if(currentRoundTime.Value <= 10.6) 
-                    {
-                        textMeshProObject.GetComponent<Animator>().Play("timerAnim");
-                        if (timeText != null) {
-                            timeText.text = Mathf.Round(currentRoundTime.Value).ToString();
-                            timeText.color = new Color(197f / 255f, 22f / 255f, 55f / 255f);
-                            Color colorCountdown = new Color(27f / 255f, 0f / 255f, 8f / 255f);
-                            timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.3f);
-                            timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorCountdown);
-                        }
+                        timeText.text = Mathf.Round(currentRoundTime.Value).ToString();
+                        timeText.color = new Color(197f / 255f, 22f / 255f, 55f / 255f);
+                        Color colorCountdown = new Color(27f / 255f, 0f / 255f, 8f / 255f);
+                        timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.3f);
+                        timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorCountdown);
                     }
                 }
 
@@ -395,7 +390,6 @@ public class GameManager : NetworkBehaviour
     private void HandleRound(){
         if (IsOwner) {
             roundSection.Value = true;
-            countdownPhase.Value = true;
         }
     }
     
@@ -429,7 +423,6 @@ public class GameManager : NetworkBehaviour
     // Reinicia los contadores de tiempo
     void ResetValues(){
         if (IsOwner) {
-            currentCountdownTime.Value = countdownTime;
             currentRoundTime.Value = roundTime;
             currentLeaderboardTime.Value = leaderboardTime;
             currentPurchaseTime.Value = purchaseTime;
