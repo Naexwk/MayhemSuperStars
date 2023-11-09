@@ -223,12 +223,14 @@ public class MenuManager : NetworkBehaviour
         _sponsorsUI.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
         _countdownUI.gameObject.SetActive(curr == GameState.Countdown || curr == GameState.TimesUp);
         // Administrar spawns del jugador y movimientos de cámara
-        if(curr != GameState.Round && curr != GameState.StartGame && curr != GameState.Countdown && curr != GameState.TimesUp) {
-            if (myPlayer != null) {
-                myPlayer.GetComponent<PlayerController>().Despawn();
-            }
-            if (myCameraTarget != null) {
-                myCameraTarget.GetComponent<CameraTarget>().lockOnPlayer = false;
+        if(curr != GameState.Round && curr != GameState.StartGame) {
+            if (curr != GameState.Countdown && curr != GameState.TimesUp) {
+                if (myPlayer != null) {
+                    myPlayer.GetComponent<PlayerController>().Despawn();
+                }
+                if (myCameraTarget != null) {
+                    myCameraTarget.GetComponent<CameraTarget>().lockOnPlayer = false;
+                }
             }
         } else {
             if (myPlayer != null) {

@@ -191,8 +191,6 @@ public class GameManager : NetworkBehaviour
 
     public void Update()
     {
-        Debug.Log(state.Value);
-        
         // Controlar si el juego inició
         if(gameStarted.Value){
             if(!startHandled){

@@ -164,8 +164,11 @@ public class PlayerController : NetworkBehaviour
 
     void Update()
     {
+        //Debug.Log("xAim: " + Input.GetAxisRaw("Horizontal Aim") + ", yAim: " + Input.GetAxisRaw("Vertical Aim"));
         // Si no es dueño de este script o no está habilitado
         // el  control, ignorar
+        
+
         if (!IsOwner || !enableControl) {
             return;
         }
@@ -173,14 +176,23 @@ public class PlayerController : NetworkBehaviour
         // Disparar con el clic izquierdo
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            Shoot();
+            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 direction = worldMousePos - transform.position;
+            Shoot(direction);
+        }
+
+        if (Mathf.Abs(Input.GetAxisRaw("Horizontal Aim")) > 0.2f || Mathf.Abs(Input.GetAxisRaw("Vertical Aim")) > 0.2f)
+        {
+            Vector2 direction = new Vector2 (Input.GetAxisRaw("Horizontal Aim"), Input.GetAxisRaw("Vertical Aim"));
+            Shoot(direction);
         }
 
         // Usar habilidad especial con el clic derecho
-        if (Input.GetKey(KeyCode.Mouse1))
+        if (Input.GetKey(KeyCode.Mouse1) || Input.GetAxisRaw("Special") != 0)
         {
             CastSpecialAbility();
         }
+        
     }
 
     private void FixedUpdate(){
@@ -212,11 +224,9 @@ public class PlayerController : NetworkBehaviour
     } 
 
     // Dispara una bala si ya se cumplió el tiempo de espera del firerate.
-    private void Shoot(){
+    private void Shoot(Vector2 direction){
         if ((Time.time - timeSinceLastFire) > (1f/fireRate)) {
             // Obtener dirección de disparo
-            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 direction = worldMousePos - transform.position;
             direction.Normalize();
 
             // Disparar en red
@@ -249,9 +259,16 @@ public class PlayerController : NetworkBehaviour
 
     // Cheeseman: Aparece una bola de queso que daña a los enemigos
     private void CheesemanSA () {
+        Vector2 direction;
+        if (Mathf.Abs(Input.GetAxisRaw("Horizontal Aim")) > 0.2f || Mathf.Abs(Input.GetAxisRaw("Vertical Aim")) > 0.2f)
+        {
+            direction = new Vector2 (Input.GetAxisRaw("Horizontal Aim"), Input.GetAxisRaw("Vertical Aim"));
+        } else {
+            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            direction = worldMousePos - transform.position;
+        }
         // Encontrar dirección de disparo
-        Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 direction = worldMousePos - transform.position;
+        
         direction.Normalize();
 
         // Instanciar bala en red
