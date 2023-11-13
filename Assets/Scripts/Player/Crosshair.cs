@@ -1,14 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+
 
 public class Crosshair : MonoBehaviour
 {
-    float xInput;
-    float yInput;
+
+    Vector2 input_ShootDirection;
     Vector2 direction;
+
     [SerializeField] private float distance = 10f;
     Color myColor, tmp;
+
+    public void OnShootDirection(InputAction.CallbackContext context){
+        input_ShootDirection = context.ReadValue<Vector2>();
+    }
 
     private void Start() {
         myColor = GetComponent<SpriteRenderer>().color;
@@ -19,16 +26,19 @@ public class Crosshair : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        xInput = Input.GetAxisRaw("Horizontal Aim");
-        yInput = Input.GetAxisRaw("Vertical Aim");
-        if (Mathf.Abs(xInput) < 0.2f && Mathf.Abs(yInput) < 0.2f) {
+        if (transform.parent.GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard") {
+            direction = Vector2.zero;
+        } else {
+            direction = input_ShootDirection;
+            direction.Normalize();
+            direction = direction * distance;
+            transform.localPosition = direction;
+        }
+        
+        if (direction == Vector2.zero) {
             GetComponent<SpriteRenderer>().color = tmp;
         } else {
             GetComponent<SpriteRenderer>().color = myColor;
         }
-        direction = new Vector2(xInput, yInput);
-        direction.Normalize();
-        direction = direction * distance;
-        transform.localPosition = direction;
     }
 }

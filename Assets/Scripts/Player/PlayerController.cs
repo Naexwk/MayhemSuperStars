@@ -6,6 +6,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using Unity.Collections;
 using System.Threading.Tasks;
+using UnityEngine.InputSystem;
 
 delegate void specialAbility();
 public class PlayerController : NetworkBehaviour
@@ -68,6 +69,10 @@ public class PlayerController : NetworkBehaviour
     //private Vector3[] spawnPositions = { new Vector3(65.83f,36.37f,0f), new Vector3(67f,22.5f,0f), new Vector3(38.24f,21.71f,0f), new Vector3(32.7f,38.65f,0f) };
 
     private GameManager gameManager;
+
+    // Input variables
+    private bool input_Shoot, input_Special;
+    private Vector2 input_ShootDirection, input_Movement;
 
     // Función para colorear objetos según el número del jugador
     void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
@@ -173,9 +178,26 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    // Input functions
+
+    public void OnMove(InputAction.CallbackContext context){
+        input_Movement = context.ReadValue<Vector2>();
+    }
+
+    public void OnShoot(InputAction.CallbackContext context){
+        input_Shoot = context.action.triggered;
+    }
+
+    public void OnSpecial(InputAction.CallbackContext context){
+        input_Special = context.action.triggered;
+    }
+
+    public void OnShootDirection(InputAction.CallbackContext context){
+        input_ShootDirection = context.ReadValue<Vector2>();
+    }
+
     void Update()
     {
-        //Debug.Log("xAim: " + Input.GetAxisRaw("Horizontal Aim") + ", yAim: " + Input.GetAxisRaw("Vertical Aim"));
         // Si no es dueño de este script o no está habilitado
         // el  control, ignorar
         
@@ -185,21 +207,21 @@ public class PlayerController : NetworkBehaviour
         }
 
         // Disparar con el clic izquierdo
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (input_Shoot)
         {
-            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 direction = worldMousePos - transform.position;
-            Shoot(direction);
-        }
-
-        if (Mathf.Abs(Input.GetAxisRaw("Horizontal Aim")) > 0.2f || Mathf.Abs(Input.GetAxisRaw("Vertical Aim")) > 0.2f)
-        {
-            Vector2 direction = new Vector2 (Input.GetAxisRaw("Horizontal Aim"), Input.GetAxisRaw("Vertical Aim"));
+            Vector2 direction;
+            if (GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard") {
+                Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(input_ShootDirection);
+                direction = worldMousePos - transform.position;
+            } else {
+                direction = input_ShootDirection;
+            }
+            
             Shoot(direction);
         }
 
         // Usar habilidad especial con el clic derecho
-        if (Input.GetKey(KeyCode.Mouse1) || Input.GetAxisRaw("Special") != 0)
+        if (input_Special)
         {
             CastSpecialAbility();
         }
@@ -220,15 +242,11 @@ public class PlayerController : NetworkBehaviour
     private void Move(){
         // Obtener input de jugador
         // Escucha WASD y flechas
-        float xInput = Input.GetAxisRaw("Horizontal");
-        float yInput = Input.GetAxisRaw("Vertical");
-
-        // Mover según el input, normalizado
-        if (xInput == 0 || yInput == 0) {
-            rig.velocity = new Vector2(xInput * playerSpeed, yInput * playerSpeed);
-        } else {
-            rig.velocity = new Vector2(xInput * playerSpeed * 0.707f, yInput * playerSpeed* 0.707f);
-        }
+        Vector2 direction;
+        direction = input_Movement;
+        direction.Normalize();
+        direction = direction * playerSpeed;
+        rig.velocity = direction;
 
         // Añadir velocidad al animador según la velocidad
         animator.SetFloat("Speed", Mathf.Abs(rig.velocity.magnitude));
@@ -271,12 +289,14 @@ public class PlayerController : NetworkBehaviour
     // Cheeseman: Aparece una bola de queso que daña a los enemigos
     private void CheesemanSA () {
         Vector2 direction;
-        if (Mathf.Abs(Input.GetAxisRaw("Horizontal Aim")) > 0.2f || Mathf.Abs(Input.GetAxisRaw("Vertical Aim")) > 0.2f)
-        {
-            direction = new Vector2 (Input.GetAxisRaw("Horizontal Aim"), Input.GetAxisRaw("Vertical Aim"));
-        } else {
-            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        if (GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard") {
+            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(input_ShootDirection);
             direction = worldMousePos - transform.position;
+        } else {
+            direction = input_ShootDirection;
+            if (direction == Vector2.zero) {
+                return;
+            }
         }
         // Encontrar dirección de disparo
         
