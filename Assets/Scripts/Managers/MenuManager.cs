@@ -231,6 +231,10 @@ public class MenuManager : NetworkBehaviour
                 if (myCameraTarget != null) {
                     myCameraTarget.GetComponent<CameraTarget>().lockOnPlayer = false;
                 }
+            } else {
+                if (myCameraTarget != null) {
+                    myCameraTarget.GetComponent<CameraTarget>().lockOnPlayer = true;
+                }
             }
         } else {
             if (myPlayer != null) {

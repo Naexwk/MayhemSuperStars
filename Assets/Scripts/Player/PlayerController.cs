@@ -156,8 +156,19 @@ public class PlayerController : NetworkBehaviour
     private void StateChange(GameState prev, GameState curr){
         // Si empieza una ronda de juego, permitir al jugador usar su habilidad especial
         if (this != null) {
+            if (curr == GameState.Countdown) {
+                Respawn();
+            }
+
             if (curr == GameState.Round || curr == GameState.StartGame) {
                 timeSinceLastAbility = Time.time - abilityCooldown;
+                this.isInvulnerable = false;
+                StopCoroutine(recordInvulnerabiltyFrames());
+                StartCoroutine(recordInvulnerabiltyFrames());
+            } else {
+                gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
+                enableControl = false;
+                this.isInvulnerable = true;
             }
         }
     }
@@ -312,6 +323,7 @@ public class PlayerController : NetworkBehaviour
             Die();
         } else {
             animator.SetBool("takeDamage", true);
+            StopCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordAnimatorHitFrames());
         }
@@ -381,6 +393,7 @@ public class PlayerController : NetworkBehaviour
         ChangeDeadStateServerRpc(false, playerNumber);
 
         // Dar periodo de invulnerabilidad
+        StopCoroutine(recordInvulnerabiltyFrames());
         StartCoroutine(recordInvulnerabiltyFrames());
 
         // Ir a posición inicial
