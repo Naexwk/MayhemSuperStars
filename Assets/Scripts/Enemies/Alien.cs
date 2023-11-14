@@ -26,6 +26,11 @@ public class Alien : NetworkBehaviour
 
     private GameObject target;
 
+    //Knockback variables
+    private float knockbackForce = 15f;
+    private float knockbackDuration = 0.2f;
+    private Rigidbody2D rb;
+
     void Start () {
         bullethandler = GameObject.FindWithTag("BulletHandler");
     }
@@ -33,6 +38,7 @@ public class Alien : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        rb = GetComponent<Rigidbody2D>();
         // Inicializar vida
         if (NetworkManager.Singleton.IsServer) {
             health.Value = 7;
@@ -45,9 +51,9 @@ public class Alien : NetworkBehaviour
         if (col.gameObject.tag == "PlayerBullet")
         {
             if (col.gameObject.GetComponent<PlayerBullet>() != null) {
-                AlienGetHitServerRpc(col.gameObject.GetComponent<PlayerBullet>().bulletDamage);
+                AlienGetHitServerRpc(col.gameObject.GetComponent<PlayerBullet>().bulletDamage, col.gameObject.GetComponent<PlayerBullet>().bulletDirection);
             } else if (col.gameObject.GetComponent<CheeseBullet>() != null) {
-                AlienGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage);
+                AlienGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage, new Vector2(0,0));
             }
         }
     }
@@ -63,7 +69,8 @@ public class Alien : NetworkBehaviour
 
     // Actualizar la vida en la red
     [ServerRpc(RequireOwnership = false)]
-    public void AlienGetHitServerRpc(int damage) {
+    public void AlienGetHitServerRpc(int damage, Vector2 direction) {
+        StartCoroutine(ApplyKnockback(direction));
         health.Value -= damage;
         if (health.Value <= 0) {
             Destroy(this.gameObject);
@@ -109,5 +116,20 @@ public class Alien : NetworkBehaviour
         if (NetworkManager.Singleton.IsServer) {
             bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, Direction, transform.position.x, transform.position.y);
         }
+    }
+
+    //Knockback
+    private IEnumerator ApplyKnockback(Vector2 direction)
+    {
+        // Knockback direction
+        Vector2 knockbackDirection = direction;
+
+        // Apply a force to the enemy's Rigidbody2D
+        rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+
+        yield return new WaitForSeconds(knockbackDuration);
+
+        // Stop the knockback force after a duration
+        rb.velocity = Vector2.zero;
     }
 }
