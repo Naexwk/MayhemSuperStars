@@ -15,6 +15,7 @@ public class GameManager : NetworkBehaviour
     public static NetworkVariable<GameState> state = new NetworkVariable<GameState>(default, NetworkVariableReadPermission.Everyone);
     public static event Action<GameState> OnGameStateChanged;
     // Variables de control de inicio de juego
+    public NetworkVariable<int> readyPlay = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone);
     public NetworkVariable<bool> gameStarted = new NetworkVariable<bool>();
     private bool startHandled = false;
     #endregion
@@ -109,6 +110,25 @@ public class GameManager : NetworkBehaviour
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Add(name);
     }
+
+    public void ReadyPlay(){
+        readyPlay.Value++;
+    }
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void ReadyPlayServerRpc(){
+        ReadyPlay();
+    }
+
+    public void NotReadyPlay(){
+        readyPlay.Value--;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void NotReadyPlayServerRpc(){
+        NotReadyPlay();
+    }
+
     public void DoneWithPurchase(){
         done.Value++;
     }
