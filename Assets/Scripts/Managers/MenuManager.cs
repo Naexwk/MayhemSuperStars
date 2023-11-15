@@ -95,15 +95,8 @@ public class MenuManager : NetworkBehaviour
                 LoadButtonActions();
 
                 if (IsOwner) {
-                    // Encontrar al jugador local
-                    players = GameObject.FindGameObjectsWithTag("Player");
-                    foreach (GameObject player in players) {
-                        if (player.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
-                            myPlayer = player;
-                            myPlayerScript = player.GetComponent<PlayerController>();
-                            itemManagerScript = player.GetComponent<ItemManager>();
-                        }
-                    }
+                    myPlayerScript = myPlayer.GetComponent<PlayerController>();
+                    itemManagerScript = myPlayer.GetComponent<ItemManager>();
                     
                     // Encontrar cameraTarget local
                     cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");

@@ -82,6 +82,7 @@ public class LocalGameManager : NetworkBehaviour
         networkPoints = new NetworkList<int>();
         networkLeaderboard = new NetworkList<int>();
         networkPlayerNames = new NetworkList<FixedString64Bytes>();
+        
         handleLeaderboard.Value = false;
         SceneManager.sceneLoaded += OnSceneEvent;
     }
@@ -105,7 +106,6 @@ public class LocalGameManager : NetworkBehaviour
     public void AddPlayer(string name){
         numberOfPlayers.Value++;
         changedPlayers.Value = !changedPlayers.Value;
-        networkPlayerNames.Add(name);
     }
     public void DoneWithPurchase(){
         done.Value++;
@@ -184,6 +184,10 @@ public class LocalGameManager : NetworkBehaviour
         gameStarted.Value = false;
         DontDestroyOnLoad(this.gameObject);
         UpdateGameState(GameState.LanConnection);
+        networkPlayerNames.Add("Player 1");
+        networkPlayerNames.Add("Player 2");
+        networkPlayerNames.Add("Player 3");
+        networkPlayerNames.Add("Player 4");
     }
 
 
@@ -192,7 +196,7 @@ public class LocalGameManager : NetworkBehaviour
         // Controlar si el juego inició
         if(gameStarted.Value){
             if(!startHandled){
-                GameManager.instance.UpdateGameState(GameState.StartGame);
+                LocalGameManager.instance.UpdateGameState(GameState.StartGame);
                 startHandled = true;
             }
         }
@@ -239,7 +243,7 @@ public class LocalGameManager : NetworkBehaviour
                 // TimesUp
                 if (currentRoundTime.Value < 0.6 )
                 {
-                    GameManager.instance.UpdateGameState(GameState.TimesUp);
+                    LocalGameManager.instance.UpdateGameState(GameState.TimesUp);
                     if (IsOwner) {
                         roundSection.Value = false;
                     }
@@ -260,9 +264,9 @@ public class LocalGameManager : NetworkBehaviour
             {
                 currentRound++;
                 if (currentRound > maxRounds) {
-                    GameManager.instance.UpdateGameState(GameState.WinScreen);
+                    LocalGameManager.instance.UpdateGameState(GameState.WinScreen);
                 } else {
-                    GameManager.instance.UpdateGameState(GameState.PurchasePhase);
+                    LocalGameManager.instance.UpdateGameState(GameState.PurchasePhase);
                 }
                 if (IsOwner) {
                     leaderboardSection.Value = false;
@@ -368,7 +372,7 @@ public class LocalGameManager : NetworkBehaviour
     // Inicio de la ronda
     public void CombatRound()
     {
-        GameManager.instance.UpdateGameState(GameState.Countdown);
+        LocalGameManager.instance.UpdateGameState(GameState.Countdown);
         //Aqui Codigo de Inicio de Ronda
     }
 
@@ -473,7 +477,7 @@ public class LocalGameManager : NetworkBehaviour
         {
             child.gameObject.SetActive(false);
         }
-        GameManager.instance.UpdateGameState(GameState.Round);
+        LocalGameManager.instance.UpdateGameState(GameState.Round);
     }
 
     IEnumerator TimesUp(float time){
@@ -484,7 +488,7 @@ public class LocalGameManager : NetworkBehaviour
         {
             child.gameObject.SetActive(false);
         }
-        GameManager.instance.UpdateGameState(GameState.Leaderboard);
+        LocalGameManager.instance.UpdateGameState(GameState.Leaderboard);
     }
 }
 

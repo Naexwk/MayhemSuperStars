@@ -21,6 +21,7 @@ public class LanBehaviour : NetworkBehaviour
 	
 	// Prefab de GameManager
 	[SerializeField] GameObject gameManagerPrefab;
+	[SerializeField] GameObject localGameManagerPrefab;
 
 	// Código de sala de juego (cliente)
 	private string inputJoinCode;
@@ -108,7 +109,7 @@ public class LanBehaviour : NetworkBehaviour
 			// Crear un GameManager
 			InstantiateGameManager();
 
-			// Cambiar de escena
+			// Cambiar de escena;
 			ChangeScene("LocalGameRoom");
 		} catch (RelayServiceException e){
 			loadingPanel.SetActive(false);
@@ -120,6 +121,13 @@ public class LanBehaviour : NetworkBehaviour
 	public void InstantiateGameManager(){
 		GameObject gameManager;
 		gameManager = Instantiate(gameManagerPrefab, transform.position,Quaternion.identity);
+		gameManager.GetComponent<NetworkObject>().Spawn();
+	}
+
+	// Instancia un GameManager Local-Only
+	public void InstantiateLocalGameManager(){
+		GameObject gameManager;
+		gameManager = Instantiate(localGameManagerPrefab, transform.position,Quaternion.identity);
 		gameManager.GetComponent<NetworkObject>().Spawn();
 	}
 

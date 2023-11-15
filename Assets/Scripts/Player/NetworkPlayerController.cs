@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 using UnityEngine.InputSystem;
 
 delegate void specialAbility();
-public class PlayerController : NetworkBehaviour
+
+public class NetworkPlayerController : NetworkBehaviour
 {
     // Estadísticas del personaje
     private float char_playerSpeed = 8f;
@@ -143,18 +144,21 @@ public class PlayerController : NetworkBehaviour
     // Ejecutar funciones de escena de juego
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "SampleScene") {
-            mainCamera = Camera.main;
-            bullethandler = GameObject.FindWithTag("BulletHandler");
-            if (IsOwner) {
-                animator.SetBool("dead", false);
-                gameObject.tag = "Player";
-                ChangeDeadStateServerRpc(false, playerNumber);
-                SpawnCameraTargetServerRpc(playerNumber);
-                SpawnMenuManagerServerRpc(playerNumber);
+        if(this != null){
+            if (scene.name == "SampleScene") {
+                mainCamera = Camera.main;
+                bullethandler = GameObject.FindWithTag("BulletHandler");
+                if (IsOwner) {
+                    animator.SetBool("dead", false);
+                    gameObject.tag = "Player";
+                    ChangeDeadStateServerRpc(false, playerNumber);
+                    SpawnCameraTargetServerRpc(playerNumber);
+                    SpawnMenuManagerServerRpc(playerNumber);
+                }
+                
             }
-            
         }
+        
     }
 
     // Función de cambio de estado de juego
@@ -500,6 +504,7 @@ public class PlayerController : NetworkBehaviour
         spawnMM = Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
         DontDestroyOnLoad(spawnMM);
         spawnMM.GetComponent<NetworkObject>().SpawnWithOwnership(_playerNumber);
+        spawnMM.GetComponent<MenuManager>().myPlayer = this.gameObject;
     }
 
     // Se ejecuta en el servidor

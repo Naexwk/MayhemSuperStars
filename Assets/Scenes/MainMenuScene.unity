@@ -1392,6 +1392,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transport: {fileID: 31812683}
   gameManagerPrefab: {fileID: 6218536917503192965, guid: dde1425fff0e7794d880853824aa2608, type: 3}
+  localGameManagerPrefab: {fileID: 8466736029250000277, guid: 1e868a44bd5101a469d38651ea332777, type: 3}
   hostJoinCode: 
   playerName: Anon
   tf_newName: {fileID: 2115573345}
