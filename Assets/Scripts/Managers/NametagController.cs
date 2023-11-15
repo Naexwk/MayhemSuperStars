@@ -9,6 +9,7 @@ public class NametagController : MonoBehaviour
     [SerializeField] private TMP_Text nametagname;
     private GameObject[] player;
     private GameManager gameManager;
+    Color[] colors = { Color.red, Color.blue, Color.yellow, Color.green };
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
@@ -17,10 +18,11 @@ public class NametagController : MonoBehaviour
             Canvas canvas = GetComponent<Canvas>();
             canvas.worldCamera = mainCamera;
             foreach(GameObject players in player){
-                nametagname.text = gameManager.networkPlayerNames[(int)players.GetComponent<PlayerController>().playerNumber].ToString();
+                int index = (int)players.GetComponent<PlayerController>().playerNumber;
+                nametagname.text = gameManager.networkPlayerNames[index].ToString();
+                nametagname.color = colors[index];
                 Debug.Log(players.GetComponent<PlayerController>().playerNumber.ToString());
             }
-            nametagname.color = new Color(0.5f,1f,0.5f,1f);
         }
     }
     private void Awake() {
