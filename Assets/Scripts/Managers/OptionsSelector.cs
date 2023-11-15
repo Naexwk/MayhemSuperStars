@@ -246,7 +246,8 @@ public class OptionsSelector : NetworkBehaviour
 
         // Hardcodeado para volver a defaults
         // Eliminar ya que existan los objetos
-        /*propOptions[0] = propDefaults[0];
+        propOptions[0] =  new int[] {3,1};
+        /*
         propOptions[1] = propDefaults[1];
         propOptions[2] = propDefaults[2];
         sponsorOptions[0] = 1;
