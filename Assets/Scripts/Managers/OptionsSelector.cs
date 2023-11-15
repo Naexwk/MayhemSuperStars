@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 public class OptionsSelector : NetworkBehaviour
 {
@@ -56,7 +57,6 @@ public class OptionsSelector : NetworkBehaviour
     }
 
     private void Awake() {
-
         LoadProps();
         SearchForMyPlayer();
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
@@ -68,7 +68,25 @@ public class OptionsSelector : NetworkBehaviour
 
         GameManager.handleLeaderboard.OnValueChanged += OnLeaderboardChange;
         GameManager.state.OnValueChanged += StateChange;
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
+
+    // Ejecutar funciones de escena de juego
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "SampleScene") {
+            LoadProps();
+            SearchForMyPlayer();
+            gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+
+            // Load props
+            propOptions[0] = propDefaults[0];
+            propOptions[1] = propDefaults[1];
+            propOptions[2] = propDefaults[2];
+        }
+    }
+
+    
 
     private void OnLeaderboardChange(bool prev, bool curr){
         if (this != null && !handled) {

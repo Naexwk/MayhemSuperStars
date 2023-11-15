@@ -15,6 +15,7 @@ public class GameManager : NetworkBehaviour
     public static NetworkVariable<GameState> state = new NetworkVariable<GameState>(default, NetworkVariableReadPermission.Everyone);
     public static event Action<GameState> OnGameStateChanged;
     // Variables de control de inicio de juego
+    public NetworkVariable<int> readyPlay = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone);
     public NetworkVariable<bool> gameStarted = new NetworkVariable<bool>();
     private bool startHandled = false;
     #endregion
@@ -30,7 +31,7 @@ public class GameManager : NetworkBehaviour
     public NetworkVariable<bool> purchasePhase = new NetworkVariable<bool>();
 
     // Variables de tiempo de estados de juego
-    [SerializeField] private float roundTime, leaderboardTime, purchaseTime;
+    [SerializeField] private float roundTime, leaderboardTime, purchaseTime, countdownTime;
 
     // Variables de tiempo
     public NetworkVariable<float> currentRoundTime = new NetworkVariable<float>();
@@ -39,6 +40,9 @@ public class GameManager : NetworkBehaviour
 
     // Timer de rondas
     private TMP_Text timeText;
+    
+    // CountdownUI Component
+    private GameObject countdownUI;
 
     #endregion
 
@@ -49,6 +53,7 @@ public class GameManager : NetworkBehaviour
     // Puntos por ronda
     private int[] points = {4,8,8,16,32};
     public NetworkVariable<int> done = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone);
+    public NetworkVariable<int> deadPlayers = new NetworkVariable<int>(default, NetworkVariableReadPermission.Everyone);
 
     // Variables de control de rondas
     public int currentRound;
@@ -105,12 +110,41 @@ public class GameManager : NetworkBehaviour
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Add(name);
     }
+
+    public void ReadyPlay(){
+        readyPlay.Value++;
+    }
+    
+    [ServerRpc(RequireOwnership = false)]
+    public void ReadyPlayServerRpc(){
+        ReadyPlay();
+    }
+
+    public void NotReadyPlay(){
+        readyPlay.Value--;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void NotReadyPlayServerRpc(){
+        NotReadyPlay();
+    }
+
     public void DoneWithPurchase(){
         done.Value++;
     }
+
     [ServerRpc(RequireOwnership = false)]
     public void DoneWithPurchaseServerRpc(){
         DoneWithPurchase();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void PlayerDiedServerRpc(){
+        PlayerDied();
+    }
+
+    public void PlayerDied(){
+        deadPlayers.Value++;
     }
 
     // Actualizar los puntos de los jugadores
@@ -177,7 +211,6 @@ public class GameManager : NetworkBehaviour
 
     public void Update()
     {
-        
         // Controlar si el juego inició
         if(gameStarted.Value){
             if(!startHandled){
@@ -189,50 +222,51 @@ public class GameManager : NetworkBehaviour
         // Lógica de ronda de juego
         if (roundSection.Value)
         {
-            // Encontrar el timer
-            TMP_Text timeText = FindTimerText();
-            Material timeTextMaterial = timeText.materialForRendering;
-            //timeText.enableVertexGradient = false;
-            timeText.color = Color.white;
-            timeText.fontSize = 60f;
-            Color colorOutline = new Color(49f / 255f, 49f / 255f, 49f / 255f);
-            timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorOutline);
-            timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.5f);
-
             // Actualizar el tiempo de ronda
             if (IsOwner) {
                 currentRoundTime.Value -= Time.deltaTime;
+                if (deadPlayers.Value >= numberOfPlayers.Value && currentRoundTime.Value > 3.6f) {
+                    currentRoundTime.Value = 3.6f;
+                    deadPlayers.Value = 0;
+                }
             }
+            // Encontrar el timer
+                TMP_Text timeText = FindTimerText();
+                Material timeTextMaterial = timeText.materialForRendering;
+                //timeText.enableVertexGradient = false;
+                timeText.color = Color.white;
+                timeText.fontSize = 60f;
+                Color colorOutline = new Color(49f / 255f, 49f / 255f, 49f / 255f);
+                timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorOutline);
+                timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.5f);
 
-            // Actualizar el texto según el tiempo
-            if (timeText != null) {
-                timeText.text = (Mathf.Round(currentRoundTime.Value * 10.0f) / 10.0f).ToString();
-            }
-            
-            // Cambiar el formato del texto al quedar menos 10 segundos
-            if(currentRoundTime.Value <= 10.6) //9.6
-            {
-                textMeshProObject.GetComponent<Animator>().Play("timerAnim");
+                // Actualizar el texto según el tiempo
                 if (timeText != null) {
-                    timeText.text = Mathf.Round(currentRoundTime.Value).ToString();
-                    timeText.color = new Color(197f / 255f, 22f / 255f, 55f / 255f);
-                    Color colorCountdown = new Color(27f / 255f, 0f / 255f, 8f / 255f);
-                    timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.3f);
-                    timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorCountdown);
+                    timeText.text = (Mathf.Round(currentRoundTime.Value * 10.0f) / 10.0f).ToString();
                 }
                 
-            }
-
-            // Cambiar a leaderboard al acabarse el tiempo
-            if (currentRoundTime.Value <= 0.5 )
-            {
-                GameManager.instance.UpdateGameState(GameState.Leaderboard);
-                if (IsOwner) {
-                    roundSection.Value = false;
+                // Cambiar el formato del texto al quedar menos 10 segundos
+                if(currentRoundTime.Value <= 10.6) 
+                {
+                    textMeshProObject.GetComponent<Animator>().Play("timerAnim");
+                    if (timeText != null) {
+                        timeText.text = Mathf.Round(currentRoundTime.Value).ToString();
+                        timeText.color = new Color(197f / 255f, 22f / 255f, 55f / 255f);
+                        Color colorCountdown = new Color(27f / 255f, 0f / 255f, 8f / 255f);
+                        timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.3f);
+                        timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorCountdown);
+                    }
                 }
 
-            }
-        }
+                // TimesUp
+                if (currentRoundTime.Value < 0.6 )
+                {
+                    GameManager.instance.UpdateGameState(GameState.TimesUp);
+                    if (IsOwner) {
+                        roundSection.Value = false;
+                    }
+                }
+        } 
 
         // Lógica de leaderboard
         if (leaderboardSection.Value)
@@ -264,12 +298,12 @@ public class GameManager : NetworkBehaviour
             // Encontrar el timer
             TMP_Text timeText = FindTimerText();
             // Modificar el texto
+            timeText.fontSize = 60f;
             Color colorOutline = new Color(49f / 255f, 49f / 255f, 49f / 255f);
             Material timeTextMaterial = timeText.materialForRendering;
             timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorOutline);
             timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.5f);
             timeText.color = Color.white;
-            timeText.fontSize = 60f;
 
             // Actualizar el tiempo de fase de compra
             if (IsOwner) { 
@@ -311,8 +345,14 @@ public class GameManager : NetworkBehaviour
             case GameState.StartGame:
                 HandleStartGame();
                 break;
+            case GameState.Countdown:
+                HandleCountdown();
+                break;
             case GameState.Round:
                 HandleRound();
+                break;
+            case GameState.TimesUp:
+                HandleTimesUp();
                 break;
             case GameState.Leaderboard:
                 HandleLeaderboard();
@@ -350,7 +390,8 @@ public class GameManager : NetworkBehaviour
     // Inicio de la ronda
     public void CombatRound()
     {
-        GameManager.instance.UpdateGameState(GameState.Round);
+        GameManager.instance.UpdateGameState(GameState.Countdown);
+        //Aqui Codigo de Inicio de Ronda
     }
 
     // Función complementaria de inicio de juego
@@ -368,11 +409,32 @@ public class GameManager : NetworkBehaviour
         CombatRound();
     }
 
+    private void HandleCountdown(){
+        players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            player.GetComponent<PlayerController>().enableControl = false;
+            player.GetComponent<PlayerController>().isInvulnerable = true;
+        }
+            StartCoroutine(Countdown(4.0f));
+    }
+
     // Iniciar sección de ronda
     private void HandleRound(){
         if (IsOwner) {
+            deadPlayers.Value = 0;
             roundSection.Value = true;
         }
+    }
+    
+    private void HandleTimesUp(){
+        players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            player.GetComponent<PlayerController>().enableControl = false;
+            player.GetComponent<PlayerController>().isInvulnerable = true;
+        }
+        StartCoroutine(TimesUp(2.0f));
     }
 
     // Iniciar sección de leaderboard y actualizar puntos
@@ -424,13 +486,38 @@ public class GameManager : NetworkBehaviour
             return null;
         }
     }
+
+    IEnumerator Countdown(float time){
+        GameObject countdownUI = GameObject.FindWithTag("Countdown");
+        countdownUI.GetComponent<Animator>().Play("321goAnim");
+        yield return new WaitForSeconds(time);
+        foreach (Transform child in countdownUI.transform)
+        {
+            child.gameObject.SetActive(false);
+        }
+        GameManager.instance.UpdateGameState(GameState.Round);
+    }
+
+    IEnumerator TimesUp(float time){
+        GameObject countdownUI = GameObject.FindWithTag("Countdown");
+        countdownUI.GetComponent<Animator>().Play("countdownAnim");
+        yield return new WaitForSeconds(time);
+        foreach (Transform child in countdownUI.transform)
+        {
+            child.gameObject.SetActive(false);
+        }
+        GameManager.instance.UpdateGameState(GameState.Leaderboard);
+    }
 }
+
 
 // Estados de juego
 public enum GameState{
     LanConnection,
     StartGame,
+    Countdown,
     Round,
+    TimesUp,
     Leaderboard,
     PurchasePhase,
     EditMode,

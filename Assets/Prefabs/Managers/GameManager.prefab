@@ -47,22 +47,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameStarted:
     m_InternalValue: 0
-  startHandled: 0
   roundSection:
     m_InternalValue: 0
   leaderboardSection:
     m_InternalValue: 0
   purchasePhase:
     m_InternalValue: 0
+  countdownPhase: 0
   roundTime: 30
   leaderboardTime: 5
   purchaseTime: 30
+  countdownTime: 4.5
   currentRoundTime:
     m_InternalValue: 0
   currentLeaderboardTime:
     m_InternalValue: 0
   currentPurchaseTime:
     m_InternalValue: 0
+  currentCountdownTime:
+    m_InternalValue: 0
+  done:
+    m_InternalValue: 0
+  currentRound: 0
 --- !u!114 &-8928019697991546388
 MonoBehaviour:
   m_ObjectHideFlags: 0

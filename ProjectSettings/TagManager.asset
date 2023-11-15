@@ -24,6 +24,8 @@ TagManager:
   - MapBorders
   - OptionsSelector
   - PropEnemy
+  - Countdown
+  - HUD
   layers:
   - Default
   - TransparentFX

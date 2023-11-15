@@ -31,13 +31,13 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private Animator animator;
 
     // Variables de control
-    private bool enableControl = false;
+    public bool enableControl = false;
     public float currentHealth;
     private float timeSinceLastFire;
     public float abilityCooldown; // en segundos
     public float timeSinceLastAbility;
     public int abilityDamage;
-    private bool isInvulnerable;
+    public  bool isInvulnerable;
     [SerializeField] private float invulnerabilityWindow;
     public bool sargeActive = false;
 
@@ -66,6 +66,8 @@ public class PlayerController : NetworkBehaviour
     // DEV: Hacer GameObjects para modificarlos en escena
     private Vector3[] spawnPositions = { new Vector3(56.5f,28f,0f), new Vector3(57.5f,14.5f,0f), new Vector3(29f,13.5f,0f), new Vector3(23.5f,30f,0f) };
     //private Vector3[] spawnPositions = { new Vector3(65.83f,36.37f,0f), new Vector3(67f,22.5f,0f), new Vector3(38.24f,21.71f,0f), new Vector3(32.7f,38.65f,0f) };
+
+    private GameManager gameManager;
 
     // Función para colorear objetos según el número del jugador
     void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
@@ -99,7 +101,7 @@ public class PlayerController : NetworkBehaviour
         //bubble = transform.GetChild(0).gameObject;
         bubble.GetComponent<SpriteRenderer>().enabled = false;
         rig = gameObject.GetComponent<Rigidbody2D>();
-        GameObject gameManager = GameObject.FindWithTag("GameManager");
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         mainCamera = Camera.main;
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
         if (IsOwner){
@@ -140,6 +142,9 @@ public class PlayerController : NetworkBehaviour
             mainCamera = Camera.main;
             bullethandler = GameObject.FindWithTag("BulletHandler");
             if (IsOwner) {
+                animator.SetBool("dead", false);
+                gameObject.tag = "Player";
+                ChangeDeadStateServerRpc(false, playerNumber);
                 SpawnCameraTargetServerRpc(playerNumber);
                 SpawnMenuManagerServerRpc(playerNumber);
             }
@@ -151,16 +156,30 @@ public class PlayerController : NetworkBehaviour
     private void StateChange(GameState prev, GameState curr){
         // Si empieza una ronda de juego, permitir al jugador usar su habilidad especial
         if (this != null) {
+            if (curr == GameState.Countdown) {
+                Respawn();
+            }
+
             if (curr == GameState.Round || curr == GameState.StartGame) {
                 timeSinceLastAbility = Time.time - abilityCooldown;
+                this.isInvulnerable = false;
+                StopCoroutine(recordInvulnerabiltyFrames());
+                StartCoroutine(recordInvulnerabiltyFrames());
+            } else {
+                gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
+                enableControl = false;
+                this.isInvulnerable = true;
             }
         }
     }
 
     void Update()
     {
+        //Debug.Log("xAim: " + Input.GetAxisRaw("Horizontal Aim") + ", yAim: " + Input.GetAxisRaw("Vertical Aim"));
         // Si no es dueño de este script o no está habilitado
         // el  control, ignorar
+        
+
         if (!IsOwner || !enableControl) {
             return;
         }
@@ -168,14 +187,23 @@ public class PlayerController : NetworkBehaviour
         // Disparar con el clic izquierdo
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            Shoot();
+            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 direction = worldMousePos - transform.position;
+            Shoot(direction);
+        }
+
+        if (Mathf.Abs(Input.GetAxisRaw("Horizontal Aim")) > 0.2f || Mathf.Abs(Input.GetAxisRaw("Vertical Aim")) > 0.2f)
+        {
+            Vector2 direction = new Vector2 (Input.GetAxisRaw("Horizontal Aim"), Input.GetAxisRaw("Vertical Aim"));
+            Shoot(direction);
         }
 
         // Usar habilidad especial con el clic derecho
-        if (Input.GetKey(KeyCode.Mouse1))
+        if (Input.GetKey(KeyCode.Mouse1) || Input.GetAxisRaw("Special") != 0)
         {
             CastSpecialAbility();
         }
+        
     }
 
     private void FixedUpdate(){
@@ -207,11 +235,9 @@ public class PlayerController : NetworkBehaviour
     } 
 
     // Dispara una bala si ya se cumplió el tiempo de espera del firerate.
-    private void Shoot(){
+    private void Shoot(Vector2 direction){
         if ((Time.time - timeSinceLastFire) > (1f/fireRate)) {
             // Obtener dirección de disparo
-            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 direction = worldMousePos - transform.position;
             direction.Normalize();
 
             // Disparar en red
@@ -244,9 +270,16 @@ public class PlayerController : NetworkBehaviour
 
     // Cheeseman: Aparece una bola de queso que daña a los enemigos
     private void CheesemanSA () {
+        Vector2 direction;
+        if (Mathf.Abs(Input.GetAxisRaw("Horizontal Aim")) > 0.2f || Mathf.Abs(Input.GetAxisRaw("Vertical Aim")) > 0.2f)
+        {
+            direction = new Vector2 (Input.GetAxisRaw("Horizontal Aim"), Input.GetAxisRaw("Vertical Aim"));
+        } else {
+            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            direction = worldMousePos - transform.position;
+        }
         // Encontrar dirección de disparo
-        Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 direction = worldMousePos - transform.position;
+        
         direction.Normalize();
 
         // Instanciar bala en red
@@ -290,6 +323,7 @@ public class PlayerController : NetworkBehaviour
             Die();
         } else {
             animator.SetBool("takeDamage", true);
+            StopCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordAnimatorHitFrames());
         }
@@ -310,7 +344,9 @@ public class PlayerController : NetworkBehaviour
 
         // Eliminar movimiento
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
-        
+
+        // Decirle al server que un jugador murio
+        gameManager.PlayerDiedServerRpc();
     }
 
     // Función de conteo de invulnerabilidad
@@ -357,6 +393,7 @@ public class PlayerController : NetworkBehaviour
         ChangeDeadStateServerRpc(false, playerNumber);
 
         // Dar periodo de invulnerabilidad
+        StopCoroutine(recordInvulnerabiltyFrames());
         StartCoroutine(recordInvulnerabiltyFrames());
 
         // Ir a posición inicial
@@ -500,7 +537,6 @@ public class PlayerController : NetworkBehaviour
     // Añadir jugador a la lista del GameManager
     [ServerRpc(RequireOwnership = false)]
     private void AddPlayerServerRpc(string _name){
-        GameObject gameManager = GameObject.FindWithTag("GameManager");
         gameManager.GetComponent<GameManager>().AddPlayer(_name);
     }
 

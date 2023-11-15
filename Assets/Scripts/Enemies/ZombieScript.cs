@@ -11,11 +11,17 @@ public class ZombieScript : NetworkBehaviour
 
     private Animator animator;
     private SpriteRenderer m_SpriteRenderer;
+    
+    //Knockback variables
+    private float knockbackForce = 15f;
+    private float knockbackDuration = 0.2f;
+    private Rigidbody2D rb;
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
         m_SpriteRenderer = GetComponentInChildren<SpriteRenderer>();
         // Aleatorizar el color del zombie
         m_SpriteRenderer.color = new Color(1f, 1f, Random.Range(0f, 1f));
@@ -31,9 +37,9 @@ public class ZombieScript : NetworkBehaviour
         if (col.gameObject.tag == "PlayerBullet")
         {
             if (col.gameObject.GetComponent<PlayerBullet>() != null) {
-                ZombieGetHitServerRpc(col.gameObject.GetComponent<PlayerBullet>().bulletDamage);
+                ZombieGetHitServerRpc(col.gameObject.GetComponent<PlayerBullet>().bulletDamage, col.gameObject.GetComponent<PlayerBullet>().bulletDirection);
             } else if (col.gameObject.GetComponent<CheeseBullet>() != null) {
-                ZombieGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage);
+                ZombieGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage, new Vector2(0,0));
             }
             
         }
@@ -50,7 +56,8 @@ public class ZombieScript : NetworkBehaviour
 
     // Actualizar la vida en la red
     [ServerRpc(RequireOwnership = false)]
-    public void ZombieGetHitServerRpc(int damage) {
+    public void ZombieGetHitServerRpc(int damage, Vector2 direction) {
+        StartCoroutine(ApplyKnockback(direction));
         health.Value -= damage;
         if (health.Value <= 0) {
             Destroy(this.gameObject);
@@ -63,5 +70,21 @@ public class ZombieScript : NetworkBehaviour
         } else {
             animator.SetBool("isMoving", true);
         }
+    }
+
+
+    //Knockback
+    private IEnumerator ApplyKnockback(Vector2 direction)
+    {
+        // Knockback direction
+        Vector2 knockbackDirection = direction;
+
+        // Apply a force to the enemy's Rigidbody2D
+        rb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+
+        yield return new WaitForSeconds(knockbackDuration);
+
+        // Stop the knockback force after a duration
+        rb.velocity = Vector2.zero;
     }
 }
