@@ -10,7 +10,7 @@ using UnityEngine.InputSystem;
 
 delegate void specialAbility();
 
-public class NetworkPlayerController : NetworkBehaviour
+public class NetworkPlayerController : PlayerController
 {
     // Estadísticas del personaje
     private float char_playerSpeed = 8f;
@@ -20,32 +20,32 @@ public class NetworkPlayerController : NetworkBehaviour
     private int char_bulletDamage = 3;
 
     // Estadísticas de jugador actuales
-    public float playerSpeed;
+    new public float playerSpeed;
     public float bulletSpeed;
-    public int maxHealth;
-    public int fireRate; // en disparos por segundo
-    public int bulletDamage;
+    new public int maxHealth;
+    new public int fireRate; // en disparos por segundo
+    new public int bulletDamage;
 
-    public float aiPriority = 1;
+    new public float aiPriority = 1;
 
     //Animacion
     [SerializeField] private RuntimeAnimatorController[] characterAnimators;
-    [SerializeField] private Animator animator;
+    [SerializeField] new private Animator animator;
 
     // Variables de control
-    public bool enableControl = false;
-    public float currentHealth;
+    new public bool enableControl = false;
+    new public float currentHealth;
     private float timeSinceLastFire;
-    public float abilityCooldown; // en segundos
-    public float timeSinceLastAbility;
+    new public float abilityCooldown; // en segundos
+    new public float timeSinceLastAbility;
     public int abilityDamage;
-    public  bool isInvulnerable;
+    new public  bool isInvulnerable;
     [SerializeField] private float invulnerabilityWindow;
     public bool sargeActive = false;
 
     // Variables de personaje
     public GameObject bubble;
-    public NetworkVariable<FixedString64Bytes> characterCode = new NetworkVariable<FixedString64Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    new public NetworkVariable<FixedString64Bytes> characterCode = new NetworkVariable<FixedString64Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     // public string characterCode = "cheeseman";
     specialAbility specAb;
 
@@ -57,7 +57,7 @@ public class NetworkPlayerController : NetworkBehaviour
     [SerializeField] private GameObject cameraTargetPrefab;
 
     // Objetos de Network
-    public ulong playerNumber;
+    new public ulong playerNumber;
     private GameObject bullethandler;
     [SerializeField] private GameObject prefabMenuManager;
 
@@ -76,7 +76,7 @@ public class NetworkPlayerController : NetworkBehaviour
     private Vector2 input_ShootDirection, input_Movement;
 
     // Función para colorear objetos según el número del jugador
-    void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
+    public void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
         if (playerNumber == 0) {
             go.GetComponent<Renderer>().material.color = Color.red;
         }
@@ -335,7 +335,7 @@ public class NetworkPlayerController : NetworkBehaviour
     }
 
     // Función pública para hacer daño al jugador
-    public void GetHit(){
+    public override void GetHit(){
         // Si es invulnerable o no es propietario de este jugador, ignorar
         if (!IsOwner || isInvulnerable || this.sargeActive) {
             return;
@@ -396,7 +396,7 @@ public class NetworkPlayerController : NetworkBehaviour
     }
 
     // Función para respawnear al jugador
-    public void Respawn(){
+    public override void Respawn(){
         // Reiniciar estadísticas para reaplicar sponsors
         ResetStats();
         GetComponent<ItemManager>().applyItems();
@@ -446,7 +446,7 @@ public class NetworkPlayerController : NetworkBehaviour
 
     // Función para Despawnear
     // Usada para las fases de compra/edicion
-    public void Despawn(){
+    public override void Despawn(){
         // Enviar fuera de la vista de la cámara
         gameObject.transform.position = new Vector3(0f,100f,0f);
 
@@ -460,7 +460,7 @@ public class NetworkPlayerController : NetworkBehaviour
     // DEV: Reformular en un nuevo script para liberar espacio del PlayerController
 
     // Aparece una bala falsa local
-    public void SpawnFakeBullet(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y){
+    public override void SpawnFakeBullet(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y){
         if (IsOwner && playerNumber != _playerNumber) {
             GameObject clone;
             clone = Instantiate(bullethandler.GetComponent<BulletHandler>().prefabFakeBullet, new Vector3 (_x, _y, 0f), transform.rotation);
@@ -482,7 +482,7 @@ public class NetworkPlayerController : NetworkBehaviour
     // Se ejecuta en todos los clientes
     // Le dota su objetivo a la cámara
     [ClientRpc]
-    public void StartCameraClientRpc(){
+    public override void StartCameraClientRpc(){
         GameObject mainCam;
         mainCam = GameObject.FindWithTag("MainCamera");
         GameObject[] cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
@@ -567,7 +567,7 @@ public class NetworkPlayerController : NetworkBehaviour
 
     // Cambiar personaje del jugador
     // DEV: No, no estamos orgullosos de esta solución, pero se reformulará
-    public async Task ChangeCharacter(string _characterCode){
+    public override async Task ChangeCharacter(string _characterCode){
         characterCode.Value = _characterCode;
         if (_characterCode == "cheeseman") {
             animator.runtimeAnimatorController = characterAnimators[0];
@@ -604,15 +604,18 @@ public class NetworkPlayerController : NetworkBehaviour
     // Cambiar el animador de un jugador en todos los clientes
     [ClientRpc]
     public void changeAnimatorClientRpc(ulong _playerNumber, int _characterAnimatorNumber){
-        GameObject[] players;
-        PlayerController script;
-        players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject player in players) {
-            script = player.GetComponent<PlayerController>();
-            if (script.playerNumber == _playerNumber) {
-                script.animator.runtimeAnimatorController = characterAnimators[_characterAnimatorNumber];
+        if (this != null) {
+            GameObject[] players;
+            PlayerController script;
+            players = GameObject.FindGameObjectsWithTag("Player");
+            foreach (GameObject player in players) {
+                script = player.GetComponent<PlayerController>();
+                if (script.playerNumber == _playerNumber) {
+                    if (script.animator.runtimeAnimatorController != null) {
+                        script.animator.runtimeAnimatorController = characterAnimators[_characterAnimatorNumber];
+                    }
+                }
             }
         }
-        
     }
 }

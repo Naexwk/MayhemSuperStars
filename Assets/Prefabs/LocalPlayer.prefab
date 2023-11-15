@@ -102,9 +102,10 @@ GameObject:
   - component: {fileID: 3457618332700867865}
   - component: {fileID: 2218212432194560206}
   - component: {fileID: 4874797784648575664}
-  - component: {fileID: -4707281689278636089}
+  - component: {fileID: 5872255389662825829}
+  - component: {fileID: -8272560315517944428}
   m_Layer: 7
-  m_Name: Player
+  m_Name: LocalPlayer
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -483,7 +484,7 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &-4707281689278636089
+--- !u!114 &5872255389662825829
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -492,7 +493,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1810112698189722300}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8bf80d4517b317846a98fe24f1c2a692, type: 3}
+  m_Script: {fileID: 11500000, guid: 9876b9c4332fb31408e3b787ff5d83b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerSpeed: 8
@@ -510,7 +511,7 @@ MonoBehaviour:
   abilityCooldown: 5
   timeSinceLastAbility: 0
   abilityDamage: 10
-  isInvulnerable: 1
+  isInvulnerable: 0
   invulnerabilityWindow: 1.5
   sargeActive: 0
   bubble: {fileID: 7693957477330083549}
@@ -586,6 +587,20 @@ MonoBehaviour:
   cameraTargetPrefab: {fileID: 2992852506160938039, guid: 11fe1c7413bd4084093215912acee2b0, type: 3}
   playerNumber: 0
   prefabMenuManager: {fileID: 5238048039657987364, guid: e3e731cabd4a4c244996bb6826c61670, type: 3}
+--- !u!114 &-8272560315517944428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810112698189722300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b11b45415f80064a8677d296bb16a1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  codersSmellParticles: {fileID: 6239493142669028527, guid: 28173e91d4c84b64fb7387f369f87180, type: 3}
+  itemIDs: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
 --- !u!1 &2017297992113670114
 GameObject:
   m_ObjectHideFlags: 0
