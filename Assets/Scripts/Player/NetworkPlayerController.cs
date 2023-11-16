@@ -20,32 +20,18 @@ public class NetworkPlayerController : PlayerController
     private int char_bulletDamage = 3;
 
     // Estadísticas de jugador actuales
-    new public float playerSpeed;
     public float bulletSpeed;
-    new public int maxHealth;
-    new public int fireRate; // en disparos por segundo
-    new public int bulletDamage;
-
-    new public float aiPriority = 1;
 
     //Animacion
     [SerializeField] private RuntimeAnimatorController[] characterAnimators;
-    [SerializeField] new private Animator animator;
-
     // Variables de control
-    new public bool enableControl = false;
-    new public float currentHealth;
     private float timeSinceLastFire;
-    new public float abilityCooldown; // en segundos
-    new public float timeSinceLastAbility;
     public int abilityDamage;
-    new public  bool isInvulnerable;
     [SerializeField] private float invulnerabilityWindow;
     public bool sargeActive = false;
 
     // Variables de personaje
     public GameObject bubble;
-    new public NetworkVariable<FixedString64Bytes> characterCode = new NetworkVariable<FixedString64Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     // public string characterCode = "cheeseman";
     specialAbility specAb;
 
@@ -57,7 +43,6 @@ public class NetworkPlayerController : PlayerController
     [SerializeField] private GameObject cameraTargetPrefab;
 
     // Objetos de Network
-    new public ulong playerNumber;
     private GameObject bullethandler;
     [SerializeField] private GameObject prefabMenuManager;
 
@@ -141,6 +126,12 @@ public class NetworkPlayerController : PlayerController
         GameManager.state.OnValueChanged += StateChange;
     }
 
+    public override void OnNetworkDespawn() {
+        Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAA");
+        RemovePlayerServerRpc(name);
+        base.OnNetworkDespawn();
+    }
+
     // Ejecutar funciones de escena de juego
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -214,7 +205,7 @@ public class NetworkPlayerController : PlayerController
         if (input_Shoot)
         {
             Vector2 direction;
-            if (GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard") {
+            if (GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard" || GetComponent<PlayerInput>().devices[0].ToString() =="Mouse:/Mouse") {
                 Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(input_ShootDirection);
                 direction = worldMousePos - transform.position;
             } else {
@@ -343,14 +334,28 @@ public class NetworkPlayerController : PlayerController
 
         // Hacer daño y dar invulnerabilidad o morir
         currentHealth -= 1;
+        
         if (currentHealth <= 0) {
             Die();
+            if (Gamepad.current != null){
+                Gamepad.current.SetMotorSpeeds(0.10f, 0.25f);
+                StartCoroutine(handleRumble(1.5f));
+            }
         } else {
             animator.SetBool("takeDamage", true);
             StopCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordAnimatorHitFrames());
+            if (Gamepad.current != null){
+                Gamepad.current.SetMotorSpeeds(0.10f, 0.25f);
+                StartCoroutine(handleRumble(0.5f));
+            }
         }
+    }
+
+    IEnumerator handleRumble(float time){
+        yield return new WaitForSeconds(time);
+        Gamepad.current.SetMotorSpeeds(0f, 0f);
     }
 
     // Función para morir
@@ -565,6 +570,12 @@ public class NetworkPlayerController : PlayerController
         gameManager.GetComponent<GameManager>().AddPlayer(_name);
     }
 
+    // Añadir jugador a la lista del GameManager
+    [ServerRpc(RequireOwnership = false)]
+    private void RemovePlayerServerRpc(string _name){
+        gameManager.GetComponent<GameManager>().RemovePlayer(_name);
+    }
+
     // Cambiar personaje del jugador
     // DEV: No, no estamos orgullosos de esta solución, pero se reformulará
     public override async Task ChangeCharacter(string _characterCode){
@@ -611,7 +622,7 @@ public class NetworkPlayerController : PlayerController
             foreach (GameObject player in players) {
                 script = player.GetComponent<PlayerController>();
                 if (script.playerNumber == _playerNumber) {
-                    if (script.animator.runtimeAnimatorController != null) {
+                    if (script.animator != null) {
                         script.animator.runtimeAnimatorController = characterAnimators[_characterAnimatorNumber];
                     }
                 }

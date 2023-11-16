@@ -17,32 +17,19 @@ public class LocalPlayerController : PlayerController
     private int char_bulletDamage = 3;
 
     // Estadísticas de jugador actuales
-    new public float playerSpeed;
     public float bulletSpeed;
-    new public int maxHealth;
-    new public int fireRate; // en disparos por segundo
-    new public int bulletDamage;
-
-    new public float aiPriority = 1;
 
     //Animacion
     [SerializeField] private RuntimeAnimatorController[] characterAnimators;
-    [SerializeField] new private Animator animator;
 
     // Variables de control
-    new public bool enableControl = false;
-    new public float currentHealth;
     private float timeSinceLastFire;
-    new public float abilityCooldown; // en segundos
-    new public float timeSinceLastAbility;
     public int abilityDamage;
-    new public  bool isInvulnerable;
     [SerializeField] private float invulnerabilityWindow;
     public bool sargeActive = false;
 
     // Variables de personaje
     public GameObject bubble;
-    new public NetworkVariable<FixedString64Bytes> characterCode = new NetworkVariable<FixedString64Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     // public string characterCode = "cheeseman";
     specialAbility specAb;
 
@@ -54,7 +41,6 @@ public class LocalPlayerController : PlayerController
     [SerializeField] private GameObject cameraTargetPrefab;
 
     // Objetos de Network
-    new public ulong playerNumber;
     private GameObject bullethandler;
     [SerializeField] private GameObject prefabMenuManager;
 
@@ -99,6 +85,7 @@ public class LocalPlayerController : PlayerController
         bubble.GetComponent<SpriteRenderer>().enabled = false;
         rig = gameObject.GetComponent<Rigidbody2D>();
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+        gameManager.AddPlayer(name);
         GameObject relayManager = GameObject.FindWithTag("RelayManager");
         mainCamera = Camera.main;
 
@@ -148,7 +135,7 @@ public class LocalPlayerController : PlayerController
                 StartCoroutine(recordInvulnerabiltyFrames());
             } else {
                 gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
-                enableControl = false;
+                //enableControl = false;
                 this.isInvulnerable = true;
             }
         }
@@ -186,7 +173,8 @@ public class LocalPlayerController : PlayerController
         if (input_Shoot)
         {
             Vector2 direction;
-            if (GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard") {
+            Debug.Log("dispositivo = " + GetComponent<PlayerInput>().devices[0].ToString());
+            if (GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard" || GetComponent<PlayerInput>().devices[0].ToString() == "Mouse:/Mouse") {
                 Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(input_ShootDirection);
                 direction = worldMousePos - transform.position;
             } else {
@@ -235,6 +223,9 @@ public class LocalPlayerController : PlayerController
             direction.Normalize();
 
             // Disparar en red
+            if (bullethandler == null){
+                return;
+            }
             bullethandler.GetComponent<BulletHandler>().SpawnBulletServerRpc(bulletSpeed, direction, playerNumber, transform.position.x, transform.position.y);
 
             // Disparar a nivel local
@@ -317,18 +308,31 @@ public class LocalPlayerController : PlayerController
         currentHealth -= 1;
         if (currentHealth <= 0) {
             Die();
+            if (Gamepad.current != null){
+                Gamepad.current.SetMotorSpeeds(0.10f, 0.25f);
+                StartCoroutine(handleRumble(1.5f));
+            }
         } else {
             animator.SetBool("takeDamage", true);
             StopCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordAnimatorHitFrames());
+            if (Gamepad.current != null){
+                Gamepad.current.SetMotorSpeeds(0.10f, 0.25f);
+                StartCoroutine(handleRumble(0.5f));
+            }
         }
+    }
+
+    IEnumerator handleRumble(float time){
+        yield return new WaitForSeconds(time);
+        Gamepad.current.SetMotorSpeeds(0f, 0f);
     }
 
     // Función para morir
     private void Die(){
         // Deshabilitar controles
-        enableControl = false;
+        //enableControl = false;
 
         // Cambiar a estado de muerte
         gameObject.tag = "Dead Player";
@@ -425,7 +429,7 @@ public class LocalPlayerController : PlayerController
         // Desactivar rigidbody y controles
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
         gameObject.GetComponent<Rigidbody2D>().simulated = false;
-        enableControl = false;
+        //enableControl = false;
     }
 
     // Funciones de red
@@ -475,7 +479,7 @@ public class LocalPlayerController : PlayerController
         GameObject spawnMM;
         spawnMM = Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
         DontDestroyOnLoad(spawnMM);
-        spawnMM.GetComponent<NetworkObject>().SpawnWithOwnership(_playerNumber);
+        spawnMM.GetComponent<NetworkObject>().Spawn();
         spawnMM.GetComponent<MenuManager>().myPlayer = this.gameObject;
     }
 

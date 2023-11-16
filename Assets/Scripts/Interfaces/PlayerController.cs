@@ -10,19 +10,19 @@ using UnityEngine.InputSystem;
 
 public abstract class PlayerController : NetworkBehaviour
 {
-    [NonSerialized] public float aiPriority;
-    [NonSerialized]public int maxHealth;
-    [NonSerialized]public float currentHealth;
-    [NonSerialized]public float playerSpeed;
-    [NonSerialized]public int bulletDamage;
-    [NonSerialized]public ulong playerNumber;
-    [NonSerialized]public int fireRate; // en disparos por segundo
-    [NonSerialized]public bool enableControl;
-    [NonSerialized]public bool isInvulnerable;
-    [NonSerialized]public float timeSinceLastAbility;
-    [NonSerialized]public float abilityCooldown; // en segundos
-    [NonSerialized]public Animator animator;
-    [NonSerialized]public NetworkVariable<FixedString64Bytes> characterCode = new NetworkVariable<FixedString64Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    public float aiPriority;
+    public int maxHealth;
+    public float currentHealth;
+    public float playerSpeed;
+    public int bulletDamage;
+    public ulong playerNumber;
+    public int fireRate; // en disparos por segundo
+    public bool enableControl;
+    public bool isInvulnerable;
+    public float timeSinceLastAbility;
+    public float abilityCooldown; // en segundos
+    public Animator animator;
+    public NetworkVariable<FixedString64Bytes> characterCode = new NetworkVariable<FixedString64Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public abstract void GetHit();
     public abstract void SpawnFakeBullet(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y);
     public abstract Task ChangeCharacter(string _characterCode);

@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 
 // Controlador de UI a nivel local
-public class MenuManager : NetworkBehaviour
+public class LocalMenuManager : NetworkBehaviour
 {
     // Elementos de UI a cargar
     private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI, _healthHeartsUI, _specialAbilityUI, _sponsorsUI, _countdownUI;
@@ -50,6 +50,8 @@ public class MenuManager : NetworkBehaviour
     //
     private bool startRecordingLife = false;
 
+    public ulong assignedPlayerNumber;
+
     // Destruir al entrar al character select, se regenerará al entrar a la escena de juego.
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -72,7 +74,6 @@ public class MenuManager : NetworkBehaviour
     void OnSceneEvent (SceneEvent sceneEvent) {
         if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted) {
             if (SceneManager.GetActiveScene().name == "SampleScene" && this != null){
-                Debug.Log("Loading...");
                 // Desplegar vida
                 startRecordingLife = true;
 
@@ -96,7 +97,6 @@ public class MenuManager : NetworkBehaviour
                 LoadButtonActions();
 
                 if (IsOwner) {
-                    Debug.Log("hanlo");
                     myPlayerScript = myPlayer.GetComponent<PlayerController>();
                     itemManagerScript = myPlayer.GetComponent<ItemManager>();
                     

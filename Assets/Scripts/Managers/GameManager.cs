@@ -110,6 +110,13 @@ public class GameManager : NetworkBehaviour
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Add(name);
     }
+
+    public void RemovePlayer(string name){
+        numberOfPlayers.Value--;
+        Debug.Log(numberOfPlayers.Value);
+        changedPlayers.Value = !changedPlayers.Value;
+        networkPlayerNames.Remove(name);
+    }
     public void DoneWithPurchase(){
         done.Value++;
     }
