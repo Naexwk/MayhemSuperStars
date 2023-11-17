@@ -5,6 +5,8 @@ using Unity.Netcode;
 using System;
 using UnityEngine.SceneManagement;
 
+using UnityEngine.InputSystem;
+
 // Controlador del objetivo de cámara
 public class CameraTarget : NetworkBehaviour
 {
@@ -12,7 +14,7 @@ public class CameraTarget : NetworkBehaviour
     private GameObject[] players;
 
     // Jugador a seguir
-    private GameObject chosenPlayer;
+    [SerializeField] private GameObject chosenPlayer;
 
     // Variable de control que informa si se debe seguir al jugador o centrar la cámara
     public bool lockOnPlayer = false;
@@ -25,7 +27,7 @@ public class CameraTarget : NetworkBehaviour
     float posY;
     float helper;
 
-    private Camera mainCamera;
+    [SerializeField] private Camera mainCamera;
     
     // Máximos de distancia de la cámara con respecto al jugador
     [SerializeField] private float verticalOffset = 1f;
@@ -61,6 +63,7 @@ public class CameraTarget : NetworkBehaviour
     // Seguir al jugador seleccionado
     void Update()
     {
+        
         // Teletransportarse instantáneamente al jugador seleccionado al cambiar el estado del juego
         if (lockOnPlayer != lastLockOnValue) {
             if (lockOnPlayer) {
@@ -70,9 +73,12 @@ public class CameraTarget : NetworkBehaviour
         }
 
         if (chosenPlayer != null && lockOnPlayer) {
-
-            worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-
+            if (!(chosenPlayer.GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard") && !(chosenPlayer.GetComponent<PlayerInput>().devices[0].ToString() == "Mouse:/Mouse")) {
+                Vector2 chosenPlayerPos = new Vector2(chosenPlayer.transform.position.x, chosenPlayer.transform.position.y);
+                worldMousePos = (chosenPlayer.GetComponent<PlayerController>().input_ShootDirection * 7f) + chosenPlayerPos;
+            } else {
+                worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            }
             // Encontrar las coordenadas a colocarse (entre la cámara y el jugador)
             posX = (chosenPlayer.transform.position.x + worldMousePos.x)/2;
             posY = (chosenPlayer.transform.position.y + worldMousePos.y)/2;
@@ -101,6 +107,8 @@ public class CameraTarget : NetworkBehaviour
 
             // Cambiar posición a las nuevas coordenadas
             pos = new Vector3(posX,posY,0f);
+        
+            
             gameObject.transform.position = pos;
         } else {
             // Si no debe seguir al jugador, o no existe, quedarse al centro

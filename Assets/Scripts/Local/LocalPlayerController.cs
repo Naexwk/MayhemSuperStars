@@ -37,7 +37,7 @@ public class LocalPlayerController : PlayerController
     private Rigidbody2D rig;
 
     // Objetos de cámara
-    private Camera mainCamera;
+    [SerializeField] private Camera mainCamera;
     [SerializeField] private GameObject cameraTargetPrefab;
 
     // Objetos de Network
@@ -56,7 +56,9 @@ public class LocalPlayerController : PlayerController
 
     // Input variables
     private bool input_Shoot, input_Special;
-    private Vector2 input_ShootDirection, input_Movement;
+    private Vector2 input_Movement;
+
+    private int deviceID;
 
     // Función para colorear objetos según el número del jugador
     public void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
@@ -77,6 +79,7 @@ public class LocalPlayerController : PlayerController
     // Inicializar controladores de jugador
     async void Start()
     {
+        deviceID = GetComponent<PlayerInput>().devices[0].deviceId;
         GetComponent<NetworkObject>().Spawn();
         playerNumber = Convert.ToUInt64(GameManager.numberOfPlayers.Value);
         string name = "Player " + (playerNumber+1);
@@ -87,7 +90,6 @@ public class LocalPlayerController : PlayerController
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         gameManager.AddPlayer(name);
         GameObject relayManager = GameObject.FindWithTag("RelayManager");
-        mainCamera = Camera.main;
 
         // DEV: Reañadir outline
         outline = gameObject.transform.GetChild(0).gameObject;
@@ -95,6 +97,7 @@ public class LocalPlayerController : PlayerController
             // Inicializar como personaje default (cheeseman)
             await ChangeCharacter("cheeseman");
         }
+        
     }
 
     // Escuchar cambios de escena
@@ -107,7 +110,6 @@ public class LocalPlayerController : PlayerController
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "SampleScene") {
-            mainCamera = Camera.main;
             bullethandler = GameObject.FindWithTag("BulletHandler");
             if (IsOwner) {
                 animator.SetBool("dead", false);
@@ -173,7 +175,6 @@ public class LocalPlayerController : PlayerController
         if (input_Shoot)
         {
             Vector2 direction;
-            Debug.Log("dispositivo = " + GetComponent<PlayerInput>().devices[0].ToString());
             if (GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard" || GetComponent<PlayerInput>().devices[0].ToString() == "Mouse:/Mouse") {
                 Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(input_ShootDirection);
                 direction = worldMousePos - transform.position;
@@ -256,7 +257,7 @@ public class LocalPlayerController : PlayerController
     // Cheeseman: Aparece una bola de queso que daña a los enemigos
     private void CheesemanSA () {
         Vector2 direction;
-        if (GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard") {
+        if (GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard" || GetComponent<PlayerInput>().devices[0].ToString() == "Mouse:/Mouse") {
             Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(input_ShootDirection);
             direction = worldMousePos - transform.position;
         } else {
@@ -308,7 +309,7 @@ public class LocalPlayerController : PlayerController
         currentHealth -= 1;
         if (currentHealth <= 0) {
             Die();
-            if (Gamepad.current != null){
+            if (Gamepad.current != null && Gamepad.current.deviceId == deviceID){
                 Gamepad.current.SetMotorSpeeds(0.10f, 0.25f);
                 StartCoroutine(handleRumble(1.5f));
             }
@@ -317,7 +318,7 @@ public class LocalPlayerController : PlayerController
             StopCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordAnimatorHitFrames());
-            if (Gamepad.current != null){
+            if (Gamepad.current != null && Gamepad.current.deviceId == deviceID){
                 Gamepad.current.SetMotorSpeeds(0.10f, 0.25f);
                 StartCoroutine(handleRumble(0.5f));
             }
@@ -450,25 +451,13 @@ public class LocalPlayerController : PlayerController
     // Aparece un objetivo de camara que sigue al jugador
     [ServerRpc(RequireOwnership = false)]
     public void SpawnCameraTargetServerRpc(ulong _playerNumber){
-        GameObject spawnCam;
-        spawnCam = Instantiate(cameraTargetPrefab, new Vector3(0f,0f,0f), transform.rotation);
-        spawnCam.GetComponent<NetworkObject>().SpawnWithOwnership(_playerNumber);
+
     }
 
     // Se ejecuta en todos los clientes
     // Le dota su objetivo a la cámara
     [ClientRpc]
     public override void StartCameraClientRpc(){
-        GameObject mainCam;
-        mainCam = GameObject.FindWithTag("MainCamera");
-        GameObject[] cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
-        foreach (GameObject cameraTarget in cameraTargets)
-        {
-            if(cameraTarget.GetComponent<NetworkObject>().IsOwner){
-                mainCam.GetComponent<CameraMovement>().SetCameraTarget(cameraTarget.transform);
-                cameraTarget.GetComponent<CameraTarget>().StartCam();
-            }
-        }
         
     }
 

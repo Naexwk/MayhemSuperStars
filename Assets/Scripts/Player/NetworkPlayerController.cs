@@ -58,7 +58,7 @@ public class NetworkPlayerController : PlayerController
 
     // Input variables
     private bool input_Shoot, input_Special;
-    private Vector2 input_ShootDirection, input_Movement;
+    private Vector2 input_Movement;
 
     // Función para colorear objetos según el número del jugador
     public void ColorCodeToPlayer (GameObject go, ulong playerNumber) {

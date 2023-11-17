@@ -34,6 +34,8 @@ public class Crosshair : MonoBehaviour
             direction = direction * distance;
             transform.localPosition = direction;
         }
+
+        Debug.Log("Direction, X: " + direction.x + " Y: " + direction.y);
         
         if (direction == Vector2.zero) {
             GetComponent<SpriteRenderer>().color = tmp;
