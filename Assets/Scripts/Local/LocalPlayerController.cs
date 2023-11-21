@@ -59,6 +59,7 @@ public class LocalPlayerController : PlayerController
     private Vector2 input_Movement;
 
     private int deviceID;
+    [SerializeField] private GameObject prefabCharSelCanvas;
 
     // Función para colorear objetos según el número del jugador
     public void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
@@ -104,6 +105,9 @@ public class LocalPlayerController : PlayerController
     private void Awake() {
         SceneManager.sceneLoaded += OnSceneLoaded;
         GameManager.state.OnValueChanged += StateChange;
+        GameObject canvas;
+        canvas = Instantiate(prefabCharSelCanvas, new Vector3(0f,0f,0f), transform.rotation);
+        canvas.GetComponent<Canvas>().worldCamera = playerCamera;
     }
 
     // Ejecutar funciones de escena de juego
@@ -137,7 +141,7 @@ public class LocalPlayerController : PlayerController
                 StartCoroutine(recordInvulnerabiltyFrames());
             } else {
                 gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
-                //enableControl = false;
+                enableControl = false;
                 this.isInvulnerable = true;
             }
         }
@@ -333,7 +337,7 @@ public class LocalPlayerController : PlayerController
     // Función para morir
     private void Die(){
         // Deshabilitar controles
-        //enableControl = false;
+        enableControl = false;
 
         // Cambiar a estado de muerte
         gameObject.tag = "Dead Player";
@@ -430,7 +434,7 @@ public class LocalPlayerController : PlayerController
         // Desactivar rigidbody y controles
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
         gameObject.GetComponent<Rigidbody2D>().simulated = false;
-        //enableControl = false;
+        enableControl = false;
     }
 
     // Funciones de red

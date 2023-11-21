@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
 
 public abstract class PlayerController : NetworkBehaviour
 {
+    public Camera playerCamera;
     public float aiPriority;
     public int maxHealth;
     public float currentHealth;

@@ -486,6 +486,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9876b9c4332fb31408e3b787ff5d83b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerCamera: {fileID: 788099782347829169}
   aiPriority: 1
   maxHealth: 6
   currentHealth: 6
@@ -493,7 +494,7 @@ MonoBehaviour:
   bulletDamage: 3
   playerNumber: 0
   fireRate: 3
-  enableControl: 1
+  enableControl: 0
   isInvulnerable: 0
   timeSinceLastAbility: 0
   abilityCooldown: 5
@@ -579,6 +580,7 @@ MonoBehaviour:
   mainCamera: {fileID: 788099782347829169}
   cameraTargetPrefab: {fileID: 2992852506160938039, guid: 11fe1c7413bd4084093215912acee2b0, type: 3}
   prefabMenuManager: {fileID: 5238048039657987364, guid: e3e731cabd4a4c244996bb6826c61670, type: 3}
+  prefabCharSelCanvas: {fileID: 4513855481243013738, guid: 2b812397266a9124c81cc696fc878b38, type: 3}
 --- !u!114 &-8272560315517944428
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1732,6 +1734,10 @@ PrefabInstance:
       propertyPath: chosenPlayer
       value: 
       objectReference: {fileID: 1810112698189722300}
+    - target: {fileID: 7790488462483464529, guid: 7fd5a3937aafd954db1d70fa11e01e05, type: 3}
+      propertyPath: lockOnPlayer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

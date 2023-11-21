@@ -26,6 +26,7 @@ TagManager:
   - PropEnemy
   - Countdown
   - HUD
+  - RelayMiniManager
   layers:
   - Default
   - TransparentFX

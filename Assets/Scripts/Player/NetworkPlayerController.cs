@@ -127,8 +127,9 @@ public class NetworkPlayerController : PlayerController
     }
 
     public override void OnNetworkDespawn() {
-        Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAA");
-        RemovePlayerServerRpc(name);
+        GameObject relayManager = GameObject.FindWithTag("RelayManager");
+        string _name = relayManager.GetComponent<LanBehaviour>().playerName;
+        RemovePlayerServerRpc(_name);
         base.OnNetworkDespawn();
     }
 

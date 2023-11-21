@@ -109,6 +109,7 @@ public class GameManager : NetworkBehaviour
         Debug.Log(numberOfPlayers.Value);
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Add(name);
+        Debug.Log("Added name: " + name);
     }
 
     public void RemovePlayer(string name){
@@ -116,6 +117,7 @@ public class GameManager : NetworkBehaviour
         Debug.Log(numberOfPlayers.Value);
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Remove(name);
+        Debug.Log("Removed name: " + name);
     }
     public void DoneWithPurchase(){
         done.Value++;

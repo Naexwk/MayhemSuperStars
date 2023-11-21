@@ -5,6 +5,7 @@ using UnityEngine;
 // Clase contenedora de objetos de UI, recibidos por el MenuManager
 public class UIHelper : MonoBehaviour
 {
+    public GameObject canvas;
     public GameObject LanScreen;
     public GameObject Leaderboard;
     public GameObject GameTimer;

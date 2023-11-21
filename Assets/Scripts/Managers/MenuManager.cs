@@ -13,6 +13,7 @@ public class MenuManager : NetworkBehaviour
     private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI, _healthHeartsUI, _specialAbilityUI, _sponsorsUI, _countdownUI;
     private TMP_Text _vidaText;
     private GameObject _winScreen;
+    private GameObject _canvas;
 
     //Variables UI Health Hearts
 
@@ -50,6 +51,9 @@ public class MenuManager : NetworkBehaviour
     //
     private bool startRecordingLife = false;
 
+    [SerializeField] private GameObject prefabCanvas;
+    private GameObject myCanvas;
+
     // Destruir al entrar al character select, se regenerará al entrar a la escena de juego.
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -61,23 +65,30 @@ public class MenuManager : NetworkBehaviour
     // Suscribirse al cambio de estado del GameManager, al cambio de handleLeaderboard,
     // y a los cambios de escena
     void Awake(){
+        
         GameManager.state.OnValueChanged += GameManagerOnGameStateChanged;
         GameManager.handleLeaderboard.OnValueChanged += UpdateLeaderboard;
         NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
         SceneManager.sceneLoaded += OnSceneLoaded;
+        myCanvas = Instantiate(prefabCanvas);
         loaded = false;
+        
     }
 
     // Al entrar a escena de juego, cargar elementos de UI y gestionar al jugador
     void OnSceneEvent (SceneEvent sceneEvent) {
         if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted) {
             if (SceneManager.GetActiveScene().name == "SampleScene" && this != null){
+                
+                Debug.Log("I am alive. My master is Player " + (myPlayer.GetComponent<PlayerController>().playerNumber+1));
                 Debug.Log("Loading...");
                 // Desplegar vida
                 startRecordingLife = true;
 
                 // Cargar elementos de UI
-                uiHelper = GameObject.FindWithTag("UIHelper").GetComponent<UIHelper>();
+                //uiHelper = GameObject.FindWithTag("UIHelper").GetComponent<UIHelper>();
+                uiHelper = myCanvas.GetComponent<UIHelper>();
+                _canvas = myCanvas;
                 _timer = uiHelper.GameTimer;
                 _leaderboard = uiHelper.Leaderboard;
                 _purchaseScreen = uiHelper.PurchaseUI;
@@ -117,6 +128,10 @@ public class MenuManager : NetworkBehaviour
                 // Lockear camera al jugador
                 if (myCameraTarget != null) {
                     myCameraTarget.GetComponent<CameraTarget>().lockOnPlayer = true;
+                }
+
+                if (myPlayer.GetComponent<PlayerController>().playerCamera != null) {
+                    _canvas.GetComponent<Canvas>().worldCamera = myPlayer.GetComponent<PlayerController>().playerCamera;
                 }
             }
         }
