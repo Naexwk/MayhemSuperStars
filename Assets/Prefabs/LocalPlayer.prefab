@@ -1649,6 +1649,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66de20697e88cd145ae2277af21c0572, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 5872255389662825829}
+  playerInput: {fileID: -1499872487155888439}
   distance: 10
 --- !u!1001 &2835294568884896825
 PrefabInstance:

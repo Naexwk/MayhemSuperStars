@@ -9,13 +9,11 @@ public class Crosshair : MonoBehaviour
 
     Vector2 input_ShootDirection;
     Vector2 direction;
+    [SerializeField] private PlayerController player;
+    [SerializeField] private PlayerInput playerInput;
 
     [SerializeField] private float distance = 10f;
     Color myColor, tmp;
-
-    public void OnShootDirection(InputAction.CallbackContext context){
-        input_ShootDirection = context.ReadValue<Vector2>();
-    }
 
     private void Start() {
         myColor = GetComponent<SpriteRenderer>().color;
@@ -26,10 +24,10 @@ public class Crosshair : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.parent.GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard") {
+        if (playerInput.devices[0].ToString() == "Keyboard:/Keyboard" || playerInput.devices[0].ToString() == "Mouse:/Mouse") {
             direction = Vector2.zero;
         } else {
-            direction = input_ShootDirection;
+            direction = player.input_ShootDirection;
             direction.Normalize();
             direction = direction * distance;
             transform.localPosition = direction;
