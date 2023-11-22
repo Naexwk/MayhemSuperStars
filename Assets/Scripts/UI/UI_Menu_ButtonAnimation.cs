@@ -15,7 +15,19 @@ public class UI_Menu_ButtonAnimation : MonoBehaviour, IPointerEnterHandler, IPoi
     [SerializeField] private string AnimationHover;
     [SerializeField] private string AnimationHoverExit;
 
+    public Selectable buttonSelectable;
+
     // Al hacer hover sobre un botón, animar y cambiar su sprite
+    void Start(){
+         buttonSelectable = GetComponent<Selectable>();
+    }
+    void Update(){
+        if (buttonSelectable != null && buttonSelectable.IsInteractable())
+        {
+            Debug.Log("Button is selected!");
+            // Your logic for when the button is selected goes here
+        }
+    }
     public void OnPointerEnter(PointerEventData eventData)
     {
         Debug.Log(AnimationHover);
