@@ -44,6 +44,7 @@ public class ItemManager : NetworkBehaviour
 
     // Función para añadir lógica de objeto
     public void addItem(int itemID) {
+        Debug.Log("Adding item" + (itemID-1) + " to player " + gameObject.GetComponent<PlayerController>().playerNumber);
         obtainedItemsNumber++;
         itemInventory[obtainedItemsNumber] = allItems[itemID-1];
         itemIDs[obtainedItemsNumber] = itemID;
@@ -75,7 +76,11 @@ public class ItemManager : NetworkBehaviour
     // (5) Rugileo y Pepsi: Hace crecer al jugador, aumenta su daño y vida
     void RugileoPepsi () {
         gameObject.transform.localScale += new Vector3 (0.3f,0.3f,0.3f);
-        Camera.main.orthographicSize += 1;
+        if (gameObject.GetComponent<PlayerController>().playerCamera == null) {
+            Camera.main.orthographicSize += 1;
+        } else {
+            gameObject.GetComponent<PlayerController>().playerCamera.orthographicSize += 1;
+        }
         gameObject.GetComponent<PlayerController>().bulletDamage += 1;
         gameObject.GetComponent<PlayerController>().maxHealth += 2;
         gameObject.GetComponent<PlayerController>().currentHealth += 2;

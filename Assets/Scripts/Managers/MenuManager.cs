@@ -79,9 +79,6 @@ public class MenuManager : NetworkBehaviour
     void OnSceneEvent (SceneEvent sceneEvent) {
         if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted) {
             if (SceneManager.GetActiveScene().name == "SampleScene" && this != null){
-                
-                Debug.Log("I am alive. My master is Player " + (myPlayer.GetComponent<PlayerController>().playerNumber+1));
-                Debug.Log("Loading...");
                 // Desplegar vida
                 startRecordingLife = true;
 
@@ -102,20 +99,26 @@ public class MenuManager : NetworkBehaviour
                 _sponsorsUI = uiHelper.Sponsors;
                 _countdownUI = uiHelper.Countdown;
                 loaded = true;
+
+
                 
                 // Cargar acciones de botones
                 LoadButtonActions();
 
                 if (IsOwner) {
-                    Debug.Log("hanlo");
                     myPlayerScript = myPlayer.GetComponent<PlayerController>();
                     itemManagerScript = myPlayer.GetComponent<ItemManager>();
                     
                     // Encontrar cameraTarget local
-                    cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
-                    foreach (GameObject cameraTarget in cameraTargets) {
-                        if (cameraTarget.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
-                            myCameraTarget = cameraTarget;
+                    if (myPlayerScript.cameraTarget != null) {
+                        Debug.Log("XDDD");
+                        myCameraTarget = myPlayerScript.cameraTarget;
+                    } else {
+                        cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
+                        foreach (GameObject cameraTarget in cameraTargets) {
+                            if (cameraTarget.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
+                                myCameraTarget = cameraTarget;
+                            }
                         }
                     }
                 }
@@ -133,6 +136,8 @@ public class MenuManager : NetworkBehaviour
                 if (myPlayer.GetComponent<PlayerController>().playerCamera != null) {
                     _canvas.GetComponent<Canvas>().worldCamera = myPlayer.GetComponent<PlayerController>().playerCamera;
                 }
+
+                _optionsSelector.GetComponent<OptionsSelector>().myPlayer = myPlayerScript;
             }
         }
 
@@ -317,9 +322,9 @@ public class MenuManager : NetworkBehaviour
         GameObject newHeart = Instantiate(heartPrefab);
         newHeart.transform.SetParent(_healthHeartsUI.transform);
 
-        HealthHeart heartCompenent = newHeart.GetComponent<HealthHeart>();
-        heartCompenent.SetHeartImage(HeartStatus.Empty);
-        hearts.Add(heartCompenent);
+        HealthHeart heartComponent = newHeart.GetComponent<HealthHeart>();
+        heartComponent.SetHeartImage(HeartStatus.Empty);
+        hearts.Add(heartComponent);
     }
 
     public void ClearHearts()

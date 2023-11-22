@@ -487,6 +487,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 788099782347829169}
+  cameraTarget: {fileID: 1067425800605054990}
   aiPriority: 1
   maxHealth: 6
   currentHealth: 6
@@ -1736,13 +1737,18 @@ PrefabInstance:
       objectReference: {fileID: 1810112698189722300}
     - target: {fileID: 7790488462483464529, guid: 7fd5a3937aafd954db1d70fa11e01e05, type: 3}
       propertyPath: lockOnPlayer
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7fd5a3937aafd954db1d70fa11e01e05, type: 3}
+--- !u!1 &1067425800605054990 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2992852506160938039, guid: 7fd5a3937aafd954db1d70fa11e01e05, type: 3}
+  m_PrefabInstance: {fileID: 2835294568884896825}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5497354622606302336 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7715364919699724473, guid: 7fd5a3937aafd954db1d70fa11e01e05, type: 3}

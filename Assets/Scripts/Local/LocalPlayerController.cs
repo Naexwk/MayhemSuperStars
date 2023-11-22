@@ -83,7 +83,7 @@ public class LocalPlayerController : PlayerController
         deviceID = GetComponent<PlayerInput>().devices[0].deviceId;
         GetComponent<NetworkObject>().Spawn();
         playerNumber = Convert.ToUInt64(GameManager.numberOfPlayers.Value);
-        string name = "Player " + (playerNumber+1);
+        string name = "P" + (playerNumber+1);
         //bubble = transform.GetChild(0).gameObject;
         DontDestroyOnLoad(this.gameObject);
         bubble.GetComponent<SpriteRenderer>().enabled = false;

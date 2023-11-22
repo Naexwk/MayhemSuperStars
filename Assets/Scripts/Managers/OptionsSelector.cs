@@ -5,10 +5,10 @@ using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
 
-public class OptionsSelector : NetworkBehaviour
+public class OptionsSelector : MonoBehaviour
 {
     bool handled = false;
-    private PlayerController myPlayer;
+    public PlayerController myPlayer;
     private int power;
     private GameManager gameManager;
 
@@ -58,7 +58,7 @@ public class OptionsSelector : NetworkBehaviour
 
     private void Awake() {
         LoadProps();
-        SearchForMyPlayer();
+        //SearchForMyPlayer();
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
 
         // Load props
@@ -76,7 +76,7 @@ public class OptionsSelector : NetworkBehaviour
     {
         if (scene.name == "SampleScene") {
             LoadProps();
-            SearchForMyPlayer();
+            //SearchForMyPlayer();
             gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
 
             // Load props
