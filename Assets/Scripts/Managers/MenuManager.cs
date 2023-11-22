@@ -53,6 +53,8 @@ public class MenuManager : NetworkBehaviour
 
     [SerializeField] private GameObject prefabCanvas;
     private GameObject myCanvas;
+    
+    private ItemController itemController;
 
     // Destruir al entrar al character select, se regenerará al entrar a la escena de juego.
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -99,8 +101,8 @@ public class MenuManager : NetworkBehaviour
                 _sponsorsUI = uiHelper.Sponsors;
                 _countdownUI = uiHelper.Countdown;
                 loaded = true;
-
-
+                
+                
                 
                 // Cargar acciones de botones
                 LoadButtonActions();
@@ -121,6 +123,27 @@ public class MenuManager : NetworkBehaviour
                             }
                         }
                     }
+                }
+
+                if (uiHelper.lem != null) {
+                    Debug.Log("LEM 1: " + uiHelper.lem.cameraReference);
+                    uiHelper.lem.cameraReference = myPlayerScript.playerCamera;
+                    Debug.Log("Player XD: " + myPlayerScript.playerCamera);
+                    Debug.Log("LEM 2: " +uiHelper.lem.cameraReference);
+                    if (uiHelper.itemController != null) { 
+                        uiHelper.lem.itemController = uiHelper.itemController;
+                    }
+                }
+
+                if (uiHelper.itemController != null) {
+                    itemController = uiHelper.itemController;
+                    if (uiHelper.lem != null) {
+                        itemController.editor = uiHelper.lem;
+                    }
+                    if (_optionsSelector != null) {
+                        itemController.optionsSelector = _optionsSelector.GetComponent<OptionsSelector>();
+                    }
+                    uiHelper.itemController.cameraReference = myPlayerScript.playerCamera;
                 }
 
                 // Respawnear player
@@ -163,14 +186,22 @@ public class MenuManager : NetworkBehaviour
 
         button = _purchaseTrapsUI.transform.GetChild(0).GetComponent<Button>();
         button.onClick.AddListener(SelectTrap);
+        button.onClick.AddListener(() => ItemControllerHelper(0));
 
         button = _purchaseTrapsUI.transform.GetChild(1).GetComponent<Button>();
         button.onClick.AddListener(SelectTrap);
+        button.onClick.AddListener(() => ItemControllerHelper(1));
 
         button = _purchaseTrapsUI.transform.GetChild(2).GetComponent<Button>();
         button.onClick.AddListener(SelectTrap);
+        button.onClick.AddListener(() => ItemControllerHelper(2));
+
+
     }
 
+    private void ItemControllerHelper (int id) {
+        itemController.StartNewPlacement(id);
+    }
 
     // Seleccionar sponsors
     private void OnSelectedItems(){

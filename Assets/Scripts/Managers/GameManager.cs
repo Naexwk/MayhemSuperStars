@@ -483,23 +483,31 @@ public class GameManager : NetworkBehaviour
     }
 
     IEnumerator Countdown(float time){
-        GameObject countdownUI = GameObject.FindWithTag("Countdown");
-        countdownUI.GetComponent<Animator>().Play("321goAnim");
+        GameObject[] countdownUIArray = GameObject.FindGameObjectsWithTag("Countdown");
+        foreach (GameObject countdownUI in countdownUIArray) {
+            countdownUI.GetComponent<Animator>().Play("321goAnim");
+        }
         yield return new WaitForSeconds(time);
-        foreach (Transform child in countdownUI.transform)
-        {
-            child.gameObject.SetActive(false);
+        foreach (GameObject countdownUI in countdownUIArray) {
+            foreach (Transform child in countdownUI.transform)
+            {
+                child.gameObject.SetActive(false);
+            }
         }
         GameManager.instance.UpdateGameState(GameState.Round);
     }
 
     IEnumerator TimesUp(float time){
-        GameObject countdownUI = GameObject.FindWithTag("Countdown");
-        countdownUI.GetComponent<Animator>().Play("countdownAnim");
+        GameObject[] countdownUIArray = GameObject.FindGameObjectsWithTag("Countdown");
+        foreach (GameObject countdownUI in countdownUIArray) {
+            countdownUI.GetComponent<Animator>().Play("countdownAnim");
+        }
         yield return new WaitForSeconds(time);
-        foreach (Transform child in countdownUI.transform)
-        {
-            child.gameObject.SetActive(false);
+        foreach (GameObject countdownUI in countdownUIArray) {
+            foreach (Transform child in countdownUI.transform)
+            {
+                child.gameObject.SetActive(false);
+            }
         }
         GameManager.instance.UpdateGameState(GameState.Leaderboard);
     }

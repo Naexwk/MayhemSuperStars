@@ -19,4 +19,6 @@ public class UIHelper : MonoBehaviour
     public GameObject SpecialAbility;
     public GameObject Sponsors;
     public GameObject Countdown;
+    public ItemController itemController;
+    public LevelEditorManager lem;
 }

@@ -24,7 +24,16 @@ public class LocalCameraDestroyer : MonoBehaviour
                 if (mainCamera != null) {
                     Destroy(mainCamera.gameObject);
                 }
-                
+
+                GameObject lem = GameObject.FindWithTag("LevelEditorManager");
+                if (lem != null) {
+                    Destroy(lem.gameObject);
+                }
+
+                GameObject itemcontroller = GameObject.FindWithTag("ItemController");
+                if (itemcontroller != null) {
+                    Destroy(itemcontroller.gameObject);
+                }
             }
         }
         
