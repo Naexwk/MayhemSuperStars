@@ -11,10 +11,12 @@ public class ItemController : MonoBehaviour
 
     // Cantidad a colocar de props
     private int quantity = 1;
-    private LevelEditorManager editor; 
-    private OptionsSelector optionsSelector; 
+    public LevelEditorManager editor; 
+    public OptionsSelector optionsSelector; 
     public GameObject tempObject;
     private Renderer tempRend;
+    public Camera cameraReference;
+    private Vector2 worldPosition;
 
     // Escuchar cambios de estado de juego
     private void Awake() {
@@ -24,8 +26,14 @@ public class ItemController : MonoBehaviour
     // Encontrar al LevelEditorManager
     void Start()
     {
-        editor = GameObject.FindWithTag("LevelEditorManager").GetComponent<LevelEditorManager>();
-        optionsSelector = GameObject.FindWithTag("OptionsSelector").GetComponent<OptionsSelector>();
+        if (editor == null) { 
+            editor = GameObject.FindWithTag("LevelEditorManager").GetComponent<LevelEditorManager>();
+        }
+        
+        if (optionsSelector == null) {
+            optionsSelector = GameObject.FindWithTag("OptionsSelector").GetComponent<OptionsSelector>();
+        }
+        
     }
 
     // Función para designar la cantidad de props a colocar
@@ -45,7 +53,13 @@ public class ItemController : MonoBehaviour
         if(quantity > 0 ){
             // Encontrar posición para spawnear
             Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+            if (cameraReference != null) {
+                Debug.Log("IC: CameraReference is not null");
+                worldPosition = cameraReference.ScreenToWorldPoint(screenPosition);
+            } else {
+                worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+            }
+            
 
             // Instancia el objeto temporal
             tempObject = Instantiate(editor.ItemPrefabs[id], new Vector3(worldPosition.x, worldPosition.y,0), Quaternion.identity);
@@ -97,7 +111,12 @@ public class ItemController : MonoBehaviour
             if(tempObject != null){
                 // Seguir el mouse con el objeto fantasma
                 Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-                Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+                
+                if (cameraReference != null) {
+                    worldPosition = cameraReference.ScreenToWorldPoint(screenPosition);
+                } else {
+                    worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+                }
                 tempObject.transform.position = worldPosition;
 
                 // Al hacer clic con el mouse, aparecer el objeto si es colocable

@@ -4,22 +4,32 @@ using UnityEngine;
 using Unity.Netcode;
 
 // Controlador de prefabs de props para el modo edición
-public class LevelEditorManager : NetworkBehaviour
+public class LevelEditorManager : MonoBehaviour
 {
     // Referencia al itemController, controlador de los objetos fantasmas
-    [SerializeField] private ItemController itemController; 
+    public ItemController itemController; 
 
     // Referencia a props colocados
     public GameObject[] ItemPrefabs;
     public GameObject bombExplosion;
 
+    public Camera cameraReference;
+
     // Id de objeto seleccionado
     public int id;
+    private Vector2 worldPosition;
 
     // Aparecer Prop
     public void SpawnProp(){
         Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-        Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+        if (cameraReference != null) {
+            Debug.Log("LEM: CameraReference is not null");
+            worldPosition = cameraReference.ScreenToWorldPoint(screenPosition);
+        } else {
+            Debug.Log("LEM: CameraReference is null! AAAAAAAAAAAAAa");
+            worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+        }
+        
         if(itemController.tempObject != null){
             if(itemController.tempObject.tag != "Bomb"){
                 EditModeSpawnerServerRpc(worldPosition.x, worldPosition.y, id);
@@ -49,13 +59,13 @@ public class LevelEditorManager : NetworkBehaviour
     // Llamada a los clientes para spawnear el objeto como duplicado local
     [ClientRpc]
     void EditModeSpawnerClientRpc(float x, float y, int index){
-        if(!IsServer){
+        if(!NetworkManager.Singleton.IsServer){
             Instantiate(ItemPrefabs[index], new Vector3(x, y, 0), Quaternion.identity);
         }
     }
     [ClientRpc]
     void BombClientRpc(float x, float y){
-        if(!IsServer){
+        if(!NetworkManager.Singleton.IsServer){
             Instantiate(bombExplosion, new Vector3(x, y, 0), Quaternion.identity);
         }
     }

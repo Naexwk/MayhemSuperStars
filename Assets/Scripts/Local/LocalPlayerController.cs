@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using Unity.Netcode;
 using System;
@@ -6,9 +5,9 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using Unity.Collections;
 using System.Threading.Tasks;
+using UnityEngine.InputSystem;
 
-delegate void specialAbility();
-public class PlayerController : NetworkBehaviour
+public class LocalPlayerController : PlayerController
 {
     // Estadísticas del personaje
     private float char_playerSpeed = 8f;
@@ -18,32 +17,19 @@ public class PlayerController : NetworkBehaviour
     private int char_bulletDamage = 3;
 
     // Estadísticas de jugador actuales
-    public float playerSpeed;
     public float bulletSpeed;
-    public int maxHealth;
-    public int fireRate; // en disparos por segundo
-    public int bulletDamage;
-
-    public float aiPriority = 1;
 
     //Animacion
     [SerializeField] private RuntimeAnimatorController[] characterAnimators;
-    [SerializeField] private Animator animator;
 
     // Variables de control
-    public bool enableControl = false;
-    public float currentHealth;
     private float timeSinceLastFire;
-    public float abilityCooldown; // en segundos
-    public float timeSinceLastAbility;
     public int abilityDamage;
-    public  bool isInvulnerable;
     [SerializeField] private float invulnerabilityWindow;
     public bool sargeActive = false;
 
     // Variables de personaje
     public GameObject bubble;
-    public NetworkVariable<FixedString64Bytes> characterCode = new NetworkVariable<FixedString64Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     // public string characterCode = "cheeseman";
     specialAbility specAb;
 
@@ -51,11 +37,10 @@ public class PlayerController : NetworkBehaviour
     private Rigidbody2D rig;
 
     // Objetos de cámara
-    private Camera mainCamera;
+    [SerializeField] private Camera mainCamera;
     [SerializeField] private GameObject cameraTargetPrefab;
 
     // Objetos de Network
-    public ulong playerNumber;
     private GameObject bullethandler;
     [SerializeField] private GameObject prefabMenuManager;
 
@@ -69,8 +54,15 @@ public class PlayerController : NetworkBehaviour
 
     private GameManager gameManager;
 
+    // Input variables
+    private bool input_Shoot, input_Special;
+    private Vector2 input_Movement;
+
+    private int deviceID;
+    [SerializeField] private GameObject prefabCharSelCanvas;
+
     // Función para colorear objetos según el número del jugador
-    void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
+    public void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
         if (playerNumber == 0) {
             go.GetComponent<Renderer>().material.color = Color.red;
         }
@@ -85,31 +77,20 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    // Conseguir numero de jugador
-    public override void OnNetworkSpawn() {
-        base.OnNetworkSpawn();
-        DontDestroyOnLoad(this.gameObject);
-        playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
-        if (IsOwner) {
-            characterCode.Value = "cheeseman";
-        }
-    }
-
     // Inicializar controladores de jugador
     async void Start()
     {
+        deviceID = GetComponent<PlayerInput>().devices[0].deviceId;
+        GetComponent<NetworkObject>().Spawn();
+        playerNumber = Convert.ToUInt64(GameManager.numberOfPlayers.Value);
+        string name = "P" + (playerNumber+1);
         //bubble = transform.GetChild(0).gameObject;
+        DontDestroyOnLoad(this.gameObject);
         bubble.GetComponent<SpriteRenderer>().enabled = false;
         rig = gameObject.GetComponent<Rigidbody2D>();
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
-        mainCamera = Camera.main;
-        playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
-        if (IsOwner){
-            // Añadir nombre del jugador al server
-            GameObject relayManager = GameObject.FindWithTag("RelayManager");
-            string name = relayManager.GetComponent<LanBehaviour>().playerName;
-            AddPlayerServerRpc(name);
-        }
+        gameManager.AddPlayer(name);
+        GameObject relayManager = GameObject.FindWithTag("RelayManager");
 
         // DEV: Reañadir outline
         outline = gameObject.transform.GetChild(0).gameObject;
@@ -117,29 +98,22 @@ public class PlayerController : NetworkBehaviour
             // Inicializar como personaje default (cheeseman)
             await ChangeCharacter("cheeseman");
         }
-
-        // Recibir personajes de los jugadores que ya están en escena
-        GameObject[] players;
-        players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject player in players) {
-            PlayerController script = player.GetComponent<PlayerController>();
-            if (script.playerNumber != this.playerNumber) {
-                await script.ChangeCharacter(script.characterCode.Value.ToString());
-            }
-        }
+        
     }
 
     // Escuchar cambios de escena
     private void Awake() {
         SceneManager.sceneLoaded += OnSceneLoaded;
         GameManager.state.OnValueChanged += StateChange;
+        GameObject canvas;
+        canvas = Instantiate(prefabCharSelCanvas, new Vector3(0f,0f,0f), transform.rotation);
+        canvas.GetComponent<Canvas>().worldCamera = playerCamera;
     }
 
     // Ejecutar funciones de escena de juego
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "SampleScene") {
-            mainCamera = Camera.main;
             bullethandler = GameObject.FindWithTag("BulletHandler");
             if (IsOwner) {
                 animator.SetBool("dead", false);
@@ -165,17 +139,36 @@ public class PlayerController : NetworkBehaviour
                 this.isInvulnerable = false;
                 StopCoroutine(recordInvulnerabiltyFrames());
                 StartCoroutine(recordInvulnerabiltyFrames());
+                InputSystem.ResumeHaptics();
             } else {
                 gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
                 enableControl = false;
                 this.isInvulnerable = true;
+                InputSystem.ResetHaptics();
             }
         }
     }
 
+    // Input functions
+
+    public void OnMove(InputAction.CallbackContext context){
+        input_Movement = context.ReadValue<Vector2>();
+    }
+
+    public void OnShoot(InputAction.CallbackContext context){
+        input_Shoot = context.action.triggered;
+    }
+
+    public void OnSpecial(InputAction.CallbackContext context){
+        input_Special = context.action.triggered;
+    }
+
+    public void OnShootDirection(InputAction.CallbackContext context){
+        input_ShootDirection = context.ReadValue<Vector2>();
+    }
+
     void Update()
     {
-        //Debug.Log("xAim: " + Input.GetAxisRaw("Horizontal Aim") + ", yAim: " + Input.GetAxisRaw("Vertical Aim"));
         // Si no es dueño de este script o no está habilitado
         // el  control, ignorar
         
@@ -185,21 +178,21 @@ public class PlayerController : NetworkBehaviour
         }
 
         // Disparar con el clic izquierdo
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (input_Shoot)
         {
-            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 direction = worldMousePos - transform.position;
-            Shoot(direction);
-        }
-
-        if (Mathf.Abs(Input.GetAxisRaw("Horizontal Aim")) > 0.2f || Mathf.Abs(Input.GetAxisRaw("Vertical Aim")) > 0.2f)
-        {
-            Vector2 direction = new Vector2 (Input.GetAxisRaw("Horizontal Aim"), Input.GetAxisRaw("Vertical Aim"));
+            Vector2 direction;
+            if (GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard" || GetComponent<PlayerInput>().devices[0].ToString() == "Mouse:/Mouse") {
+                Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(input_ShootDirection);
+                direction = worldMousePos - transform.position;
+            } else {
+                direction = input_ShootDirection;
+            }
+            
             Shoot(direction);
         }
 
         // Usar habilidad especial con el clic derecho
-        if (Input.GetKey(KeyCode.Mouse1) || Input.GetAxisRaw("Special") != 0)
+        if (input_Special)
         {
             CastSpecialAbility();
         }
@@ -220,15 +213,11 @@ public class PlayerController : NetworkBehaviour
     private void Move(){
         // Obtener input de jugador
         // Escucha WASD y flechas
-        float xInput = Input.GetAxisRaw("Horizontal");
-        float yInput = Input.GetAxisRaw("Vertical");
-
-        // Mover según el input, normalizado
-        if (xInput == 0 || yInput == 0) {
-            rig.velocity = new Vector2(xInput * playerSpeed, yInput * playerSpeed);
-        } else {
-            rig.velocity = new Vector2(xInput * playerSpeed * 0.707f, yInput * playerSpeed* 0.707f);
-        }
+        Vector2 direction;
+        direction = input_Movement;
+        direction.Normalize();
+        direction = direction * playerSpeed;
+        rig.velocity = direction;
 
         // Añadir velocidad al animador según la velocidad
         animator.SetFloat("Speed", Mathf.Abs(rig.velocity.magnitude));
@@ -241,6 +230,9 @@ public class PlayerController : NetworkBehaviour
             direction.Normalize();
 
             // Disparar en red
+            if (bullethandler == null){
+                return;
+            }
             bullethandler.GetComponent<BulletHandler>().SpawnBulletServerRpc(bulletSpeed, direction, playerNumber, transform.position.x, transform.position.y);
 
             // Disparar a nivel local
@@ -271,12 +263,14 @@ public class PlayerController : NetworkBehaviour
     // Cheeseman: Aparece una bola de queso que daña a los enemigos
     private void CheesemanSA () {
         Vector2 direction;
-        if (Mathf.Abs(Input.GetAxisRaw("Horizontal Aim")) > 0.2f || Mathf.Abs(Input.GetAxisRaw("Vertical Aim")) > 0.2f)
-        {
-            direction = new Vector2 (Input.GetAxisRaw("Horizontal Aim"), Input.GetAxisRaw("Vertical Aim"));
-        } else {
-            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        if (GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard" || GetComponent<PlayerInput>().devices[0].ToString() == "Mouse:/Mouse") {
+            Vector3 worldMousePos = mainCamera.ScreenToWorldPoint(input_ShootDirection);
             direction = worldMousePos - transform.position;
+        } else {
+            direction = input_ShootDirection;
+            if (direction == Vector2.zero) {
+                return;
+            }
         }
         // Encontrar dirección de disparo
         
@@ -311,7 +305,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     // Función pública para hacer daño al jugador
-    public void GetHit(){
+    public override void GetHit(){
         // Si es invulnerable o no es propietario de este jugador, ignorar
         if (!IsOwner || isInvulnerable || this.sargeActive) {
             return;
@@ -321,12 +315,25 @@ public class PlayerController : NetworkBehaviour
         currentHealth -= 1;
         if (currentHealth <= 0) {
             Die();
+            if (Gamepad.current != null && Gamepad.current.deviceId == deviceID){
+                Gamepad.current.SetMotorSpeeds(0.10f, 0.25f);
+                StartCoroutine(handleRumble(1.5f));
+            }
         } else {
             animator.SetBool("takeDamage", true);
             StopCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordAnimatorHitFrames());
+            if (Gamepad.current != null && Gamepad.current.deviceId == deviceID){
+                Gamepad.current.SetMotorSpeeds(0.10f, 0.25f);
+                StartCoroutine(handleRumble(0.5f));
+            }
         }
+    }
+
+    IEnumerator handleRumble(float time){
+        yield return new WaitForSeconds(time);
+        Gamepad.current.SetMotorSpeeds(0f, 0f);
     }
 
     // Función para morir
@@ -372,7 +379,7 @@ public class PlayerController : NetworkBehaviour
     }
 
     // Función para respawnear al jugador
-    public void Respawn(){
+    public override void Respawn(){
         // Reiniciar estadísticas para reaplicar sponsors
         ResetStats();
         GetComponent<ItemManager>().applyItems();
@@ -422,7 +429,7 @@ public class PlayerController : NetworkBehaviour
 
     // Función para Despawnear
     // Usada para las fases de compra/edicion
-    public void Despawn(){
+    public override void Despawn(){
         // Enviar fuera de la vista de la cámara
         gameObject.transform.position = new Vector3(0f,100f,0f);
 
@@ -436,7 +443,7 @@ public class PlayerController : NetworkBehaviour
     // DEV: Reformular en un nuevo script para liberar espacio del PlayerController
 
     // Aparece una bala falsa local
-    public void SpawnFakeBullet(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y){
+    public override void SpawnFakeBullet(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y){
         if (IsOwner && playerNumber != _playerNumber) {
             GameObject clone;
             clone = Instantiate(bullethandler.GetComponent<BulletHandler>().prefabFakeBullet, new Vector3 (_x, _y, 0f), transform.rotation);
@@ -450,25 +457,13 @@ public class PlayerController : NetworkBehaviour
     // Aparece un objetivo de camara que sigue al jugador
     [ServerRpc(RequireOwnership = false)]
     public void SpawnCameraTargetServerRpc(ulong _playerNumber){
-        GameObject spawnCam;
-        spawnCam = Instantiate(cameraTargetPrefab, new Vector3(0f,0f,0f), transform.rotation);
-        spawnCam.GetComponent<NetworkObject>().SpawnWithOwnership(_playerNumber);
+
     }
 
     // Se ejecuta en todos los clientes
     // Le dota su objetivo a la cámara
     [ClientRpc]
-    public void StartCameraClientRpc(){
-        GameObject mainCam;
-        mainCam = GameObject.FindWithTag("MainCamera");
-        GameObject[] cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
-        foreach (GameObject cameraTarget in cameraTargets)
-        {
-            if(cameraTarget.GetComponent<NetworkObject>().IsOwner){
-                mainCam.GetComponent<CameraMovement>().SetCameraTarget(cameraTarget.transform);
-                cameraTarget.GetComponent<CameraTarget>().StartCam();
-            }
-        }
+    public override void StartCameraClientRpc(){
         
     }
 
@@ -479,7 +474,8 @@ public class PlayerController : NetworkBehaviour
         GameObject spawnMM;
         spawnMM = Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
         DontDestroyOnLoad(spawnMM);
-        spawnMM.GetComponent<NetworkObject>().SpawnWithOwnership(_playerNumber);
+        spawnMM.GetComponent<NetworkObject>().Spawn();
+        spawnMM.GetComponent<MenuManager>().myPlayer = this.gameObject;
     }
 
     // Se ejecuta en el servidor
@@ -493,7 +489,7 @@ public class PlayerController : NetworkBehaviour
         deadPlayers = GameObject.FindGameObjectsWithTag("Dead Player");
         // Buscar al jugador entre los jugadores vivos y actualizar su tag
         foreach (GameObject player in players) {
-            if (player.GetComponent<PlayerController>().playerNumber == _playerNumber) {
+            if (player.GetComponent<LocalPlayerController>().playerNumber == _playerNumber) {
                 if (isDead) {
                     player.tag = "Dead Player";
                 } else {
@@ -503,7 +499,7 @@ public class PlayerController : NetworkBehaviour
         }
         // Buscar al jugador entre los jugadores muertos y actualizar su tag
         foreach (GameObject deadplayer in deadPlayers) {
-            if (deadplayer.GetComponent<PlayerController>().playerNumber == _playerNumber) {
+            if (deadplayer.GetComponent<LocalPlayerController>().playerNumber == _playerNumber) {
                 if (isDead) {
                     deadplayer.tag = "Dead Player";
                 } else {
@@ -537,12 +533,13 @@ public class PlayerController : NetworkBehaviour
     // Añadir jugador a la lista del GameManager
     [ServerRpc(RequireOwnership = false)]
     private void AddPlayerServerRpc(string _name){
-        gameManager.GetComponent<GameManager>().AddPlayer(_name);
+        Debug.Log("rpc");
+        gameManager.AddPlayer(_name);
     }
 
     // Cambiar personaje del jugador
     // DEV: No, no estamos orgullosos de esta solución, pero se reformulará
-    public async Task ChangeCharacter(string _characterCode){
+    public override async Task ChangeCharacter(string _characterCode){
         characterCode.Value = _characterCode;
         if (_characterCode == "cheeseman") {
             animator.runtimeAnimatorController = characterAnimators[0];
@@ -580,10 +577,10 @@ public class PlayerController : NetworkBehaviour
     [ClientRpc]
     public void changeAnimatorClientRpc(ulong _playerNumber, int _characterAnimatorNumber){
         GameObject[] players;
-        PlayerController script;
+        LocalPlayerController script;
         players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject player in players) {
-            script = player.GetComponent<PlayerController>();
+            script = player.GetComponent<LocalPlayerController>();
             if (script.playerNumber == _playerNumber) {
                 script.animator.runtimeAnimatorController = characterAnimators[_characterAnimatorNumber];
             }

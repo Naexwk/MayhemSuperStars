@@ -37,9 +37,6 @@ public class GameManager : NetworkBehaviour
     public NetworkVariable<float> currentRoundTime = new NetworkVariable<float>();
     public NetworkVariable<float> currentLeaderboardTime = new NetworkVariable<float>();
     public NetworkVariable<float> currentPurchaseTime = new NetworkVariable<float>();
-
-    // Timer de rondas
-    private TMP_Text timeText;
     
     // CountdownUI Component
     private GameObject countdownUI;
@@ -75,7 +72,11 @@ public class GameManager : NetworkBehaviour
     public static NetworkVariable<bool> handleLeaderboard = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone);
 
     // Variable para acceder al animator del timer
-    private GameObject textMeshProObject;
+    
+    private GameObject[] textMeshProObject;
+
+    //private TMP_Text[] timeTextArray;
+    private List<TMP_Text> timeTextArray = new List<TMP_Text>();
 
     // Inicializar valores
     void Awake() {
@@ -96,6 +97,7 @@ public class GameManager : NetworkBehaviour
     void OnSceneEvent (SceneEvent sceneEvent) {
         if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted) {
             if (SceneManager.GetActiveScene().name == "SampleScene" && IsOwner){
+                FindTimerText();
                 gameStarted.Value = false;
                 UpdateGameState(GameState.LanConnection);
                 StartGame();
@@ -107,8 +109,18 @@ public class GameManager : NetworkBehaviour
     // Añadir jugador a la red
     public void AddPlayer(string name){
         numberOfPlayers.Value++;
+        Debug.Log(numberOfPlayers.Value);
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Add(name);
+        Debug.Log("Added name: " + name);
+    }
+
+    public void RemovePlayer(string name){
+        numberOfPlayers.Value--;
+        Debug.Log(numberOfPlayers.Value);
+        changedPlayers.Value = !changedPlayers.Value;
+        networkPlayerNames.Remove(name);
+        Debug.Log("Removed name: " + name);
     }
 
     public void ReadyPlay(){
@@ -230,8 +242,7 @@ public class GameManager : NetworkBehaviour
                     deadPlayers.Value = 0;
                 }
             }
-            // Encontrar el timer
-                TMP_Text timeText = FindTimerText();
+            foreach (TMP_Text timeText in timeTextArray) {
                 Material timeTextMaterial = timeText.materialForRendering;
                 //timeText.enableVertexGradient = false;
                 timeText.color = Color.white;
@@ -248,7 +259,9 @@ public class GameManager : NetworkBehaviour
                 // Cambiar el formato del texto al quedar menos 10 segundos
                 if(currentRoundTime.Value <= 10.6) 
                 {
-                    textMeshProObject.GetComponent<Animator>().Play("timerAnim");
+                    foreach (GameObject item in textMeshProObject){
+                        item.GetComponent<Animator>().Play("timerAnim");
+                    }
                     if (timeText != null) {
                         timeText.text = Mathf.Round(currentRoundTime.Value).ToString();
                         timeText.color = new Color(197f / 255f, 22f / 255f, 55f / 255f);
@@ -266,6 +279,7 @@ public class GameManager : NetworkBehaviour
                         roundSection.Value = false;
                     }
                 }
+            }
         } 
 
         // Lógica de leaderboard
@@ -295,16 +309,6 @@ public class GameManager : NetworkBehaviour
         // Lógica de fase de compra
         if (purchasePhase.Value)
         {
-            // Encontrar el timer
-            TMP_Text timeText = FindTimerText();
-            // Modificar el texto
-            timeText.fontSize = 60f;
-            Color colorOutline = new Color(49f / 255f, 49f / 255f, 49f / 255f);
-            Material timeTextMaterial = timeText.materialForRendering;
-            timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorOutline);
-            timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.5f);
-            timeText.color = Color.white;
-
             // Actualizar el tiempo de fase de compra
             if (IsOwner) { 
                 // CHANGE NEEDED HERE
@@ -316,21 +320,35 @@ public class GameManager : NetworkBehaviour
                 }
             }
 
-            // Actualizar el texto del timer
-            if (timeText != null) {
-                timeText.text = Mathf.Round(currentPurchaseTime.Value).ToString();
+            foreach (TMP_Text timeText in timeTextArray)
+            {
+                // Modificar el texto
+                timeText.fontSize = 60f;
+                Color colorOutline = new Color(49f / 255f, 49f / 255f, 49f / 255f);
+                Material timeTextMaterial = timeText.materialForRendering;
+                timeTextMaterial.SetColor(ShaderUtilities.ID_OutlineColor, colorOutline);
+                timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.5f);
+                timeText.color = Color.white;
+
+                
+
+                // Actualizar el texto del timer
+                if (timeText != null) {
+                    timeText.text = Mathf.Round(currentPurchaseTime.Value).ToString();
+                }
+                
+                // Cambiar a ronda de combate al acabarse el tiempo
+                if (currentPurchaseTime.Value <= 0)
+                {
+                    if (IsOwner) {
+                        purchasePhase.Value = false;
+                    }
+                    ResetValues();
+                    // Llamar al RPC
+                    CombatRound();
+                }
             }
             
-            // Cambiar a ronda de combate al acabarse el tiempo
-            if (currentPurchaseTime.Value <= 0)
-            {
-                if (IsOwner) {
-                    purchasePhase.Value = false;
-                }
-                ResetValues();
-                // Llamar al RPC
-                CombatRound();
-            }
         }
     }
 
@@ -464,47 +482,54 @@ public class GameManager : NetworkBehaviour
     }
 
     // Función para encontrar el timer
-    public TMP_Text FindTimerText()
+    public void FindTimerText()
     {
-        textMeshProObject = GameObject.FindWithTag("Timer");
-        if (textMeshProObject != null)
+        textMeshProObject = GameObject.FindGameObjectsWithTag("Timer");
+        
+        if (textMeshProObject.Length != 0)
         {
-            TMP_Text textMeshProComponent = textMeshProObject.GetComponent<TMP_Text>();
-            if (textMeshProComponent != null)
-            {
-                return textMeshProComponent;
+
+            foreach(GameObject tmpObject in textMeshProObject) {
+                timeTextArray.Add(tmpObject.GetComponent<TMP_Text>());
             }
-            else
+
+            if (timeTextArray.Count == 0)
             {
                 Debug.LogError("TextMeshPro component not found on the object with the 'Timer' tag.");
-                return null;
             }
         }
         else
         {
             Debug.LogError("GameObject with the 'Timer' tag not found.");
-            return null;
         }
     }
 
     IEnumerator Countdown(float time){
-        GameObject countdownUI = GameObject.FindWithTag("Countdown");
-        countdownUI.GetComponent<Animator>().Play("321goAnim");
+        GameObject[] countdownUIArray = GameObject.FindGameObjectsWithTag("Countdown");
+        foreach (GameObject countdownUI in countdownUIArray) {
+            countdownUI.GetComponent<Animator>().Play("321goAnim");
+        }
         yield return new WaitForSeconds(time);
-        foreach (Transform child in countdownUI.transform)
-        {
-            child.gameObject.SetActive(false);
+        foreach (GameObject countdownUI in countdownUIArray) {
+            foreach (Transform child in countdownUI.transform)
+            {
+                child.gameObject.SetActive(false);
+            }
         }
         GameManager.instance.UpdateGameState(GameState.Round);
     }
 
     IEnumerator TimesUp(float time){
-        GameObject countdownUI = GameObject.FindWithTag("Countdown");
-        countdownUI.GetComponent<Animator>().Play("countdownAnim");
+        GameObject[] countdownUIArray = GameObject.FindGameObjectsWithTag("Countdown");
+        foreach (GameObject countdownUI in countdownUIArray) {
+            countdownUI.GetComponent<Animator>().Play("countdownAnim");
+        }
         yield return new WaitForSeconds(time);
-        foreach (Transform child in countdownUI.transform)
-        {
-            child.gameObject.SetActive(false);
+        foreach (GameObject countdownUI in countdownUIArray) {
+            foreach (Transform child in countdownUI.transform)
+            {
+                child.gameObject.SetActive(false);
+            }
         }
         GameManager.instance.UpdateGameState(GameState.Leaderboard);
     }

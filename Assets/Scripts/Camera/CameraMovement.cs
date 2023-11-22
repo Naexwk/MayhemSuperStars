@@ -7,7 +7,7 @@ using Unity.Netcode;
 public class CameraMovement : NetworkBehaviour
 {
     // El objetivo de la cámara: el objeto que va a seguir
-    private Transform target;
+    [SerializeField] private Transform target;
 
     // Tiempo de suavizamiento de la cámara
    [SerializeField] private float smoothTime = 0.15f;
@@ -18,31 +18,41 @@ public class CameraMovement : NetworkBehaviour
 
     // Ejecutar la función changeZoomByGameState cada vez que cambie el estado de juego
     void Awake(){
-        GameManager.state.OnValueChanged += ChangeZoomByGameState;
+        if (this != null){
+            GameManager.state.OnValueChanged += ChangeZoomByGameState;
+        }
     }
 
     // Fijar objetivo de cámara
     public void SetCameraTarget(Transform _target){
-        target = _target;
+        if (this != null){
+            target = _target;
+        }
+        
     }
 
     // Moverse hacia el objetivo de cámara suavemente
     void FixedUpdate()
     {
-        if (target != null){
-            Vector3 targetPosition = target.TransformPoint(new Vector3(0, 0, -10));
-            transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
+        if (this != null){
+            if (target != null){
+                Vector3 targetPosition = target.TransformPoint(new Vector3(0, 0, -10));
+                transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
+            }
         }
+        
 
     }
 
     // Cambiar la visión de la cámara para ver al jugador de cerca durante la ronda,
     // o para ver todo el mapa en el resto de estados de juego.
     private void ChangeZoomByGameState(GameState prev, GameState curr){
-        if (curr == GameState.Round || curr == GameState.StartGame || curr == GameState.Countdown || curr== GameState.TimesUp) {
-            Camera.main.orthographicSize = 9;
-        } else {
-            Camera.main.orthographicSize = 17;
+        if (this != null){
+            if (curr == GameState.Round || curr == GameState.StartGame || curr == GameState.Countdown || curr== GameState.TimesUp) {
+                GetComponent<Camera>().orthographicSize = 9;
+            } else {
+                GetComponent<Camera>().orthographicSize = 17;
+            }
         }
     }
 }
