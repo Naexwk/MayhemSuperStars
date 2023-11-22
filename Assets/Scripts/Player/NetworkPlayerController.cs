@@ -166,10 +166,12 @@ public class NetworkPlayerController : PlayerController
                 this.isInvulnerable = false;
                 StopCoroutine(recordInvulnerabiltyFrames());
                 StartCoroutine(recordInvulnerabiltyFrames());
+                InputSystem.ResumeHaptics();
             } else {
                 gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
                 enableControl = false;
                 this.isInvulnerable = true;
+                InputSystem.ResetHaptics();
             }
         }
     }

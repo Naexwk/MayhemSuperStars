@@ -289,6 +289,17 @@ public class GameManager : NetworkBehaviour
         // Lógica de fase de compra
         if (purchasePhase.Value)
         {
+            // Actualizar el tiempo de fase de compra
+            if (IsOwner) { 
+                // CHANGE NEEDED HERE
+                if(done.Value == numberOfPlayers.Value){
+                    currentPurchaseTime.Value = 3.0f;
+                    done.Value = 0;
+                } else {
+                    currentPurchaseTime.Value -= Time.deltaTime;
+                }
+            }
+
             foreach (TMP_Text timeText in timeTextArray)
             {
                 // Modificar el texto
@@ -299,16 +310,7 @@ public class GameManager : NetworkBehaviour
                 timeTextMaterial.SetFloat(ShaderUtilities.ID_OutlineWidth, 0.5f);
                 timeText.color = Color.white;
 
-                // Actualizar el tiempo de fase de compra
-                if (IsOwner) { 
-                    // CHANGE NEEDED HERE
-                    if(done.Value == numberOfPlayers.Value){
-                        currentPurchaseTime.Value = 3.0f;
-                        done.Value = 0;
-                    } else {
-                        currentPurchaseTime.Value -= Time.deltaTime;
-                    }
-                }
+                
 
                 // Actualizar el texto del timer
                 if (timeText != null) {
