@@ -7,6 +7,8 @@ using Unity.Collections;
 using System.Threading.Tasks;
 using UnityEngine.InputSystem;
 
+using UnityEngine.InputSystem.UI;
+
 public class LocalPlayerController : PlayerController
 {
     // Estadísticas del personaje
@@ -57,7 +59,6 @@ public class LocalPlayerController : PlayerController
     // Input variables
     private bool input_Shoot, input_Special;
     private Vector2 input_Movement;
-
     private int deviceID;
     [SerializeField] private GameObject prefabCharSelCanvas;
 
@@ -80,9 +81,15 @@ public class LocalPlayerController : PlayerController
     // Inicializar controladores de jugador
     async void Start()
     {
+        
         deviceID = GetComponent<PlayerInput>().devices[0].deviceId;
+        GetComponent<VirtualCursor>().thisDeviceId = deviceID;
         GetComponent<NetworkObject>().Spawn();
         playerNumber = Convert.ToUInt64(GameManager.numberOfPlayers.Value);
+        //gameObject.transform.position = spawnPositions[Convert.ToInt32(playerNumber)];
+        if (GetComponent<VirtualCursor>() != null) {
+            GetComponent<VirtualCursor>().playerNumber = Convert.ToInt32(this.playerNumber);
+        }
         string name = "P" + (playerNumber+1);
         //bubble = transform.GetChild(0).gameObject;
         DontDestroyOnLoad(this.gameObject);
@@ -103,11 +110,14 @@ public class LocalPlayerController : PlayerController
 
     // Escuchar cambios de escena
     private void Awake() {
+        GameObject eventSystem = GameObject.FindWithTag("EventSystem");
+        //GetComponent<PlayerInput>().uiInputModule  = eventSystem.GetComponent<InputSystemUIInputModule>();
         SceneManager.sceneLoaded += OnSceneLoaded;
         GameManager.state.OnValueChanged += StateChange;
         GameObject canvas;
         canvas = Instantiate(prefabCharSelCanvas, new Vector3(0f,0f,0f), transform.rotation);
         canvas.GetComponent<Canvas>().worldCamera = playerCamera;
+        GetComponent<MultiplayerEventSystem>().playerRoot = canvas;
     }
 
     // Ejecutar funciones de escena de juego
@@ -135,6 +145,8 @@ public class LocalPlayerController : PlayerController
             }
 
             if (curr == GameState.Round || curr == GameState.StartGame) {
+                GetComponent<VirtualCursor>().stopRecordingInput = true;
+                GetComponent<VirtualCursor>().cursorTransform.gameObject.SetActive(false);
                 timeSinceLastAbility = Time.time - abilityCooldown;
                 this.isInvulnerable = false;
                 StopCoroutine(recordInvulnerabiltyFrames());
@@ -145,6 +157,13 @@ public class LocalPlayerController : PlayerController
                 enableControl = false;
                 this.isInvulnerable = true;
                 InputSystem.ResetHaptics();
+                if (curr == GameState.PurchasePhase || curr == GameState.WinScreen) {
+                    GetComponent<VirtualCursor>().stopRecordingInput = false;
+                    GetComponent<VirtualCursor>().cursorTransform.gameObject.SetActive(true);
+                } else {
+                    GetComponent<VirtualCursor>().stopRecordingInput = true;
+                    GetComponent<VirtualCursor>().cursorTransform.gameObject.SetActive(false);
+                }
             }
         }
     }
@@ -165,6 +184,11 @@ public class LocalPlayerController : PlayerController
 
     public void OnShootDirection(InputAction.CallbackContext context){
         input_ShootDirection = context.ReadValue<Vector2>();
+    }
+
+    public void OnUIClick(InputAction.CallbackContext context){
+        input_UiClick = context.action.triggered;
+        Debug.Log("input Click > " + input_UiClick);
     }
 
     void Update()
@@ -476,6 +500,7 @@ public class LocalPlayerController : PlayerController
         DontDestroyOnLoad(spawnMM);
         spawnMM.GetComponent<NetworkObject>().Spawn();
         spawnMM.GetComponent<MenuManager>().myPlayer = this.gameObject;
+        GetComponent<MultiplayerEventSystem>().playerRoot = null;
     }
 
     // Se ejecuta en el servidor

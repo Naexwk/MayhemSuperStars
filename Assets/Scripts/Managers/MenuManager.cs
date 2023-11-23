@@ -113,7 +113,6 @@ public class MenuManager : NetworkBehaviour
                     
                     // Encontrar cameraTarget local
                     if (myPlayerScript.cameraTarget != null) {
-                        Debug.Log("XDDD");
                         myCameraTarget = myPlayerScript.cameraTarget;
                     } else {
                         cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
@@ -200,7 +199,7 @@ public class MenuManager : NetworkBehaviour
     }
 
     private void ItemControllerHelper (int id) {
-        itemController.StartNewPlacement(id);
+        itemController.StartNewPlacement(id, myPlayer);
     }
 
     // Seleccionar sponsors

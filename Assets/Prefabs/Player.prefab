@@ -554,6 +554,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bf80d4517b317846a98fe24f1c2a692, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerCamera: {fileID: 0}
+  cameraTarget: {fileID: 0}
   aiPriority: 1
   maxHealth: 0
   currentHealth: 6

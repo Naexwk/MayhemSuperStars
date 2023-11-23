@@ -66,7 +66,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chosenPlayer: {fileID: 0}
-  lockOnPlayer: 1
+  lockOnPlayer: 0
   mainCamera: {fileID: 0}
   verticalOffset: 1
   horizontalOffset: 3

@@ -36,6 +36,7 @@ public class CameraTarget : NetworkBehaviour
     // Escuchar los cambios de escena
     void Awake(){
         SceneManager.sceneLoaded += OnSceneLoaded;
+        
     }
 
     // Destruir este objeto al llegar a la escena GameRoom
