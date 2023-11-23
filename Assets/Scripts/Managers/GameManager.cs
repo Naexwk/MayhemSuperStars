@@ -109,18 +109,14 @@ public class GameManager : NetworkBehaviour
     // Añadir jugador a la red
     public void AddPlayer(string name){
         numberOfPlayers.Value++;
-        Debug.Log(numberOfPlayers.Value);
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Add(name);
-        Debug.Log("Added name: " + name);
     }
 
     public void RemovePlayer(string name){
         numberOfPlayers.Value--;
-        Debug.Log(numberOfPlayers.Value);
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Remove(name);
-        Debug.Log("Removed name: " + name);
     }
 
     public void ReadyPlay(){

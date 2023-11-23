@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
+using UnityEngine.InputSystem;
+
 // Controlador de prefabs de props para el modo edición
 public class LevelEditorManager : MonoBehaviour
 {
@@ -18,10 +20,16 @@ public class LevelEditorManager : MonoBehaviour
     // Id de objeto seleccionado
     public int id;
     private Vector2 worldPosition;
+    private Vector2 screenPosition;
 
     // Aparecer Prop
     public void SpawnProp(){
-        Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        if (itemController.playerObject.GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard" || itemController.playerObject.GetComponent<PlayerInput>().devices[0].ToString() == "Mouse:/Mouse") {
+            screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        } else {
+            screenPosition = itemController.playerObject.GetComponent<VirtualCursor>().virtualMouse.position.ReadValue();
+        }
+
         if (cameraReference != null) {
             Debug.Log("LEM: CameraReference is not null");
             worldPosition = cameraReference.ScreenToWorldPoint(screenPosition);

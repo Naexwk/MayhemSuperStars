@@ -18,7 +18,6 @@ public class UI_Menu_ButtonAnimation : MonoBehaviour, IPointerEnterHandler, IPoi
     // Al hacer hover sobre un botón, animar y cambiar su sprite
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log(AnimationHover);
         GetComponent<Animator>().Play(AnimationHover);
         transform.GetComponent<Image>().sprite = spriteHover;
     }
@@ -26,7 +25,6 @@ public class UI_Menu_ButtonAnimation : MonoBehaviour, IPointerEnterHandler, IPoi
     // Al hacer hover sobre un botón, animar y cambiar su sprite
     public void OnPointerExit(PointerEventData eventData)
     {
-        Debug.Log(AnimationHoverExit);
         GetComponent<Animator>().Play(AnimationHoverExit);
         transform.GetComponent<Image>().sprite = sprite;
     }
