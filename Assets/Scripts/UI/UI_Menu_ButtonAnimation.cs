@@ -16,12 +16,10 @@ public class UI_Menu_ButtonAnimation : MonoBehaviour, IPointerEnterHandler, IPoi
     [SerializeField] private string AnimationHoverExit;
 
     public void Selection(){
-        Debug.Log(AnimationHover);
         GetComponent<Animator>().Play(AnimationHover);
         transform.GetComponent<Image>().sprite = spriteHover;
     }
     public void DeSelection(){
-        Debug.Log(AnimationHoverExit);
         GetComponent<Animator>().Play(AnimationHoverExit);
         transform.GetComponent<Image>().sprite = sprite;
     }

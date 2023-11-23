@@ -61,6 +61,7 @@ public class LocalPlayerController : PlayerController
     private Vector2 input_Movement;
     private int deviceID;
     [SerializeField] private GameObject prefabCharSelCanvas;
+    Gamepad gamepadSearcher;
 
     // Función para colorear objetos según el número del jugador
     public void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
@@ -81,9 +82,10 @@ public class LocalPlayerController : PlayerController
     // Inicializar controladores de jugador
     async void Start()
     {
-        
+        gameObject.transform.position = spawnPositions[Convert.ToInt32(playerNumber)];
         deviceID = GetComponent<PlayerInput>().devices[0].deviceId;
         GetComponent<VirtualCursor>().thisDeviceId = deviceID;
+        GetComponent<VirtualCursor>().SetMyGamepad();
         GetComponent<NetworkObject>().Spawn();
         playerNumber = Convert.ToUInt64(GameManager.numberOfPlayers.Value);
         //gameObject.transform.position = spawnPositions[Convert.ToInt32(playerNumber)];
@@ -188,7 +190,6 @@ public class LocalPlayerController : PlayerController
 
     public void OnUIClick(InputAction.CallbackContext context){
         input_UiClick = context.action.triggered;
-        Debug.Log("input Click > " + input_UiClick);
     }
 
     void Update()
@@ -337,27 +338,36 @@ public class LocalPlayerController : PlayerController
 
         // Hacer daño y dar invulnerabilidad o morir
         currentHealth -= 1;
+
+        
+        
+        foreach (Gamepad gpd in Gamepad.all){
+            if (gpd.deviceId == deviceID) {
+                gamepadSearcher = gpd;
+            }
+        }
+
         if (currentHealth <= 0) {
             Die();
-            if (Gamepad.current != null && Gamepad.current.deviceId == deviceID){
-                Gamepad.current.SetMotorSpeeds(0.10f, 0.25f);
-                StartCoroutine(handleRumble(1.5f));
+            if (gamepadSearcher != null){
+                gamepadSearcher.SetMotorSpeeds(0.10f, 0.25f);
+                StartCoroutine(handleRumble(1.5f,gamepadSearcher));
             }
         } else {
             animator.SetBool("takeDamage", true);
             StopCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordInvulnerabiltyFrames());
             StartCoroutine(recordAnimatorHitFrames());
-            if (Gamepad.current != null && Gamepad.current.deviceId == deviceID){
-                Gamepad.current.SetMotorSpeeds(0.10f, 0.25f);
-                StartCoroutine(handleRumble(0.5f));
+            if (gamepadSearcher != null){
+                gamepadSearcher.SetMotorSpeeds(0.10f, 0.25f);
+                StartCoroutine(handleRumble(0.5f,gamepadSearcher));
             }
         }
     }
 
-    IEnumerator handleRumble(float time){
+    IEnumerator handleRumble(float time, Gamepad gpd){
         yield return new WaitForSeconds(time);
-        Gamepad.current.SetMotorSpeeds(0f, 0f);
+        gpd.SetMotorSpeeds(0f, 0f);
     }
 
     // Función para morir
@@ -558,7 +568,6 @@ public class LocalPlayerController : PlayerController
     // Añadir jugador a la lista del GameManager
     [ServerRpc(RequireOwnership = false)]
     private void AddPlayerServerRpc(string _name){
-        Debug.Log("rpc");
         gameManager.AddPlayer(_name);
     }
 

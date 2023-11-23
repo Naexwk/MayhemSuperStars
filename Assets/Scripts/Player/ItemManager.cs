@@ -35,6 +35,7 @@ public class ItemManager : NetworkBehaviour
     // y los sponsors deberían aplicarse cada ronda.
     public void applyItems () {
         if (IsOwner) {
+            StopAllCoroutines();
             for (int i = 0; i <= obtainedItemsNumber; i++) {
                 itemInventory[i]();
             }
@@ -112,8 +113,15 @@ public class ItemManager : NetworkBehaviour
 
     // (7) Vampire: Cada que golpeas a un enemigo, hay una probabilidad de recuperar vida
     void Vampire () {
-        // No hace nada chsm
+        StartCoroutine(VampireCoroutine());
     }
 
+    IEnumerator VampireCoroutine(){
+        yield return new WaitForSeconds(10f);
+        if (!((GetComponent<PlayerController>().currentHealth + 1) > GetComponent<PlayerController>().maxHealth)) {
+            GetComponent<PlayerController>().currentHealth++;
+        }
+        StartCoroutine(VampireCoroutine());
+    }
 
 }

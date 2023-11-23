@@ -11,12 +11,12 @@ public class CharacterSelectManuManager : NetworkBehaviour
     }
     void Update()
     {
-        if(gm.readyPlay.Value == GameManager.numberOfPlayers.Value){
-            if(IsServer){
+        if(gm.readyPlay.Value >= GameManager.numberOfPlayers.Value){
+            if(NetworkManager.Singleton.IsServer){
                 startGameUI.SetActive(true);
             }
         }else{
-            if(IsServer){
+            if(NetworkManager.Singleton.IsServer){
                 startGameUI.SetActive(false);
             }
         }

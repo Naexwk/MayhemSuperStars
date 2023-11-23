@@ -20,6 +20,7 @@ public class Catnado : NetworkBehaviour
         GameManager.state.OnValueChanged += StateChange;
         bullethandler = GameObject.FindWithTag("BulletHandler");
         startingPos = transform.position;
+        transform.rotation = Quaternion.Euler(-90f,0f,0f);
     }
 
     void Start () {

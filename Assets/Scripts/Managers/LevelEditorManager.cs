@@ -31,10 +31,8 @@ public class LevelEditorManager : MonoBehaviour
         }
 
         if (cameraReference != null) {
-            Debug.Log("LEM: CameraReference is not null");
             worldPosition = cameraReference.ScreenToWorldPoint(screenPosition);
         } else {
-            Debug.Log("LEM: CameraReference is null! AAAAAAAAAAAAAa");
             worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
         }
         

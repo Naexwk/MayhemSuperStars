@@ -25,6 +25,7 @@ public class VirtualCursor : MonoBehaviour
     //Vector2 cursorInput;
     public int thisDeviceId;
     public bool stopRecordingInput = false;
+    Gamepad myGamepad;
 
     private void OnEnable() {
         if (playerInput.user.controlScheme.ToString() != "Keyboard(<Keyboard>,<Mouse>)") {
@@ -47,6 +48,17 @@ public class VirtualCursor : MonoBehaviour
         } else {
             cursorTransform.gameObject.SetActive(false);
         }
+
+        
+
+    }
+
+    public void SetMyGamepad(){
+        foreach (Gamepad gpd in Gamepad.all){
+            if (gpd.deviceId == thisDeviceId) {
+                myGamepad = gpd;
+            }
+        }
     }
 
     private void OnDisable() {
@@ -55,11 +67,11 @@ public class VirtualCursor : MonoBehaviour
     }
 
     private void UpdateMotion() {
-        if (virtualMouse == null || Gamepad.current == null || Gamepad.current.deviceId != thisDeviceId || stopRecordingInput){
+        if (virtualMouse == null || myGamepad == null || stopRecordingInput){
             return;
         }
 
-        Vector2 deltaValue = Gamepad.current.leftStick.ReadValue();
+        Vector2 deltaValue = myGamepad.leftStick.ReadValue();
         //Vector2 deltaValue = cursorInput;
         deltaValue *= cursorSpeed * Time.deltaTime;
 
@@ -74,13 +86,13 @@ public class VirtualCursor : MonoBehaviour
         InputState.Change(virtualMouse.position, newPosition);
         InputState.Change(virtualMouse.delta, deltaValue);
 
-        bool aButtonIsPressed = Gamepad.current.aButton.IsPressed();
+        /*bool aButtonIsPressed = myGamepad.aButton.IsPressed();
         if (previousMouseState != aButtonIsPressed){
             virtualMouse.CopyState<MouseState>(out var mouseState);
-            mouseState.WithButton(MouseButton.Left, Gamepad.current.aButton.IsPressed());
+            mouseState.WithButton(MouseButton.Left, myGamepad.aButton.IsPressed());
             InputState.Change(virtualMouse, mouseState);
             previousMouseState = aButtonIsPressed;
-        }
+        }*/
 
         AnchorCursor(newPosition);
     }
