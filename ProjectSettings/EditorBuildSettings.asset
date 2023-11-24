@@ -19,8 +19,8 @@ EditorBuildSettings:
     guid: 9caf9690b37d11a4f8360f6e06296c98
   - enabled: 1
     path: Assets/Scenes/LocalGameRoom.unity
-    guid: b8584d9475b4d484b818bd8aa96a3aef
-  - enabled: 1
+    guid: 0117247d5119c1540816dd59aaaefc5b
+  - enabled: 0
     path: Assets/Scenes/LocalGameScene.unity
     guid: 8c115a0c81d62d144b00945d02cbaea5
   m_configObjects: {}

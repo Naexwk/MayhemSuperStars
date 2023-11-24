@@ -168,6 +168,7 @@ public class GameManager : NetworkBehaviour
         foreach (GameObject player in players)
         {
             playerPoints[Convert.ToInt32(player.GetComponent<PlayerController>().playerNumber)] += pointsToDistribute;
+            playerPoints[Convert.ToInt32(player.GetComponent<PlayerController>().playerNumber)] += (int)((player.GetComponent<PlayerController>().currentHealth/player.GetComponent<PlayerController>().maxHealth) * (2.5*numberOfPlayers.Value));
         }
 
         // Enviar los puntos de cada jugador a la red a través de networkPoints

@@ -18,5 +18,10 @@ public class enemyBulletScript : MonoBehaviour
             collision.gameObject.GetComponent<PlayerController>().GetHit();
             Destroy(this.gameObject);
         }
+
+        if (collision.gameObject.tag == "PlayerBullet" && collision.gameObject.GetComponent<CheeseBullet>() != null)
+        {
+            Destroy(this.gameObject);
+        }
     }
 }

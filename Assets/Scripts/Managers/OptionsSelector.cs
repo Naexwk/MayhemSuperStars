@@ -175,9 +175,9 @@ public class OptionsSelector : MonoBehaviour
             }
         }
 
-        if ((UnityEngine.Random.Range(0, 10) + 1) > gameManager.currentRound) {
+        /*if ((UnityEngine.Random.Range(0, 10) + 1) > gameManager.currentRound) {
             lists[UnityEngine.Random.Range(0, 3)] = 0;
-        }
+        }*/
 
         int[] usedLists = new int[3] {-1,-1,-1};
         int index = 0;
@@ -247,6 +247,7 @@ public class OptionsSelector : MonoBehaviour
         // Hardcodeado para volver a defaults
         // Eliminar ya que existan los objetos
         /*
+        
         propOptions[1] = propDefaults[1];
         propOptions[2] = propDefaults[2];
         sponsorOptions[0] = 1;

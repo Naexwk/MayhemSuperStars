@@ -22,7 +22,6 @@ public class NametagController : MonoBehaviour
                     int index = (int)players.GetComponent<PlayerController>().playerNumber;
                     nametagname.text = gameManager.networkPlayerNames[index].ToString();
                     nametagname.color = colors[index];
-                    Debug.Log(players.GetComponent<PlayerController>().playerNumber.ToString());
                 }
             }
         }

@@ -61,17 +61,17 @@ public class ItemManager : NetworkBehaviour
 
     // (2) Fosfofosfo: Añade velocidad
     void Fosfofosfo () {
-        gameObject.GetComponent<PlayerController>().playerSpeed += 1;
+        gameObject.GetComponent<PlayerController>().playerSpeed += 2;
     }
 
     // (3) Cheese: Añade daño
     void Cheese () {
-        gameObject.GetComponent<PlayerController>().bulletDamage += 1;
+        gameObject.GetComponent<PlayerController>().bulletDamage += 2;
     }
 
     // (4) Testosterone: Mejora el fireRate
     void Testosterone () {
-        gameObject.GetComponent<PlayerController>().fireRate += 1;
+        gameObject.GetComponent<PlayerController>().fireRate += 2;
     }
 
     // (5) Rugileo y Pepsi: Hace crecer al jugador, aumenta su daño y vida
@@ -82,7 +82,7 @@ public class ItemManager : NetworkBehaviour
         } else {
             gameObject.GetComponent<PlayerController>().playerCamera.orthographicSize += 1;
         }
-        gameObject.GetComponent<PlayerController>().bulletDamage += 1;
+        gameObject.GetComponent<PlayerController>().bulletDamage += 3;
         gameObject.GetComponent<PlayerController>().maxHealth += 2;
         gameObject.GetComponent<PlayerController>().currentHealth += 2;
         if (IsOwner) {
@@ -118,7 +118,7 @@ public class ItemManager : NetworkBehaviour
 
     IEnumerator VampireCoroutine(){
         yield return new WaitForSeconds(10f);
-        if (!((GetComponent<PlayerController>().currentHealth + 1) > GetComponent<PlayerController>().maxHealth)) {
+        if (!((GetComponent<PlayerController>().currentHealth + 1) > GetComponent<PlayerController>().maxHealth) && gameObject.tag != "Dead Player") {
             GetComponent<PlayerController>().currentHealth++;
         }
         StartCoroutine(VampireCoroutine());

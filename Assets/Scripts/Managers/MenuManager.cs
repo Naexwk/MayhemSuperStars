@@ -125,10 +125,7 @@ public class MenuManager : NetworkBehaviour
                 }
 
                 if (uiHelper.lem != null) {
-                    Debug.Log("LEM 1: " + uiHelper.lem.cameraReference);
                     uiHelper.lem.cameraReference = myPlayerScript.playerCamera;
-                    Debug.Log("Player XD: " + myPlayerScript.playerCamera);
-                    Debug.Log("LEM 2: " +uiHelper.lem.cameraReference);
                     if (uiHelper.itemController != null) { 
                         uiHelper.lem.itemController = uiHelper.itemController;
                     }

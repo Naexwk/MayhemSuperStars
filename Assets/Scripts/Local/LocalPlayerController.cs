@@ -82,7 +82,6 @@ public class LocalPlayerController : PlayerController
     // Inicializar controladores de jugador
     async void Start()
     {
-        gameObject.transform.position = spawnPositions[Convert.ToInt32(playerNumber)];
         deviceID = GetComponent<PlayerInput>().devices[0].deviceId;
         GetComponent<VirtualCursor>().thisDeviceId = deviceID;
         GetComponent<VirtualCursor>().SetMyGamepad();
@@ -155,6 +154,7 @@ public class LocalPlayerController : PlayerController
                 StartCoroutine(recordInvulnerabiltyFrames());
                 InputSystem.ResumeHaptics();
             } else {
+                animator.SetFloat("Speed", 0f);
                 gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
                 enableControl = false;
                 this.isInvulnerable = true;
@@ -196,7 +196,6 @@ public class LocalPlayerController : PlayerController
     {
         // Si no es dueño de este script o no está habilitado
         // el  control, ignorar
-        
 
         if (!IsOwner || !enableControl) {
             return;
@@ -258,11 +257,12 @@ public class LocalPlayerController : PlayerController
             if (bullethandler == null){
                 return;
             }
-            bullethandler.GetComponent<BulletHandler>().SpawnBulletServerRpc(bulletSpeed, direction, playerNumber, transform.position.x, transform.position.y);
+            //bullethandler.GetComponent<BulletHandler>().SpawnBulletServerRpc(bulletSpeed, direction, playerNumber, transform.position.x, transform.position.y);
 
             // Disparar a nivel local
             GameObject clone;
             clone = Instantiate(bullethandler.GetComponent<BulletHandler>().prefabBullet, transform.position, transform.rotation);
+            Physics2D.IgnoreCollision(GetComponent<CapsuleCollider2D>(), clone.GetComponent<CircleCollider2D>());
             clone.GetComponent<PlayerBullet>().bulletDamage = bulletDamage;
             clone.GetComponent<PlayerBullet>().bulletSpeed = bulletSpeed;
             clone.GetComponent<PlayerBullet>().bulletDirection = direction;
@@ -310,11 +310,15 @@ public class LocalPlayerController : PlayerController
 
     // Sarge: Hacer invulnerable por 5 segundos
     private void SargeSA () {
-            animator.SetBool("takeDamage", true);
-            StartCoroutine(invincibleSarge());
-            StartCoroutine(recordAnimatorHitFrames());
-            timeSinceLastAbility = Time.time;
+        if (isInvulnerable) {
+            return;
+        }
 
+        currentHealth -= 1;
+        GetHit();
+        StartCoroutine(invincibleSarge());
+        StartCoroutine(recordAnimatorHitFrames());
+        timeSinceLastAbility = Time.time;
     }
 
     // Función de conteo de invulnerabilidad para la habilidad especial de Sarge

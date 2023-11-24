@@ -238,6 +238,8 @@ MonoBehaviour:
   alertLight: {fileID: 1162052405351543886}
   canonGun: {fileID: 7383287973357036184}
   shootPoint: {fileID: 3275233722309896812}
+  turretSmoke: {fileID: 3872118962372284511, guid: 0489d0e8a78ed05499347a5a59b283b6, type: 3}
+  turretHit: {fileID: 6510522552706586842, guid: 093bf8d7656b5f545b1df3c0cff3625e, type: 3}
   distanceThreshold: 15
   fireRate: 0.5
   force: 500
