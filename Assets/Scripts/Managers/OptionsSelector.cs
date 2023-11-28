@@ -175,9 +175,9 @@ public class OptionsSelector : MonoBehaviour
             }
         }
 
-        /*if ((UnityEngine.Random.Range(0, 10) + 1) > gameManager.currentRound) {
-            lists[UnityEngine.Random.Range(0, 3)] = 0;
-        }*/
+        if ((UnityEngine.Random.Range(0, 10) + 1) > gameManager.currentRound) {
+            lists[0] = 0;
+        }
 
         int[] usedLists = new int[3] {-1,-1,-1};
         int index = 0;

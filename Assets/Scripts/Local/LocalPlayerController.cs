@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using Unity.Collections;
 using System.Threading.Tasks;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 using UnityEngine.InputSystem.UI;
 
@@ -62,6 +63,8 @@ public class LocalPlayerController : PlayerController
     private int deviceID;
     [SerializeField] private GameObject prefabCharSelCanvas;
     Gamepad gamepadSearcher;
+    private bool isDashing = false;
+    private Vector2 sleekDirection;
 
     // Función para colorear objetos según el número del jugador
     public void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
@@ -82,22 +85,27 @@ public class LocalPlayerController : PlayerController
     // Inicializar controladores de jugador
     async void Start()
     {
+        
+        playerNumber = Convert.ToUInt64(GameManager.numberOfPlayers.Value);
+        string name = "P" + (playerNumber+1);
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+        gameManager.AddPlayer(name);
+        
         deviceID = GetComponent<PlayerInput>().devices[0].deviceId;
         GetComponent<VirtualCursor>().thisDeviceId = deviceID;
         GetComponent<VirtualCursor>().SetMyGamepad();
         GetComponent<NetworkObject>().Spawn();
-        playerNumber = Convert.ToUInt64(GameManager.numberOfPlayers.Value);
+        
         //gameObject.transform.position = spawnPositions[Convert.ToInt32(playerNumber)];
         if (GetComponent<VirtualCursor>() != null) {
             GetComponent<VirtualCursor>().playerNumber = Convert.ToInt32(this.playerNumber);
         }
-        string name = "P" + (playerNumber+1);
+        
         //bubble = transform.GetChild(0).gameObject;
         DontDestroyOnLoad(this.gameObject);
         bubble.GetComponent<SpriteRenderer>().enabled = false;
         rig = gameObject.GetComponent<Rigidbody2D>();
-        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
-        gameManager.AddPlayer(name);
+        
         GameObject relayManager = GameObject.FindWithTag("RelayManager");
 
         // DEV: Reañadir outline
@@ -106,6 +114,8 @@ public class LocalPlayerController : PlayerController
             // Inicializar como personaje default (cheeseman)
             await ChangeCharacter("cheeseman");
         }
+
+        
         
     }
 
@@ -133,7 +143,6 @@ public class LocalPlayerController : PlayerController
                 SpawnCameraTargetServerRpc(playerNumber);
                 SpawnMenuManagerServerRpc(playerNumber);
             }
-            
         }
     }
 
@@ -220,13 +229,14 @@ public class LocalPlayerController : PlayerController
         {
             CastSpecialAbility();
         }
+
         
     }
 
     private void FixedUpdate(){
         // Si no es dueño de este script o no está habilitado
         // el  control, ignorar
-        if (!IsOwner || !enableControl) {
+        if (!IsOwner || !enableControl || isDashing) {
             return;
         }
 
@@ -297,8 +307,8 @@ public class LocalPlayerController : PlayerController
                 return;
             }
         }
+
         // Encontrar dirección de disparo
-        
         direction.Normalize();
 
         // Instanciar bala en red
@@ -331,6 +341,43 @@ public class LocalPlayerController : PlayerController
         yield return new WaitForSeconds(5);
         this.sargeActive = false;
         bubble.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    private void SleekSA(){
+        Vector2 direction = input_Movement;
+        // Encontrar dirección de disparo
+        direction.Normalize();
+
+        RaycastHit2D[] hits;
+        hits = Physics2D.RaycastAll(transform.position, direction, 5.35f);
+        foreach (RaycastHit2D hit in hits)
+        {
+            if (hit.collider.tag == "MapBorders")
+            {
+                return;
+            }    
+        }
+
+        sleekDirection = direction;
+        rig.AddForce(sleekDirection * 30f, ForceMode2D.Impulse);
+        StartCoroutine(SleekTimer());
+        StopCoroutine(recordInvulnerabiltyFrames());
+        StartCoroutine(SleekInvulnerability());
+        timeSinceLastAbility = Time.time;
+    }
+
+    IEnumerator SleekTimer(){
+        GetComponent<CapsuleCollider2D>().enabled = false;
+        isDashing = true;
+        yield return new WaitForSeconds(0.125f);
+        isDashing = false;
+        GetComponent<CapsuleCollider2D>().enabled = true;
+    }
+
+    IEnumerator SleekInvulnerability(){
+        this.isInvulnerable = true;
+        yield return new WaitForSeconds(1f);
+        this.isInvulnerable = false;
     }
 
     // Función pública para hacer daño al jugador
@@ -586,7 +633,7 @@ public class LocalPlayerController : PlayerController
             char_maxHealth = 6;
             char_fireRate = 3; // en disparos por segundo
             char_bulletDamage = 3;
-            abilityCooldown = 5;
+            abilityCooldown = 5f;
             specAb = new specialAbility(CheesemanSA);
             changeAnimatorServerRpc(playerNumber, 0);
             await Task.Yield();
@@ -601,6 +648,18 @@ public class LocalPlayerController : PlayerController
             abilityCooldown = 15;
             specAb = new specialAbility(SargeSA);
             changeAnimatorServerRpc(playerNumber, 1);
+            await Task.Yield();
+        }
+        if (_characterCode == "sleek") {
+            animator.runtimeAnimatorController = characterAnimators[0];
+            char_playerSpeed = 10f;
+            char_bulletSpeed = 30f;
+            char_maxHealth = 2;
+            char_fireRate = 3; // en disparos por segundo
+            char_bulletDamage = 3;
+            abilityCooldown = 0.5f;
+            specAb = new specialAbility(SleekSA);
+            changeAnimatorServerRpc(playerNumber, 0);
             await Task.Yield();
         }
     }

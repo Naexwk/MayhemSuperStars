@@ -93,7 +93,7 @@ public class Dropship : NetworkBehaviour
         spawnPosition = new Vector3(0f,0f,0f);
         targetPosition = new Vector3(0f,0f,0f);
         StartCoroutine(SearchNewSpawnPosition());
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1f);
         SpawnAlien();
         StartCoroutine(WaitToMove());
         WaitingToSpawn = false;

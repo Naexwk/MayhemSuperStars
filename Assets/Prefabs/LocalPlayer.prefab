@@ -802,7 +802,7 @@ MonoBehaviour:
   cursorSpeed: 1000
   canvasRectTransform: {fileID: 6656474321871777173}
   myCamera: {fileID: 788099782347829169}
-  padding: 80
+  padding: 60
   playerNumber: -1
   thisDeviceId: 0
   stopRecordingInput: 0

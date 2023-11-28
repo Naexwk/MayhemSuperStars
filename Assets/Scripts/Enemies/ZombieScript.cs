@@ -17,6 +17,9 @@ public class ZombieScript : NetworkBehaviour
     private float knockbackDuration = 0.2f;
     private Rigidbody2D rb;
 
+    [SerializeField] private GameObject zombieDie;
+    [SerializeField] private GameObject zombieHit;
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -59,7 +62,9 @@ public class ZombieScript : NetworkBehaviour
     public void ZombieGetHitServerRpc(int damage, Vector2 direction) {
         StartCoroutine(ApplyKnockback(direction));
         health.Value -= damage;
+        Instantiate(zombieHit, transform.position, transform.rotation);
         if (health.Value <= 0) {
+            Instantiate(zombieDie, transform.position, transform.rotation);
             Destroy(this.gameObject);
         }
     }

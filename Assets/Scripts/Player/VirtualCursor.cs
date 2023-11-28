@@ -16,7 +16,7 @@ public class VirtualCursor : MonoBehaviour
     [SerializeField] private float cursorSpeed = 1000f;
     [SerializeField] private RectTransform canvasRectTransform;
     [SerializeField] private Camera myCamera;
-    [SerializeField] private float padding = 80f;
+    [SerializeField] private float padding = 60f;
 
     private bool previousMouseState;
     public Mouse virtualMouse;
