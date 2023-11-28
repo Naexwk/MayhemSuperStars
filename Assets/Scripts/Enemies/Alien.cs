@@ -107,17 +107,18 @@ public class Alien : NetworkBehaviour
                 target = player.gameObject;
             }
         }
-
-        Vector2 directionToPlayer;
-        directionToPlayer = closestPlayer.transform.position - transform.position;
-        if (directionToPlayer.x < 0) {
-            //shadow.transform.localPosition = new Vector2(1.41f,-2.33f);
-            transform.localScale = new Vector3(-0.515308f,0.515308f,0.515308f);
-        } else {
-            //shadow.transform.localPosition = new Vector2(-1.48f, -2.33f);
-            transform.localScale = new Vector3(0.515308f,0.515308f,0.515308f);
+        if (closestPlayer != null) {
+            Vector2 directionToPlayer;
+            directionToPlayer = closestPlayer.transform.position - transform.position;
+            if (directionToPlayer.x < 0) {
+                //shadow.transform.localPosition = new Vector2(1.41f,-2.33f);
+                transform.localScale = new Vector3(-0.515308f,0.515308f,0.515308f);
+            } else {
+                //shadow.transform.localPosition = new Vector2(-1.48f, -2.33f);
+                transform.localScale = new Vector3(0.515308f,0.515308f,0.515308f);
+            }
         }
-
+        
         // Si no se encontró a un jugador, borrar el target
         if (closestDistance == Mathf.Infinity) {
             target = null;

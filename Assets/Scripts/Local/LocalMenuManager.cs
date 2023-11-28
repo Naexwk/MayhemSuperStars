@@ -85,7 +85,6 @@ public class LocalMenuManager : NetworkBehaviour
                 _purchaseItemsUI = uiHelper.PurchaseItems;
                 _purchaseTrapsUI = uiHelper.PurchaseTraps;
                 _healthHeartsUI = uiHelper.HealthHearts;
-                _vidaText = uiHelper.VidaText.GetComponent<TMP_Text>();
                 _winScreen = uiHelper.winScreen;
                 _optionsSelector = uiHelper.optionsSelector;
                 _specialAbilityUI = uiHelper.SpecialAbility;
