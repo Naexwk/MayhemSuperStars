@@ -30,8 +30,12 @@ public class Alien : NetworkBehaviour
     private float knockbackForce = 15f;
     private float knockbackDuration = 0.2f;
     private Rigidbody2D rb;
+
+    private Animator animator;
     [SerializeField] private GameObject alienDie;
     [SerializeField] private GameObject alienHit;
+
+    [SerializeField] private GameObject shadow;
 
     void Start () {
         bullethandler = GameObject.FindWithTag("BulletHandler");
@@ -85,30 +89,49 @@ public class Alien : NetworkBehaviour
     void Update()
     {
         float closestDistance = Mathf.Infinity;
+        float closestDistanceToPlayer = Mathf.Infinity;
+        GameObject closestPlayer = null;
         // Actualizar lista de jugadores
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
         // Revisando uno por uno, encontrar al más cercano y designarlo como target
         foreach(GameObject player in players){
             float distance = Vector2.Distance(transform.position, player.transform.position);
+            if (distance < closestDistanceToPlayer) {
+                closestDistanceToPlayer = distance;
+                closestPlayer = player.gameObject;
+            }
+
             if (distance < closestDistance && distance < distanceThreshold){
                 closestDistance = distance;
                 target = player.gameObject;
             }
         }
 
-        // Si no se encontró a un jugador, borrar el target y apagar la luz de alerta
+        Vector2 directionToPlayer;
+        directionToPlayer = closestPlayer.transform.position - transform.position;
+        if (directionToPlayer.x < 0) {
+            //shadow.transform.localPosition = new Vector2(1.41f,-2.33f);
+            transform.localScale = new Vector3(-0.515308f,0.515308f,0.515308f);
+        } else {
+            //shadow.transform.localPosition = new Vector2(-1.48f, -2.33f);
+            transform.localScale = new Vector3(0.515308f,0.515308f,0.515308f);
+        }
+
+        // Si no se encontró a un jugador, borrar el target
         if (closestDistance == Mathf.Infinity) {
             target = null;
-            animator.SetBool("isMoving", false);
-        } else {
             animator.SetBool("isMoving", true);
+        } else {
+            animator.SetBool("isMoving", false);
         }
 
         // Si hay target, apuntarle con el cañón y disparar
         if (target != null) {
             Direction = target.transform.position - transform.position;
             Direction.Normalize();
+
+            
 
             // Revisar si ya pasó el tiempo de espera de la velocidad de disparo
             if ((Time.time - timeSinceLastFire) > (fireRate)) {

@@ -246,8 +246,11 @@ public class OptionsSelector : MonoBehaviour
 
         // Hardcodeado para volver a defaults
         // Eliminar ya que existan los objetos
+        
         /*
         
+        
+
         propOptions[1] = propDefaults[1];
         propOptions[2] = propDefaults[2];
         sponsorOptions[0] = 1;

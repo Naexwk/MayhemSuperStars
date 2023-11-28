@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -1.48, y: -2.33, z: 0}
-  m_LocalScale: {x: 2.6803772, y: 1.0657508, z: 1.9405868}
+  m_LocalScale: {x: 2.6803772, y: 1.0657508, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2697333883473741525}
@@ -85,7 +85,6 @@ SpriteRenderer:
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &9132538766461087591
-
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -98,7 +97,6 @@ GameObject:
   m_Layer: 0
   m_Name: sprite
   m_TagString: Untagged
-
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -212,7 +210,6 @@ Transform:
   - {fileID: 6744380147731395359}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-
 --- !u!114 &570408886296388762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,6 +225,10 @@ MonoBehaviour:
   fireRate: 1
   distanceThreshold: 10
   force: 500
+  alienDie: {fileID: 6510522552706586842, guid: d9f73786a67b6404280e172bff37380b, type: 3}
+  alienHit: {fileID: 6510522552706586842, guid: 908a9303e3653834fa2ea1cbdc91d286, type: 3}
+  spriteRenderer: {fileID: 8074730206968443562}
+  shadow: {fileID: 3767845861170626342}
 --- !u!114 &3824033238959399562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,4 +409,3 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
-
