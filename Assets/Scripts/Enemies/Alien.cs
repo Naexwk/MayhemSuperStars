@@ -31,6 +31,9 @@ public class Alien : NetworkBehaviour
     private float knockbackDuration = 0.2f;
     private Rigidbody2D rb;
 
+    //Animacion
+    private Animator animator;
+
     void Start () {
         bullethandler = GameObject.FindWithTag("BulletHandler");
     }
@@ -38,6 +41,7 @@ public class Alien : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         // Inicializar vida
         if (NetworkManager.Singleton.IsServer) {
@@ -95,6 +99,9 @@ public class Alien : NetworkBehaviour
         // Si no se encontró a un jugador, borrar el target y apagar la luz de alerta
         if (closestDistance == Mathf.Infinity) {
             target = null;
+            animator.SetBool("isMoving", false);
+        } else {
+            animator.SetBool("isMoving", true);
         }
 
         // Si hay target, apuntarle con el cañón y disparar
@@ -116,6 +123,7 @@ public class Alien : NetworkBehaviour
         if (NetworkManager.Singleton.IsServer) {
             bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, Direction, transform.position.x, transform.position.y);
         }
+        animator.Play("IG_Alien_shoot_Animation");
     }
 
     //Knockback
