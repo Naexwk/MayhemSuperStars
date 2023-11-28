@@ -85,6 +85,12 @@ public class LocalPlayerController : PlayerController
     // Inicializar controladores de jugador
     async void Start()
     {
+        
+        playerNumber = Convert.ToUInt64(GameManager.numberOfPlayers.Value);
+        string name = "P" + (playerNumber+1);
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+        gameManager.AddPlayer(name);
+        
         deviceID = GetComponent<PlayerInput>().devices[0].deviceId;
         GetComponent<VirtualCursor>().thisDeviceId = deviceID;
         GetComponent<VirtualCursor>().SetMyGamepad();
@@ -109,10 +115,7 @@ public class LocalPlayerController : PlayerController
             await ChangeCharacter("cheeseman");
         }
 
-        string name = "P" + (playerNumber+1);
-        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
-        gameManager.AddPlayer(name);
-        playerNumber = Convert.ToUInt64(GameManager.numberOfPlayers.Value);
+        
         
     }
 
