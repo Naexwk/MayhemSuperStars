@@ -11,7 +11,6 @@ public class UIHelper : MonoBehaviour
     public GameObject PurchaseUI;
     public GameObject PurchaseItems;
     public GameObject PurchaseTraps;
-    public GameObject VidaText;
     public GameObject winScreen;
     public GameObject optionsSelector;
     public GameObject HealthHearts;
