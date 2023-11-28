@@ -11,7 +11,6 @@ public class MenuManager : NetworkBehaviour
 {
     // Elementos de UI a cargar
     private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI, _healthHeartsUI, _specialAbilityUI, _sponsorsUI, _countdownUI;
-    private TMP_Text _vidaText;
     private GameObject _winScreen;
     private GameObject _canvas;
 
@@ -94,7 +93,6 @@ public class MenuManager : NetworkBehaviour
                 _purchaseItemsUI = uiHelper.PurchaseItems;
                 _purchaseTrapsUI = uiHelper.PurchaseTraps;
                 _healthHeartsUI = uiHelper.HealthHearts;
-                _vidaText = uiHelper.VidaText.GetComponent<TMP_Text>();
                 _winScreen = uiHelper.winScreen;
                 _optionsSelector = uiHelper.optionsSelector;
                 _specialAbilityUI = uiHelper.SpecialAbility;
