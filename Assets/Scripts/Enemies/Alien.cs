@@ -31,6 +31,9 @@ public class Alien : NetworkBehaviour
     private float knockbackDuration = 0.2f;
     private Rigidbody2D rb;
 
+    [SerializeField] private GameObject alienDie;
+    [SerializeField] private GameObject alienHit;
+
     void Start () {
         bullethandler = GameObject.FindWithTag("BulletHandler");
     }
@@ -72,7 +75,9 @@ public class Alien : NetworkBehaviour
     public void AlienGetHitServerRpc(int damage, Vector2 direction) {
         StartCoroutine(ApplyKnockback(direction));
         health.Value -= damage;
+        Instantiate(alienHit, transform.position, transform.rotation);
         if (health.Value <= 0) {
+            Instantiate(alienDie, transform.position, transform.rotation);
             Destroy(this.gameObject);
         }
     }

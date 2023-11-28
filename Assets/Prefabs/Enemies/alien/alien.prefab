@@ -107,6 +107,8 @@ MonoBehaviour:
   fireRate: 1
   distanceThreshold: 10
   force: 500
+  alienDie: {fileID: 6510522552706586842, guid: d9f73786a67b6404280e172bff37380b, type: 3}
+  alienHit: {fileID: 6510522552706586842, guid: 908a9303e3653834fa2ea1cbdc91d286, type: 3}
 --- !u!114 &3824033238959399562
 MonoBehaviour:
   m_ObjectHideFlags: 0
