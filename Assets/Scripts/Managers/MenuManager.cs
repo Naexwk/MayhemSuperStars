@@ -12,6 +12,7 @@ public class MenuManager : NetworkBehaviour
     // Elementos de UI a cargar
     private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI, _healthHeartsUI, _specialAbilityUI, _sponsorsUI, _countdownUI;
     private GameObject _winScreen;
+    private GameObject _canvas;
 
     //Variables UI Health Hearts
 
@@ -49,6 +50,11 @@ public class MenuManager : NetworkBehaviour
     //
     private bool startRecordingLife = false;
 
+    [SerializeField] private GameObject prefabCanvas;
+    private GameObject myCanvas;
+    
+    private ItemController itemController;
+
     // Destruir al entrar al character select, se regenerará al entrar a la escena de juego.
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -60,11 +66,14 @@ public class MenuManager : NetworkBehaviour
     // Suscribirse al cambio de estado del GameManager, al cambio de handleLeaderboard,
     // y a los cambios de escena
     void Awake(){
+        
         GameManager.state.OnValueChanged += GameManagerOnGameStateChanged;
         GameManager.handleLeaderboard.OnValueChanged += UpdateLeaderboard;
         NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
         SceneManager.sceneLoaded += OnSceneLoaded;
+        myCanvas = Instantiate(prefabCanvas);
         loaded = false;
+        
     }
 
     // Al entrar a escena de juego, cargar elementos de UI y gestionar al jugador
@@ -75,7 +84,9 @@ public class MenuManager : NetworkBehaviour
                 startRecordingLife = true;
 
                 // Cargar elementos de UI
-                uiHelper = GameObject.FindWithTag("UIHelper").GetComponent<UIHelper>();
+                //uiHelper = GameObject.FindWithTag("UIHelper").GetComponent<UIHelper>();
+                uiHelper = myCanvas.GetComponent<UIHelper>();
+                _canvas = myCanvas;
                 _timer = uiHelper.GameTimer;
                 _leaderboard = uiHelper.Leaderboard;
                 _purchaseScreen = uiHelper.PurchaseUI;
@@ -89,27 +100,44 @@ public class MenuManager : NetworkBehaviour
                 _countdownUI = uiHelper.Countdown;
                 loaded = true;
                 
+                
+                
                 // Cargar acciones de botones
                 LoadButtonActions();
 
                 if (IsOwner) {
-                    // Encontrar al jugador local
-                    players = GameObject.FindGameObjectsWithTag("Player");
-                    foreach (GameObject player in players) {
-                        if (player.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
-                            myPlayer = player;
-                            myPlayerScript = player.GetComponent<PlayerController>();
-                            itemManagerScript = player.GetComponent<ItemManager>();
-                        }
-                    }
+                    myPlayerScript = myPlayer.GetComponent<PlayerController>();
+                    itemManagerScript = myPlayer.GetComponent<ItemManager>();
                     
                     // Encontrar cameraTarget local
-                    cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
-                    foreach (GameObject cameraTarget in cameraTargets) {
-                        if (cameraTarget.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
-                            myCameraTarget = cameraTarget;
+                    if (myPlayerScript.cameraTarget != null) {
+                        myCameraTarget = myPlayerScript.cameraTarget;
+                    } else {
+                        cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
+                        foreach (GameObject cameraTarget in cameraTargets) {
+                            if (cameraTarget.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
+                                myCameraTarget = cameraTarget;
+                            }
                         }
                     }
+                }
+
+                if (uiHelper.lem != null) {
+                    uiHelper.lem.cameraReference = myPlayerScript.playerCamera;
+                    if (uiHelper.itemController != null) { 
+                        uiHelper.lem.itemController = uiHelper.itemController;
+                    }
+                }
+
+                if (uiHelper.itemController != null) {
+                    itemController = uiHelper.itemController;
+                    if (uiHelper.lem != null) {
+                        itemController.editor = uiHelper.lem;
+                    }
+                    if (_optionsSelector != null) {
+                        itemController.optionsSelector = _optionsSelector.GetComponent<OptionsSelector>();
+                    }
+                    uiHelper.itemController.cameraReference = myPlayerScript.playerCamera;
                 }
 
                 // Respawnear player
@@ -121,6 +149,12 @@ public class MenuManager : NetworkBehaviour
                 if (myCameraTarget != null) {
                     myCameraTarget.GetComponent<CameraTarget>().lockOnPlayer = true;
                 }
+
+                if (myPlayer.GetComponent<PlayerController>().playerCamera != null) {
+                    _canvas.GetComponent<Canvas>().worldCamera = myPlayer.GetComponent<PlayerController>().playerCamera;
+                }
+
+                _optionsSelector.GetComponent<OptionsSelector>().myPlayer = myPlayerScript;
             }
         }
 
@@ -146,14 +180,22 @@ public class MenuManager : NetworkBehaviour
 
         button = _purchaseTrapsUI.transform.GetChild(0).GetComponent<Button>();
         button.onClick.AddListener(SelectTrap);
+        button.onClick.AddListener(() => ItemControllerHelper(0));
 
         button = _purchaseTrapsUI.transform.GetChild(1).GetComponent<Button>();
         button.onClick.AddListener(SelectTrap);
+        button.onClick.AddListener(() => ItemControllerHelper(1));
 
         button = _purchaseTrapsUI.transform.GetChild(2).GetComponent<Button>();
         button.onClick.AddListener(SelectTrap);
+        button.onClick.AddListener(() => ItemControllerHelper(2));
+
+
     }
 
+    private void ItemControllerHelper (int id) {
+        itemController.StartNewPlacement(id, myPlayer);
+    }
 
     // Seleccionar sponsors
     private void OnSelectedItems(){
@@ -305,9 +347,9 @@ public class MenuManager : NetworkBehaviour
         GameObject newHeart = Instantiate(heartPrefab);
         newHeart.transform.SetParent(_healthHeartsUI.transform);
 
-        HealthHeart heartCompenent = newHeart.GetComponent<HealthHeart>();
-        heartCompenent.SetHeartImage(HeartStatus.Empty);
-        hearts.Add(heartCompenent);
+        HealthHeart heartComponent = newHeart.GetComponent<HealthHeart>();
+        heartComponent.SetHeartImage(HeartStatus.Empty);
+        hearts.Add(heartComponent);
     }
 
     public void ClearHearts()

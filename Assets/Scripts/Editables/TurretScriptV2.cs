@@ -10,6 +10,8 @@ public class TurretScriptV2 : MonoBehaviour
     [SerializeField] private GameObject alertLight;
     [SerializeField] private GameObject canonGun;
     [SerializeField] private Transform shootPoint;
+    [SerializeField] private GameObject turretSmoke;
+    [SerializeField] private GameObject turretHit;
 
     private GameObject[] players;
     private GameObject target;
@@ -31,6 +33,9 @@ public class TurretScriptV2 : MonoBehaviour
     [SerializeField] private float force;
 
     private bool canShoot = false;
+    private bool disabled = false;
+
+    private int health;
 
     private void Awake() {
         GameManager.state.OnValueChanged += StateChange;
@@ -40,6 +45,7 @@ public class TurretScriptV2 : MonoBehaviour
     private void StateChange(GameState prev, GameState curr){
         if (curr == GameState.Round || curr == GameState.StartGame) {
             canShoot = true;
+            disabled = false;
         } else {
             canShoot = false;
         }
@@ -48,11 +54,12 @@ public class TurretScriptV2 : MonoBehaviour
 
     void Start () {
         bullethandler = GameObject.FindWithTag("BulletHandler");
+        health = 10;
     }
 
     void Update()
     {
-        if (canShoot) {
+        if (canShoot && !disabled) {
             float closestDistance = Mathf.Infinity;
             // Actualizar lista de jugadores
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
@@ -95,5 +102,34 @@ public class TurretScriptV2 : MonoBehaviour
         if (bullethandler.GetComponent<NetworkObject>().IsOwner) {
             bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, Direction, shootPoint.position.x, shootPoint.position.y);
         }
+    }
+
+    void OnTriggerEnter2D(Collider2D collision) {
+        // Destruir al tocar un muro
+        if (collision.gameObject.tag == "PlayerBullet")
+        {
+            if (disabled) {
+                return;
+            }
+            Instantiate(turretHit, transform.position, transform.rotation);
+            if (collision.gameObject.GetComponent<CheeseBullet>() != null) {
+                health -= collision.gameObject.GetComponent<CheeseBullet>().bulletDamage;
+            }
+
+            if (collision.gameObject.GetComponent<PlayerBullet>() != null) {
+                health -= collision.gameObject.GetComponent<PlayerBullet>().bulletDamage;
+            }
+            if (health <= 0) {
+                Instantiate(turretSmoke, transform.position, Quaternion.Euler(-90f,0f,0f));
+                StartCoroutine(disableTurret());
+                health = 10;
+            }
+        }
+    }
+
+    IEnumerator disableTurret(){
+        disabled = true;
+        yield return new WaitForSeconds(5f);
+        disabled = false;
     }
 }

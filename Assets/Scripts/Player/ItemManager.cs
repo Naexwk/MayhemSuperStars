@@ -35,6 +35,7 @@ public class ItemManager : NetworkBehaviour
     // y los sponsors deberían aplicarse cada ronda.
     public void applyItems () {
         if (IsOwner) {
+            StopAllCoroutines();
             for (int i = 0; i <= obtainedItemsNumber; i++) {
                 itemInventory[i]();
             }
@@ -44,6 +45,7 @@ public class ItemManager : NetworkBehaviour
 
     // Función para añadir lógica de objeto
     public void addItem(int itemID) {
+        Debug.Log("Adding item" + (itemID-1) + " to player " + gameObject.GetComponent<PlayerController>().playerNumber);
         obtainedItemsNumber++;
         itemInventory[obtainedItemsNumber] = allItems[itemID-1];
         itemIDs[obtainedItemsNumber] = itemID;
@@ -59,24 +61,28 @@ public class ItemManager : NetworkBehaviour
 
     // (2) Fosfofosfo: Añade velocidad
     void Fosfofosfo () {
-        gameObject.GetComponent<PlayerController>().playerSpeed += 1;
+        gameObject.GetComponent<PlayerController>().playerSpeed += 2;
     }
 
     // (3) Cheese: Añade daño
     void Cheese () {
-        gameObject.GetComponent<PlayerController>().bulletDamage += 1;
+        gameObject.GetComponent<PlayerController>().bulletDamage += 2;
     }
 
     // (4) Testosterone: Mejora el fireRate
     void Testosterone () {
-        gameObject.GetComponent<PlayerController>().fireRate += 1;
+        gameObject.GetComponent<PlayerController>().fireRate += 2;
     }
 
     // (5) Rugileo y Pepsi: Hace crecer al jugador, aumenta su daño y vida
     void RugileoPepsi () {
         gameObject.transform.localScale += new Vector3 (0.3f,0.3f,0.3f);
-        Camera.main.orthographicSize += 1;
-        gameObject.GetComponent<PlayerController>().bulletDamage += 1;
+        if (gameObject.GetComponent<PlayerController>().playerCamera == null) {
+            Camera.main.orthographicSize += 1;
+        } else {
+            gameObject.GetComponent<PlayerController>().playerCamera.orthographicSize += 1;
+        }
+        gameObject.GetComponent<PlayerController>().bulletDamage += 3;
         gameObject.GetComponent<PlayerController>().maxHealth += 2;
         gameObject.GetComponent<PlayerController>().currentHealth += 2;
         if (IsOwner) {
@@ -107,8 +113,15 @@ public class ItemManager : NetworkBehaviour
 
     // (7) Vampire: Cada que golpeas a un enemigo, hay una probabilidad de recuperar vida
     void Vampire () {
-        // No hace nada chsm
+        StartCoroutine(VampireCoroutine());
     }
 
+    IEnumerator VampireCoroutine(){
+        yield return new WaitForSeconds(10f);
+        if (!((GetComponent<PlayerController>().currentHealth + 1) > GetComponent<PlayerController>().maxHealth) && gameObject.tag != "Dead Player") {
+            GetComponent<PlayerController>().currentHealth++;
+        }
+        StartCoroutine(VampireCoroutine());
+    }
 
 }

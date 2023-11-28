@@ -15,6 +15,8 @@ public class UI_ReadyBtn : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     [SerializeField] private string AnimationHover;
     [SerializeField] private string AnimationHoverExit;
 
+    bool canActivate = true;
+
     private bool lockIn = false;
 
     // Al hacer hover sobre un botón, animar y cambiar su sprite
@@ -41,6 +43,10 @@ public class UI_ReadyBtn : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     }
 
     public void BtnActive(){
+        if (!canActivate) {
+            return;
+        }
+
         if(!lockIn){
             lockIn = true;
             transform.GetComponent<Image>().sprite = spriteActive;
@@ -54,5 +60,13 @@ public class UI_ReadyBtn : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
             gm = GameObject.FindGameObjectWithTag("GameManager");
             gm.GetComponent<GameManager>().NotReadyPlayServerRpc();
         }
+
+        StartCoroutine(recordUseTime());
+    }
+
+    IEnumerator recordUseTime () {
+        canActivate = false;
+        yield return new WaitForSeconds(0.2f);
+        canActivate = true;
     }
 }

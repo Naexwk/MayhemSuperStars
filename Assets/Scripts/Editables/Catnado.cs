@@ -15,11 +15,13 @@ public class Catnado : NetworkBehaviour
     float timeSinceLastFire;
     // Referencia al objeto que maneja las balas de red
     private GameObject bullethandler;
+    private bool canSucc = false;
 
     private void Awake() {
         GameManager.state.OnValueChanged += StateChange;
         bullethandler = GameObject.FindWithTag("BulletHandler");
         startingPos = transform.position;
+        transform.rotation = Quaternion.Euler(-90f,0f,0f);
     }
 
     void Start () {
@@ -32,11 +34,12 @@ public class Catnado : NetworkBehaviour
         // iniciar una corutina nueva de spawn de zombies
         if (this != null) {
             if (curr == GameState.Round || curr == GameState.StartGame) {
-
+                canSucc = true;
                 enableControl = true;
                 transform.position = startingPos;
                 gameObject.GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = false;
             } else {
+                canSucc = false;
                 enableControl = false;
                 transform.position = startingPos;
                 gameObject.GetComponent<UnityEngine.AI.NavMeshAgent>().isStopped = true;
@@ -47,7 +50,7 @@ public class Catnado : NetworkBehaviour
 
     // Al entrar un jugador, añadirlo a los posibles objetivos
     void OnTriggerStay2D(Collider2D other) {
-        if (other.CompareTag("Player")){
+        if (other.CompareTag("Player") && canSucc){
             Vector2 direction = (transform.position - other.transform.position) ;
             direction.Normalize();
             other.gameObject.GetComponent<Rigidbody2D>().AddForce(direction * succccc);

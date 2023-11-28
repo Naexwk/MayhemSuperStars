@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static TriggerEditModeController;
+using UnityEngine.InputSystem;
 
 // Controlador de botones que crean objetos fantasmas, como parte del modo edición
 public class ItemController : MonoBehaviour
@@ -11,10 +12,15 @@ public class ItemController : MonoBehaviour
 
     // Cantidad a colocar de props
     private int quantity = 1;
-    private LevelEditorManager editor; 
-    private OptionsSelector optionsSelector; 
+    public LevelEditorManager editor; 
+    public OptionsSelector optionsSelector; 
     public GameObject tempObject;
     private Renderer tempRend;
+    public Camera cameraReference;
+    private Vector2 worldPosition;
+    public GameObject playerObject;
+    private Vector2 screenPosition;
+    private bool waitedForPlace = false;
 
     // Escuchar cambios de estado de juego
     private void Awake() {
@@ -24,8 +30,14 @@ public class ItemController : MonoBehaviour
     // Encontrar al LevelEditorManager
     void Start()
     {
-        editor = GameObject.FindWithTag("LevelEditorManager").GetComponent<LevelEditorManager>();
-        optionsSelector = GameObject.FindWithTag("OptionsSelector").GetComponent<OptionsSelector>();
+        if (editor == null) { 
+            editor = GameObject.FindWithTag("LevelEditorManager").GetComponent<LevelEditorManager>();
+        }
+        
+        if (optionsSelector == null) {
+            optionsSelector = GameObject.FindWithTag("OptionsSelector").GetComponent<OptionsSelector>();
+        }
+        
     }
 
     // Función para designar la cantidad de props a colocar
@@ -34,8 +46,9 @@ public class ItemController : MonoBehaviour
     }
 
 
-    public void StartNewPlacement(int _id)
+    public void StartNewPlacement(int _id, GameObject inputPlayer)
     {   
+        playerObject = inputPlayer;
         id = optionsSelector.propOptions[_id][0];
         quantity = optionsSelector.propOptions[_id][1];
         PlaceProp();
@@ -43,9 +56,22 @@ public class ItemController : MonoBehaviour
 
     private void PlaceProp(){
         if(quantity > 0 ){
+            waitedForPlace = false;
             // Encontrar posición para spawnear
-            Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+            if (playerObject.GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard" || playerObject.GetComponent<PlayerInput>().devices[0].ToString() == "Mouse:/Mouse") {
+                screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            } else {
+                screenPosition = playerObject.GetComponent<VirtualCursor>().virtualMouse.position.ReadValue();
+            }
+            
+            if (cameraReference != null) {
+                worldPosition = cameraReference.ScreenToWorldPoint(screenPosition);
+            } else {
+                worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+            }
+            
+            
+            
 
             // Instancia el objeto temporal
             tempObject = Instantiate(editor.ItemPrefabs[id], new Vector3(worldPosition.x, worldPosition.y,0), Quaternion.identity);
@@ -85,6 +111,8 @@ public class ItemController : MonoBehaviour
 
             // Reducir la cantidad de props a colocar
             quantity--;
+
+            StartCoroutine(waitToPlace());
             
         } else {
             GameObject gm;
@@ -92,20 +120,38 @@ public class ItemController : MonoBehaviour
             gm.GetComponent<GameManager>().DoneWithPurchaseServerRpc();
         }
     }
+
+    IEnumerator waitToPlace () {
+        yield return new WaitForSeconds(1f);
+        waitedForPlace = true;
+    }
     void Update(){
         if(tempObject != null){
             if(tempObject != null){
                 // Seguir el mouse con el objeto fantasma
-                Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-                Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+                if (playerObject.GetComponent<PlayerInput>().devices[0].ToString() == "Keyboard:/Keyboard" || playerObject.GetComponent<PlayerInput>().devices[0].ToString() == "Mouse:/Mouse") {
+                    screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+                } else {
+                    screenPosition = playerObject.GetComponent<VirtualCursor>().virtualMouse.position.ReadValue();
+                }
+                
+                if (cameraReference != null) {
+                    worldPosition = cameraReference.ScreenToWorldPoint(screenPosition);
+                } else {
+                    worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+                }
                 tempObject.transform.position = worldPosition;
 
                 // Al hacer clic con el mouse, aparecer el objeto si es colocable
-                if(tempObject.tag != "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<TriggerEditModeController>().placeable){
+                if (!waitedForPlace) {
+                    playerObject.GetComponent<PlayerController>().input_UiClick = false;
+                }
+                
+                if(tempObject.tag != "Bomb" && playerObject.GetComponent<PlayerController>().input_UiClick && tempObject.GetComponent<TriggerEditModeController>().placeable){
                     editor.SpawnProp();
                     Destroy(tempObject);
                     PlaceProp();
-                } else if(tempObject.tag == "Bomb" && Input.GetMouseButtonDown(0) && tempObject.GetComponent<BombEditModeScript>().placeable){
+                } else if(tempObject.tag == "Bomb" && playerObject.GetComponent<PlayerController>().input_UiClick && tempObject.GetComponent<BombEditModeScript>().placeable){
                     editor.SpawnProp();
                     Destroy(tempObject);
                     GameObject gm;

@@ -17,7 +17,12 @@ public class PurchasePhaseDesc : MonoBehaviour
 
     void OnEnable()
     {
-        optionsSelector = GameObject.FindWithTag("OptionsSelector").GetComponent<OptionsSelector>();
+        if (transform.parent.transform.parent.transform.parent.GetComponent<UIHelper>().optionsSelector != null){
+            optionsSelector = transform.parent.transform.parent.transform.parent.GetComponent<UIHelper>().optionsSelector.GetComponent<OptionsSelector>();
+        } else {
+            optionsSelector = GameObject.FindWithTag("OptionsSelector").GetComponent<OptionsSelector>();
+        }
+        
         
         if (IsSponsor) {
             gameObject.GetComponent<TMP_Text>().text = sponsorDesc[optionsSelector.sponsorOptions[index]-1];

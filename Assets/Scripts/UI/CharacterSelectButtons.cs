@@ -59,12 +59,15 @@ public class CharacterSelectButtons : MonoBehaviour
     private void StatsSwapper() {
         if(characterCode == "cheeseman") {
             characterName.text = "cheeseman";
-            habilityDescription.text = "Selected Cheeseman";
+            habilityDescription.text = "Throws a powerful and delicious cheese ball that damages and pierces enemies";
             abilityImage.sprite = abilitysSprites;
         } else if (characterCode == "sarge") {
             characterName.text = "sarge";
-            habilityDescription.text = "Selected Sarge";
+            habilityDescription.text = "Sacrifice a heart in exchange of an indestructible bubble shield";
             abilityImage.sprite = abilitysSprites;
+        } else if (characterCode == "sleek") {
+            characterName.text = "sleek";
+            habilityDescription.text = "Become liquid for a split second and swiftly dash through anything";
         }
     }
 }

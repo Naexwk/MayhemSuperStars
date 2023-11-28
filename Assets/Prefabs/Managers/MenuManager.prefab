@@ -49,6 +49,7 @@ MonoBehaviour:
   sponsorPrefab: {fileID: 3583508306169368464, guid: a091e739827bd024cace686539b4f9b7, type: 3}
   myPlayer: {fileID: 0}
   uiHelper: {fileID: 0}
+  prefabCanvas: {fileID: 2536993197697646162, guid: e864d85e9eb3240499d960b877c22587, type: 3}
 --- !u!114 &8486584028174393965
 MonoBehaviour:
   m_ObjectHideFlags: 0

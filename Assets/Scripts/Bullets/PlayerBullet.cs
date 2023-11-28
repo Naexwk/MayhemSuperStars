@@ -15,9 +15,12 @@ public class PlayerBullet : NetworkBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "MapBorders")
-        {
+        {   
             Destroy(this.gameObject);
-        }
+        } /*else if (collision.gameObject.tag == "Player") {
+            collision.gameObject.GetComponent<PlayerController>().GetHit();
+            Destroy(this.gameObject);
+        }*/
     }
 
     

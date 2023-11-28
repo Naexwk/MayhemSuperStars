@@ -5,10 +5,10 @@ using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
 
-public class OptionsSelector : NetworkBehaviour
+public class OptionsSelector : MonoBehaviour
 {
     bool handled = false;
-    private PlayerController myPlayer;
+    public PlayerController myPlayer;
     private int power;
     private GameManager gameManager;
 
@@ -58,7 +58,7 @@ public class OptionsSelector : NetworkBehaviour
 
     private void Awake() {
         LoadProps();
-        SearchForMyPlayer();
+        //SearchForMyPlayer();
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
 
         // Load props
@@ -76,7 +76,7 @@ public class OptionsSelector : NetworkBehaviour
     {
         if (scene.name == "SampleScene") {
             LoadProps();
-            SearchForMyPlayer();
+            //SearchForMyPlayer();
             gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
 
             // Load props
@@ -176,7 +176,7 @@ public class OptionsSelector : NetworkBehaviour
         }
 
         if ((UnityEngine.Random.Range(0, 10) + 1) > gameManager.currentRound) {
-            lists[UnityEngine.Random.Range(0, 3)] = 0;
+            lists[0] = 0;
         }
 
         int[] usedLists = new int[3] {-1,-1,-1};
@@ -246,8 +246,11 @@ public class OptionsSelector : NetworkBehaviour
 
         // Hardcodeado para volver a defaults
         // Eliminar ya que existan los objetos
-        propOptions[0] =  new int[] {3,1};
+        
         /*
+        
+        
+
         propOptions[1] = propDefaults[1];
         propOptions[2] = propDefaults[2];
         sponsorOptions[0] = 1;

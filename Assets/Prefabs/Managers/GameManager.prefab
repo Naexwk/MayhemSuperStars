@@ -45,6 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 386ac346d86052d4b903dccbf064a1a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  readyPlay:
+    m_InternalValue: 0
   gameStarted:
     m_InternalValue: 0
   roundSection:
@@ -53,10 +55,9 @@ MonoBehaviour:
     m_InternalValue: 0
   purchasePhase:
     m_InternalValue: 0
-  countdownPhase: 0
   roundTime: 30
   leaderboardTime: 5
-  purchaseTime: 30
+  purchaseTime: 45
   countdownTime: 4.5
   currentRoundTime:
     m_InternalValue: 0
@@ -64,9 +65,9 @@ MonoBehaviour:
     m_InternalValue: 0
   currentPurchaseTime:
     m_InternalValue: 0
-  currentCountdownTime:
-    m_InternalValue: 0
   done:
+    m_InternalValue: 0
+  deadPlayers:
     m_InternalValue: 0
   currentRound: 0
 --- !u!114 &-8928019697991546388

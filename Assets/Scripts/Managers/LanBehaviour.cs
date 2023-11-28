@@ -21,6 +21,7 @@ public class LanBehaviour : NetworkBehaviour
 	
 	// Prefab de GameManager
 	[SerializeField] GameObject gameManagerPrefab;
+	[SerializeField] GameObject localGameManagerPrefab;
 
 	// Código de sala de juego (cliente)
 	private string inputJoinCode;
@@ -97,10 +98,36 @@ public class LanBehaviour : NetworkBehaviour
 		}
 	}
 
+	public void StartLocalGame(){
+		try {
+			//Debug.Log(NetworkManager.Singleton.GetComponent<UnityTransport>().ProtocolType);
+			NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData("127.0.0.1", (ushort)7777);
+			loadingPanel.SetActive(true);
+			// Crear sesión de juego y obtener código de sala de juego
+			NetworkManager.Singleton.StartHost();
+			
+			// Crear un GameManager
+			InstantiateGameManager();
+
+			// Cambiar de escena;
+			ChangeScene("LocalGameRoom");
+		} catch (RelayServiceException e){
+			loadingPanel.SetActive(false);
+			Debug.Log(e);
+		}
+	}
+
 	// Instancia un GameManager Host-Only
 	public void InstantiateGameManager(){
 		GameObject gameManager;
 		gameManager = Instantiate(gameManagerPrefab, transform.position,Quaternion.identity);
+		gameManager.GetComponent<NetworkObject>().Spawn();
+	}
+
+	// Instancia un GameManager Local-Only
+	public void InstantiateLocalGameManager(){
+		GameObject gameManager;
+		gameManager = Instantiate(localGameManagerPrefab, transform.position,Quaternion.identity);
 		gameManager.GetComponent<NetworkObject>().Spawn();
 	}
 
@@ -113,4 +140,6 @@ public class LanBehaviour : NetworkBehaviour
 	public void changeName(){
 		playerName = tf_newName.GetComponent<TMP_InputField>().text;
 	}
+
+
 }

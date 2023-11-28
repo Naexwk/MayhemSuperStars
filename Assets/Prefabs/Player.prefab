@@ -229,7 +229,6 @@ GameObject:
   - component: {fileID: 6615255427158843517}
   - component: {fileID: 7334621420652007685}
   - component: {fileID: 4780981171427164661}
-  - component: {fileID: 2425302239759592383}
   - component: {fileID: -6521655923403883417}
   - component: {fileID: 4779941412160733341}
   - component: {fileID: -5188280451714561094}
@@ -238,6 +237,8 @@ GameObject:
   - component: {fileID: 3457618332700867865}
   - component: {fileID: 2218212432194560206}
   - component: {fileID: 6442167761664371344}
+  - component: {fileID: 1329645765805129056}
+  - component: {fileID: -8829424848744895479}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -343,109 +344,6 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &2425302239759592383
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1810112698189722300}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 477363220103d8248a35836aaca7e73d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerSpeed: 8
-  bulletSpeed: 30
-  maxHealth: 6
-  fireRate: 3
-  bulletDamage: 3
-  aiPriority: 1
-  characterAnimators:
-  - {fileID: 9100000, guid: 16cbc109390f3504b9cb007b7e1f994a, type: 2}
-  - {fileID: 9100000, guid: 87aa5c4cce375574a9b8b930f22ce21a, type: 2}
-  animator: {fileID: 2218212432194560206}
-  enableControl: 0
-  currentHealth: 6
-  abilityCooldown: 5
-  timeSinceLastAbility: 0
-  abilityDamage: 10
-  isInvulnerable: 0
-  invulnerabilityWindow: 1.5
-  sargeActive: 0
-  bubble: {fileID: 7693957477330083549}
-  characterCode:
-    m_InternalValue:
-      utf8LengthInBytes: 0
-      bytes:
-        offset0000:
-          byte0000: 0
-          byte0001: 0
-          byte0002: 0
-          byte0003: 0
-          byte0004: 0
-          byte0005: 0
-          byte0006: 0
-          byte0007: 0
-          byte0008: 0
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
-        offset0016:
-          byte0000: 0
-          byte0001: 0
-          byte0002: 0
-          byte0003: 0
-          byte0004: 0
-          byte0005: 0
-          byte0006: 0
-          byte0007: 0
-          byte0008: 0
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
-        offset0032:
-          byte0000: 0
-          byte0001: 0
-          byte0002: 0
-          byte0003: 0
-          byte0004: 0
-          byte0005: 0
-          byte0006: 0
-          byte0007: 0
-          byte0008: 0
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
-        byte0048: 0
-        byte0049: 0
-        byte0050: 0
-        byte0051: 0
-        byte0052: 0
-        byte0053: 0
-        byte0054: 0
-        byte0055: 0
-        byte0056: 0
-        byte0057: 0
-        byte0058: 0
-        byte0059: 0
-        byte0060: 0
-        byte0061: 0
-  cameraTargetPrefab: {fileID: 2992852506160938039, guid: 11fe1c7413bd4084093215912acee2b0, type: 3}
-  playerNumber: 0
-  prefabMenuManager: {fileID: 5238048039657987364, guid: e3e731cabd4a4c244996bb6826c61670, type: 3}
 --- !u!114 &-6521655923403883417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -644,6 +542,206 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TransitionStateInfoList: []
   m_Animator: {fileID: 2218212432194560206}
+--- !u!114 &1329645765805129056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810112698189722300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bf80d4517b317846a98fe24f1c2a692, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCamera: {fileID: 0}
+  cameraTarget: {fileID: 0}
+  aiPriority: 1
+  maxHealth: 0
+  currentHealth: 6
+  playerSpeed: 0
+  bulletDamage: 0
+  playerNumber: 0
+  fireRate: 0
+  enableControl: 0
+  isInvulnerable: 0
+  timeSinceLastAbility: 0
+  abilityCooldown: 5
+  animator: {fileID: 2218212432194560206}
+  input_ShootDirection: {x: 0, y: 0}
+  characterCode:
+    m_InternalValue:
+      utf8LengthInBytes: 0
+      bytes:
+        offset0000:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0016:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0032:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        byte0048: 0
+        byte0049: 0
+        byte0050: 0
+        byte0051: 0
+        byte0052: 0
+        byte0053: 0
+        byte0054: 0
+        byte0055: 0
+        byte0056: 0
+        byte0057: 0
+        byte0058: 0
+        byte0059: 0
+        byte0060: 0
+        byte0061: 0
+  bulletSpeed: 0
+  characterAnimators:
+  - {fileID: 9100000, guid: 16cbc109390f3504b9cb007b7e1f994a, type: 2}
+  - {fileID: 9100000, guid: 87aa5c4cce375574a9b8b930f22ce21a, type: 2}
+  abilityDamage: 10
+  invulnerabilityWindow: 1.5
+  sargeActive: 0
+  bubble: {fileID: 7693957477330083549}
+  cameraTargetPrefab: {fileID: 2992852506160938039, guid: 11fe1c7413bd4084093215912acee2b0, type: 3}
+  prefabMenuManager: {fileID: 5238048039657987364, guid: e3e731cabd4a4c244996bb6826c61670, type: 3}
+--- !u!114 &-8829424848744895479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810112698189722300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 91b39721f9f62004b85f88fa1fcd4e09, type: 3}
+  m_NotificationBehavior: 2
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1329645765805129056}
+        m_TargetAssemblyTypeName: NetworkPlayerController, Assembly-CSharp
+        m_MethodName: OnMove
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: dd100dc8-d988-439e-8d50-9f44365d3839
+    m_ActionName: Player/Movement[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1329645765805129056}
+        m_TargetAssemblyTypeName: NetworkPlayerController, Assembly-CSharp
+        m_MethodName: OnSpecial
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: e2916314-9c6c-4c8d-8307-bdab252fb34f
+    m_ActionName: Player/Special[/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1329645765805129056}
+        m_TargetAssemblyTypeName: NetworkPlayerController, Assembly-CSharp
+        m_MethodName: OnShoot
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 18d0a7c7-c206-4d0d-8644-20ea4315f049
+    m_ActionName: Player/Shoot[/Mouse/leftButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1329645765805129056}
+        m_TargetAssemblyTypeName: NetworkPlayerController, Assembly-CSharp
+        m_MethodName: OnShootDirection
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 445f00dc-45ce-491f-b2c4-5cd5ce1d2717
+    m_ActionName: Player/Shoot Direction[/Mouse/position]
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &2017297992113670114
 GameObject:
   m_ObjectHideFlags: 0
@@ -1901,4 +1999,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66de20697e88cd145ae2277af21c0572, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 1329645765805129056}
+  playerInput: {fileID: -8829424848744895479}
   distance: 10
