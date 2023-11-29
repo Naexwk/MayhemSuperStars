@@ -68,7 +68,7 @@ public class MenuManager : NetworkBehaviour
     void Awake(){
         
         GameManager.state.OnValueChanged += GameManagerOnGameStateChanged;
-        GameManager.handleLeaderboard.OnValueChanged += UpdateLeaderboard;
+        //GameManager.handleLeaderboard.OnValueChanged += UpdateLeaderboard;
         NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
         SceneManager.sceneLoaded += OnSceneLoaded;
         myCanvas = Instantiate(prefabCanvas);
@@ -256,8 +256,8 @@ public class MenuManager : NetworkBehaviour
 
         // Activar o desactivar elementos de UI según el estado del juego
         _timer.SetActive(curr == GameState.StartGame || curr == GameState.Round || curr == GameState.PurchasePhase || curr == GameState.PurchasePhase);
-        _leaderboard.SetActive(curr == GameState.Leaderboard);
-        _winScreen.SetActive(curr == GameState.WinScreen);
+        //_leaderboard.SetActive(curr == GameState.Leaderboard);
+        //_winScreen.SetActive(curr == GameState.WinScreen);
         _healthHeartsUI.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
         _specialAbilityUI.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
         _sponsorsUI.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);

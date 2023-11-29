@@ -95,6 +95,12 @@ public class LocalPlayerController : PlayerController
         GetComponent<VirtualCursor>().thisDeviceId = deviceID;
         GetComponent<VirtualCursor>().SetMyGamepad();
         GetComponent<NetworkObject>().Spawn();
+
+        GameObject canvas;
+        canvas = Instantiate(prefabCharSelCanvas, new Vector3(0f,0f,0f), transform.rotation);
+        canvas.GetComponent<Canvas>().worldCamera = playerCamera;
+        canvas.GetComponent<ChangeBackgroundColor>().ChangeColor(Convert.ToInt32(this.playerNumber));
+        GetComponent<MultiplayerEventSystem>().playerRoot = canvas;
         
         //gameObject.transform.position = spawnPositions[Convert.ToInt32(playerNumber)];
         if (GetComponent<VirtualCursor>() != null) {
@@ -125,10 +131,7 @@ public class LocalPlayerController : PlayerController
         //GetComponent<PlayerInput>().uiInputModule  = eventSystem.GetComponent<InputSystemUIInputModule>();
         SceneManager.sceneLoaded += OnSceneLoaded;
         GameManager.state.OnValueChanged += StateChange;
-        GameObject canvas;
-        canvas = Instantiate(prefabCharSelCanvas, new Vector3(0f,0f,0f), transform.rotation);
-        canvas.GetComponent<Canvas>().worldCamera = playerCamera;
-        GetComponent<MultiplayerEventSystem>().playerRoot = canvas;
+        
     }
 
     // Ejecutar funciones de escena de juego
@@ -168,7 +171,7 @@ public class LocalPlayerController : PlayerController
                 enableControl = false;
                 this.isInvulnerable = true;
                 InputSystem.ResetHaptics();
-                if (curr == GameState.PurchasePhase || curr == GameState.WinScreen) {
+                if (curr == GameState.PurchasePhase) {
                     GetComponent<VirtualCursor>().stopRecordingInput = false;
                     GetComponent<VirtualCursor>().cursorTransform.gameObject.SetActive(true);
                 } else {
