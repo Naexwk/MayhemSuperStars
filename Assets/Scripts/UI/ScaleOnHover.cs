@@ -6,20 +6,14 @@ using UnityEngine.UI;
 public class ScaleOnHover : MonoBehaviour
 {
     [SerializeField] private Image spr; 
-    private float duration = 0.009f;
-    private bool canPerformScaleUp = true; 
-    private bool canPerformScaleDown = false; 
+    private float duration = 0.05f;
 
     public void ScaleUp(){
-        if(canPerformScaleUp){
-            StartCoroutine(ScaleUpOverTime(duration));
-        }
-        
+        StartCoroutine(ScaleUpOverTime(duration));
     }
     public IEnumerator ScaleUpOverTime(float duration)
     {
-        canPerformScaleUp = false; 
-        Debug.Log("SCALE UP");
+        
         Vector3 originalScale = spr.transform.localScale;
         Vector3 targetScale = originalScale * (1 + 0.25f);
 
@@ -34,18 +28,13 @@ public class ScaleOnHover : MonoBehaviour
 
         // Ensure that the scale is exactly the target scale when the duration is complete
         spr.transform.localScale = targetScale;
-        canPerformScaleDown = true; 
-        
     }
     public void ScaleDown(){
-        if(canPerformScaleDown){
-             StartCoroutine(ScaleDownOverTime(duration));
-        }
+        StartCoroutine(ScaleDownOverTime(duration));
     }
     public IEnumerator ScaleDownOverTime(float duration)
     {
-        canPerformScaleDown = false; 
-        Debug.Log("SCALE DOWN");
+        
         Vector3 originalScale = spr.transform.localScale;
         Vector3 targetScale = originalScale * 0.8f;
 
@@ -60,6 +49,5 @@ public class ScaleOnHover : MonoBehaviour
 
         // Ensure that the scale is exactly the target scale when the duration is complete
         spr.transform.localScale = targetScale;
-        canPerformScaleUp = true; 
     }
 }
