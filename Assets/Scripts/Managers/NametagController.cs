@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 public class NametagController : MonoBehaviour
 {
     [SerializeField] private TMP_Text nametagname;
+    [SerializeField] private SpriteRenderer triangle;
+
     private GameObject[] player;
     private GameManager gameManager;
     Color[] colors = { Color.red, Color.blue, Color.yellow, Color.green };
@@ -21,7 +23,7 @@ public class NametagController : MonoBehaviour
                 foreach(GameObject players in player){
                     int index = (int)players.GetComponent<PlayerController>().playerNumber;
                     nametagname.text = gameManager.networkPlayerNames[index].ToString();
-                    nametagname.color = colors[index];
+                    triangle.color = colors[index];
                 }
             }
         }
