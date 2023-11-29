@@ -56,7 +56,7 @@ MonoBehaviour:
   purchasePhase:
     m_InternalValue: 0
   roundTime: 30
-  leaderboardTime: 99
+  leaderboardTime: 5
   purchaseTime: 45
   countdownTime: 4.5
   currentRoundTime:

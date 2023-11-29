@@ -380,7 +380,7 @@ public class LocalPlayerController : PlayerController
 
     IEnumerator SleekInvulnerability(){
         this.isInvulnerable = true;
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(0.3f);
         this.isInvulnerable = false;
     }
 
