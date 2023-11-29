@@ -9,6 +9,7 @@ public class Dropship : NetworkBehaviour
     [SerializeField] private float spawnTime;
     [SerializeField] private float speed;
     [SerializeField] private GameObject alienPrefab;
+    [SerializeField] private GameObject alienRay, alienSpawn;
     private Vector3 spawnPosition;
     private Vector3 helperSpawnPosition;
     private Vector3 targetPosition;
@@ -55,11 +56,11 @@ public class Dropship : NetworkBehaviour
         if (hit.collider == null)
         {
             spawnPosition = helperSpawnPosition;
-            targetPosition = new Vector3 (spawnPosition.x, spawnPosition.y + 2f, 0f);
+            targetPosition = new Vector3 (spawnPosition.x, spawnPosition.y + 10f, 0f);
             foundValidPosition = true;
         } else if (hit.collider.tag != "Wall" && hit.collider.tag != "MapBorders") {
             spawnPosition = helperSpawnPosition;
-            targetPosition = new Vector3 (spawnPosition.x, spawnPosition.y + 2f, 0f);
+            targetPosition = new Vector3 (spawnPosition.x, spawnPosition.y + 10f, 0f);
             foundValidPosition = true;
         }
 
@@ -93,7 +94,9 @@ public class Dropship : NetworkBehaviour
         spawnPosition = new Vector3(0f,0f,0f);
         targetPosition = new Vector3(0f,0f,0f);
         StartCoroutine(SearchNewSpawnPosition());
-        yield return new WaitForSeconds(1f);
+        Instantiate(alienRay, transform.position, Quaternion.Euler(90f,-90f,0f));
+        Instantiate(alienSpawn, helperSpawnPosition, Quaternion.Euler(0f,0f,0f));
+        yield return new WaitForSeconds(2f);
         SpawnAlien();
         StartCoroutine(WaitToMove());
         WaitingToSpawn = false;

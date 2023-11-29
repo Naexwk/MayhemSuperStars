@@ -152,6 +152,8 @@ MonoBehaviour:
   spawnTime: 5
   speed: 10
   alienPrefab: {fileID: 9150818363841136571, guid: 2b154384e7abd8341877b86bc1e19452, type: 3}
+  alienRay: {fileID: 6061026761464741037, guid: e1a793eb2f31ff543a30f48a873bae2f, type: 3}
+  alienSpawn: {fileID: 7399672102204799785, guid: 5a6705cb5e07e0e4087a083b6a1a0ca9, type: 3}
 --- !u!114 &-3907310023002441277
 MonoBehaviour:
   m_ObjectHideFlags: 0
