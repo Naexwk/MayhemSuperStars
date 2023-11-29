@@ -655,7 +655,8 @@ public class LocalPlayerController : PlayerController
             await Task.Yield();
         }
         if (_characterCode == "sleek") {
-            animator.runtimeAnimatorController = characterAnimators[0];
+            Debug.Log("cambia a sleek");
+            animator.runtimeAnimatorController = characterAnimators[2];
             char_playerSpeed = 10f;
             char_bulletSpeed = 30f;
             char_maxHealth = 2;
@@ -663,7 +664,7 @@ public class LocalPlayerController : PlayerController
             char_bulletDamage = 3;
             abilityCooldown = 0.5f;
             specAb = new specialAbility(SleekSA);
-            changeAnimatorServerRpc(playerNumber, 0);
+            changeAnimatorServerRpc(playerNumber, 2);
             await Task.Yield();
         }
     }
