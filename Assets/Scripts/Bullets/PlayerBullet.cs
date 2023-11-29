@@ -9,6 +9,7 @@ public class PlayerBullet : NetworkBehaviour
     public int bulletDamage = 0;
     public float bulletSpeed = 30f;
     public Vector2 bulletDirection;
+    public int playerNumber;
 
     // Al entrar en colisión con un muro o enemigo, destruir la bala
     // La funcion de recibir daño esta en el script del enemigo
@@ -17,10 +18,7 @@ public class PlayerBullet : NetworkBehaviour
         if (collision.gameObject.tag == "Wall" || collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "MapBorders")
         {   
             Destroy(this.gameObject);
-        } /*else if (collision.gameObject.tag == "Player") {
-            collision.gameObject.GetComponent<PlayerController>().GetHit();
-            Destroy(this.gameObject);
-        }*/
+        }
     }
 
     

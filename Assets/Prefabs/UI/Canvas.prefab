@@ -2398,6 +2398,8 @@ MonoBehaviour:
   cheesemanDisable: {fileID: 21300000, guid: 9064144efa907b44b855f07810429145, type: 3}
   sargeSA: {fileID: 21300000, guid: e27b1904974581a468e1f65fce78a652, type: 3}
   sargeDisable: {fileID: 21300000, guid: 23cf7a7efbaa64a4d89c9f9af553f212, type: 3}
+  sleekSA: {fileID: 21300000, guid: 212b6f40e80861f4a96fe680610cad78, type: 3}
+  sleekDisable: {fileID: 21300000, guid: 9064144efa907b44b855f07810429145, type: 3}
 --- !u!1 &1670672394466625180
 GameObject:
   m_ObjectHideFlags: 0
@@ -2974,6 +2976,7 @@ MonoBehaviour:
   barFillAnim: {fileID: 0}
   headCheeseman: {fileID: 0}
   headSarge: {fileID: 0}
+  headSleek: {fileID: 0}
   roundText1: {fileID: 0}
   roundText2: {fileID: 0}
   player3: {fileID: 7355458093076515968}

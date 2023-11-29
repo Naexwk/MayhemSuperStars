@@ -1,4 +1,5 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
@@ -103,6 +104,7 @@ public class BulletHandler : NetworkBehaviour
     public void SpawnCheeseBulletServerRpc(Vector2 _direction, ulong playerNumber, int _abilityDamage, float _x, float _y) {
         GameObject clone;
         clone = Instantiate(prefabCheeseBullet, new Vector3 (_x, _y, 0f), transform.rotation);
+        clone.GetComponent<CheeseBullet>().playerNumber = Convert.ToInt32(playerNumber);
         clone.GetComponent<CheeseBullet>().bulletDamage = _abilityDamage;
         clone.GetComponent<Rigidbody2D>().velocity = (_direction) * (10f);
         clone.GetComponent<NetworkObject>().Spawn();

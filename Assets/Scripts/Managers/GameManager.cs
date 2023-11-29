@@ -111,7 +111,6 @@ public class GameManager : NetworkBehaviour
         numberOfPlayers.Value++;
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Add(name);
-        Debug.Log("Added player");
     }
 
     public void RemovePlayer(string name){
@@ -119,7 +118,6 @@ public class GameManager : NetworkBehaviour
         numberOfPlayers.Value--;
         changedPlayers.Value = !changedPlayers.Value;
         networkPlayerNames.Remove(name);
-        Debug.Log("Removed player");
     }
 
     public void ReadyPlay(){
@@ -170,8 +168,20 @@ public class GameManager : NetworkBehaviour
         }
         foreach (GameObject player in players)
         {
-            playerPoints[Convert.ToInt32(player.GetComponent<PlayerController>().playerNumber)] += pointsToDistribute;
-            playerPoints[Convert.ToInt32(player.GetComponent<PlayerController>().playerNumber)] += (int)((player.GetComponent<PlayerController>().currentHealth/player.GetComponent<PlayerController>().maxHealth) * (2.5*numberOfPlayers.Value));
+            PlayerController playerScript = player.GetComponent<PlayerController>();
+            int playerNumber = Convert.ToInt32(playerScript.playerNumber);
+            playerPoints[playerNumber] += pointsToDistribute;
+            if (playerScript.currentHealth == 1) {
+                playerPoints[playerNumber] += (points[currentRound-1])/4;
+            }
+            if (playerScript.currentHealth == playerScript.maxHealth) {
+                playerPoints[playerNumber] += (points[currentRound-1])/4;
+            }
+        }
+
+        KillCounter killCounter = GameObject.FindWithTag("KillCounter").GetComponent<KillCounter>();
+        for (int i = 0; i < playerPoints.Length; i++) {
+            playerPoints[i] += killCounter.killCounterArray[i];
         }
 
         // Enviar los puntos de cada jugador a la red a través de networkPoints
@@ -531,7 +541,9 @@ public class GameManager : NetworkBehaviour
                 child.gameObject.SetActive(false);
             }
         }
-        GameManager.instance.UpdateGameState(GameState.Leaderboard);
+        if (state.Value != GameState.Leaderboard) {
+            GameManager.instance.UpdateGameState(GameState.Leaderboard);
+        }
     }
 }
 

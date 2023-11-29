@@ -40,9 +40,9 @@ public class ZombieScript : NetworkBehaviour
         if (col.gameObject.tag == "PlayerBullet")
         {
             if (col.gameObject.GetComponent<PlayerBullet>() != null) {
-                ZombieGetHitServerRpc(col.gameObject.GetComponent<PlayerBullet>().bulletDamage, col.gameObject.GetComponent<PlayerBullet>().bulletDirection);
+                ZombieGetHitServerRpc(col.gameObject.GetComponent<PlayerBullet>().bulletDamage, col.gameObject.GetComponent<PlayerBullet>().bulletDirection, col.gameObject.GetComponent<PlayerBullet>().playerNumber);
             } else if (col.gameObject.GetComponent<CheeseBullet>() != null) {
-                ZombieGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage, new Vector2(0,0));
+                ZombieGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage, new Vector2(0,0), col.gameObject.GetComponent<CheeseBullet>().playerNumber);
             }
             
         }
@@ -59,11 +59,13 @@ public class ZombieScript : NetworkBehaviour
 
     // Actualizar la vida en la red
     [ServerRpc(RequireOwnership = false)]
-    public void ZombieGetHitServerRpc(int damage, Vector2 direction) {
+    public void ZombieGetHitServerRpc(int damage, Vector2 direction, int playerNumber) {
         StartCoroutine(ApplyKnockback(direction));
         health.Value -= damage;
         Instantiate(zombieHit, transform.position, transform.rotation);
         if (health.Value <= 0) {
+            KillCounter killCounter = GameObject.FindWithTag("KillCounter").GetComponent<KillCounter>();
+            killCounter.AddKill(playerNumber);
             Instantiate(zombieDie, transform.position, transform.rotation);
             Destroy(this.gameObject);
         }

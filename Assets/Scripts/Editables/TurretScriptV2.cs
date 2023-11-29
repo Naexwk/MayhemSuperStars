@@ -108,18 +108,26 @@ public class TurretScriptV2 : MonoBehaviour
         // Destruir al tocar un muro
         if (collision.gameObject.tag == "PlayerBullet")
         {
+            int playerNumber = -1;
             if (disabled) {
                 return;
             }
             Instantiate(turretHit, transform.position, transform.rotation);
             if (collision.gameObject.GetComponent<CheeseBullet>() != null) {
                 health -= collision.gameObject.GetComponent<CheeseBullet>().bulletDamage;
+                playerNumber = collision.gameObject.GetComponent<CheeseBullet>().playerNumber;
             }
 
             if (collision.gameObject.GetComponent<PlayerBullet>() != null) {
                 health -= collision.gameObject.GetComponent<PlayerBullet>().bulletDamage;
+                playerNumber = collision.gameObject.GetComponent<PlayerBullet>().playerNumber;
             }
+
             if (health <= 0) {
+                if (playerNumber != -1) {
+                    KillCounter killCounter = GameObject.FindWithTag("KillCounter").GetComponent<KillCounter>();
+                    killCounter.AddKill(playerNumber);
+                }
                 Instantiate(turretSmoke, transform.position, Quaternion.Euler(-90f,0f,0f));
                 StartCoroutine(disableTurret());
                 health = 10;

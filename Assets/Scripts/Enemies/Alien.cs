@@ -58,9 +58,9 @@ public class Alien : NetworkBehaviour
         if (col.gameObject.tag == "PlayerBullet")
         {
             if (col.gameObject.GetComponent<PlayerBullet>() != null) {
-                AlienGetHitServerRpc(col.gameObject.GetComponent<PlayerBullet>().bulletDamage, col.gameObject.GetComponent<PlayerBullet>().bulletDirection);
+                AlienGetHitServerRpc(col.gameObject.GetComponent<PlayerBullet>().bulletDamage, col.gameObject.GetComponent<PlayerBullet>().bulletDirection, col.gameObject.GetComponent<PlayerBullet>().playerNumber);
             } else if (col.gameObject.GetComponent<CheeseBullet>() != null) {
-                AlienGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage, new Vector2(0,0));
+                AlienGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage, new Vector2(0,0), col.gameObject.GetComponent<CheeseBullet>().playerNumber);
             }
         }
     }
@@ -76,11 +76,13 @@ public class Alien : NetworkBehaviour
 
     // Actualizar la vida en la red
     [ServerRpc(RequireOwnership = false)]
-    public void AlienGetHitServerRpc(int damage, Vector2 direction) {
+    public void AlienGetHitServerRpc(int damage, Vector2 direction, int playerNumber) {
         StartCoroutine(ApplyKnockback(direction));
         health.Value -= damage;
         Instantiate(alienHit, transform.position, transform.rotation);
         if (health.Value <= 0) {
+            KillCounter killCounter = GameObject.FindWithTag("KillCounter").GetComponent<KillCounter>();
+            killCounter.AddKill(playerNumber);
             Instantiate(alienDie, transform.position, transform.rotation);
             Destroy(this.gameObject);
         }

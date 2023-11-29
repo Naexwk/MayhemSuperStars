@@ -30,6 +30,7 @@ TagManager:
   - ItemController
   - Nametag
   - EventSystem
+  - KillCounter
   layers:
   - Default
   - TransparentFX

@@ -273,6 +273,7 @@ public class LocalPlayerController : PlayerController
             GameObject clone;
             clone = Instantiate(bullethandler.GetComponent<BulletHandler>().prefabBullet, transform.position, transform.rotation);
             Physics2D.IgnoreCollision(GetComponent<CapsuleCollider2D>(), clone.GetComponent<CircleCollider2D>());
+            clone.GetComponent<PlayerBullet>().playerNumber = Convert.ToInt32(this.playerNumber);
             clone.GetComponent<PlayerBullet>().bulletDamage = bulletDamage;
             clone.GetComponent<PlayerBullet>().bulletSpeed = bulletSpeed;
             clone.GetComponent<PlayerBullet>().bulletDirection = direction;
@@ -361,7 +362,10 @@ public class LocalPlayerController : PlayerController
         sleekDirection = direction;
         rig.AddForce(sleekDirection * 30f, ForceMode2D.Impulse);
         StartCoroutine(SleekTimer());
+        this.isInvulnerable = true;
         StopCoroutine(recordInvulnerabiltyFrames());
+        StopCoroutine(SleekInvulnerability());
+        this.isInvulnerable = false;
         StartCoroutine(SleekInvulnerability());
         timeSinceLastAbility = Time.time;
     }
@@ -376,7 +380,7 @@ public class LocalPlayerController : PlayerController
 
     IEnumerator SleekInvulnerability(){
         this.isInvulnerable = true;
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.4f);
         this.isInvulnerable = false;
     }
 

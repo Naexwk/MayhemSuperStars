@@ -9,6 +9,7 @@ public class CheeseBullet : NetworkBehaviour
     public int bulletDamage = 3;
     private GameObject[] players;
     private Rigidbody2D rb;
+    public int playerNumber;
 
     // Ignorar colisiones con jugadores
     void Start()

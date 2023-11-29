@@ -13,7 +13,7 @@ public class Leaderboard : MonoBehaviour
     private GameManager gameManager;
 
     [SerializeField] private AnimationClip barFillAnim;
-    [SerializeField] private Sprite headCheeseman, headSarge;
+    [SerializeField] private Sprite headCheeseman, headSarge, headSleek;
     [SerializeField] private TMP_Text roundText1, roundText2;
     
     // Referencia a espacios de leaderboard para los jugadores 3 y 4
@@ -95,9 +95,15 @@ public class Leaderboard : MonoBehaviour
             characterHead.sprite = headCheeseman;
 
         }
+
         if (characterCode == "sarge") {
             progressBar.color = new Color32(78,88,70,255);
             characterHead.sprite = headSarge;
+        }
+
+        if (characterCode == "sleek") {
+            progressBar.color = new Color32(58, 71, 99, 255);
+            characterHead.sprite = headSleek;
         }
     }
 
@@ -107,7 +113,6 @@ public class Leaderboard : MonoBehaviour
         {
             fillNumber = 0.1f;
         }
-        Debug.Log("Entro aqui: "  +fillNumber);
         // Verifica si el componente Animation ya está adjunto al GameObject
         Animation anim = barObject.GetComponent<Animation>();
 
@@ -168,7 +173,6 @@ public class Leaderboard : MonoBehaviour
         }
 
         float finalY = startY + (fillValue * (endY - startY));
-        Debug.Log(finalY);
         rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, finalY);
     }
 
