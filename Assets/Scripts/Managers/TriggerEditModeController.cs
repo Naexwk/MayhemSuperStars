@@ -17,9 +17,6 @@ public class TriggerEditModeController : MonoBehaviour
         tempRend = GetARenderer();
         if (tempRend != null) {
             currentColor = tempRend.material.color;
-            Debug.Log("heres your renderer");
-        } else { 
-            Debug.Log("hola XDXDXD");
         }
     }
 

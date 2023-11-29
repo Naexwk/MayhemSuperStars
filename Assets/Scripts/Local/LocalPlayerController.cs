@@ -655,7 +655,6 @@ public class LocalPlayerController : PlayerController
             await Task.Yield();
         }
         if (_characterCode == "sleek") {
-            Debug.Log("cambia a sleek");
             animator.runtimeAnimatorController = characterAnimators[2];
             char_playerSpeed = 10f;
             char_bulletSpeed = 30f;

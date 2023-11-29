@@ -45,7 +45,6 @@ public class ItemManager : NetworkBehaviour
 
     // Función para añadir lógica de objeto
     public void addItem(int itemID) {
-        Debug.Log("Adding item" + (itemID-1) + " to player " + gameObject.GetComponent<PlayerController>().playerNumber);
         obtainedItemsNumber++;
         itemInventory[obtainedItemsNumber] = allItems[itemID-1];
         itemIDs[obtainedItemsNumber] = itemID;
