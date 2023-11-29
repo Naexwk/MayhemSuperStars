@@ -15,4 +15,9 @@ public class ChangeScene_Button : MonoBehaviour
             Application.Quit();
         }
     }
+
+    public void CloseGame()
+    {
+        Application.Quit();
+    }
 }

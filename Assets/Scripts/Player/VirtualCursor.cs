@@ -22,7 +22,6 @@ public class VirtualCursor : MonoBehaviour
     public Mouse virtualMouse;
     public int playerNumber = -1;
     Vector2 newPosition;
-    //Vector2 cursorInput;
     public int thisDeviceId;
     public bool stopRecordingInput = false;
     Gamepad myGamepad;
@@ -48,9 +47,6 @@ public class VirtualCursor : MonoBehaviour
         } else {
             cursorTransform.gameObject.SetActive(false);
         }
-
-        
-
     }
 
     public void SetMyGamepad(){
@@ -78,21 +74,10 @@ public class VirtualCursor : MonoBehaviour
         Vector2 currentPosition = virtualMouse.position.ReadValue();
         newPosition = currentPosition + deltaValue;
 
-        //newPosition.x = Mathf.Clamp(newPosition.x, padding, (myCamera.pixelWidth) - padding);
-        //newPosition.y = Mathf.Clamp(newPosition.y, padding, (myCamera.pixelHeight) - padding);
-
         GetPositions();
 
         InputState.Change(virtualMouse.position, newPosition);
         InputState.Change(virtualMouse.delta, deltaValue);
-
-        /*bool aButtonIsPressed = myGamepad.aButton.IsPressed();
-        if (previousMouseState != aButtonIsPressed){
-            virtualMouse.CopyState<MouseState>(out var mouseState);
-            mouseState.WithButton(MouseButton.Left, myGamepad.aButton.IsPressed());
-            InputState.Change(virtualMouse, mouseState);
-            previousMouseState = aButtonIsPressed;
-        }*/
 
         AnchorCursor(newPosition);
     }

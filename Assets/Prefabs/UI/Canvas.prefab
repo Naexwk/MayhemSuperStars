@@ -552,7 +552,7 @@ GameObject:
   - component: {fileID: 1727426908893352718}
   - component: {fileID: 692292142248498930}
   - component: {fileID: 5534489534216838172}
-  - component: {fileID: 6481518082135315472}
+  - component: {fileID: 5416994505207172122}
   - component: {fileID: 6135051210718223958}
   m_Layer: 5
   m_Name: btn_replay
@@ -663,19 +663,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6481518082135315472}
-        m_TargetAssemblyTypeName: SceneReload, Assembly-CSharp
-        m_MethodName: RestartGame
-        m_Mode: 5
+      - m_Target: {fileID: 5416994505207172122}
+        m_TargetAssemblyTypeName: ChangeScene_Button, Assembly-CSharp
+        m_MethodName: CloseGame
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: LocalGameRoom
+          m_StringArgument: Salir
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &6481518082135315472
+--- !u!114 &5416994505207172122
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -684,7 +684,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 568060279476246662}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: abd522344f868ec4abec0b0c0ec76ef2, type: 3}
+  m_Script: {fileID: 11500000, guid: abf22cc94a0381c458fe925d5f08fc7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &6135051210718223958
@@ -2239,8 +2239,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Player 0 wins!
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 954537b4f4892994da7600e7e90ee6f5, type: 2}
+  m_sharedMaterial: {fileID: -3115112932768208022, guid: 954537b4f4892994da7600e7e90ee6f5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2264,8 +2264,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
-  m_fontSizeBase: 72
+  m_fontSize: 68
+  m_fontSizeBase: 68
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -11060,10 +11060,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Replay
+  m_text: Exit Game
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 954537b4f4892994da7600e7e90ee6f5, type: 2}
+  m_sharedMaterial: {fileID: -3115112932768208022, guid: 954537b4f4892994da7600e7e90ee6f5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
