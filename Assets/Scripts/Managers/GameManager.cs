@@ -181,7 +181,7 @@ public class GameManager : NetworkBehaviour
 
         KillCounter killCounter = GameObject.FindWithTag("KillCounter").GetComponent<KillCounter>();
         for (int i = 0; i < playerPoints.Length; i++) {
-            playerPoints[i] += killCounter.killCounterArray[i];
+            playerPoints[i] += killCounter.killCounterArray[i] * (points[currentRound-1]/32);
         }
 
         // Enviar los puntos de cada jugador a la red a través de networkPoints

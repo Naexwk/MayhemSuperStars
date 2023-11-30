@@ -104,6 +104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   zombiePrefab: {fileID: 2554199365530014469, guid: 6b91fe96c534e6f47ae8404754b525a0, type: 3}
   timeToSpawn: 2
+  zombieSpawnParticles: {fileID: 2834946592580030451, guid: 566dbb04cd13d1a4cb0a230a67769e7f, type: 3}
 --- !u!114 &5391823485692510985
 MonoBehaviour:
   m_ObjectHideFlags: 0

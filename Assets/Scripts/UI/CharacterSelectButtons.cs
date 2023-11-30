@@ -68,6 +68,7 @@ public class CharacterSelectButtons : MonoBehaviour
         } else if (characterCode == "sleek") {
             characterName.text = "sleek";
             habilityDescription.text = "Become liquid for a split second and swiftly dash through anything";
+            abilityImage.sprite = abilitysSprites;
         }
     }
 }

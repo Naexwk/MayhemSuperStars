@@ -3255,7 +3255,7 @@ MonoBehaviour:
   characterName: {fileID: 3102981705478608439}
   habilityDescription: {fileID: 8067619301071943862}
   abilityImage: {fileID: 1994807329859508113}
-  abilitysSprites: {fileID: 21300000, guid: 212b6f40e80861f4a96fe680610cad78, type: 3}
+  abilitysSprites: {fileID: 21300000, guid: eedc1a655742832438c18fe1e7652f6b, type: 3}
   tvs: {fileID: 0}
 --- !u!114 &8213776984612745669
 MonoBehaviour:

@@ -18,8 +18,7 @@ public class ScaleOnHover : MonoBehaviour
     }
     public IEnumerator ScaleUpOverTime(float duration)
     {
-        canPerformScaleUp = false; 
-        Debug.Log("SCALE UP");
+        canPerformScaleUp = false;
         Vector3 originalScale = spr.transform.localScale;
         Vector3 targetScale = originalScale * (1 + 0.25f);
 
@@ -45,7 +44,6 @@ public class ScaleOnHover : MonoBehaviour
     public IEnumerator ScaleDownOverTime(float duration)
     {
         canPerformScaleDown = false; 
-        Debug.Log("SCALE DOWN");
         Vector3 originalScale = spr.transform.localScale;
         Vector3 targetScale = originalScale * 0.8f;
 
