@@ -22,7 +22,6 @@ public class TurretScript : MonoBehaviour
     private GameObject nearestPlayer;
     private float distanceToNearestPlayer = -1;
     private float distanceToPlayer;
-
     // Buscar bullet handler, que mandará las señales al server
     void Start () {
         bullethandler = GameObject.FindWithTag("BulletHandler");
@@ -92,7 +91,7 @@ public class TurretScript : MonoBehaviour
     // Llamar al bulletHandler para que instancie una bala
     void shoot(){
         if (bullethandler.GetComponent<NetworkObject>().IsOwner) {
-            bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, Direction, shootPoint.position.x, shootPoint.position.y);
+            //bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, Direction, shootPoint.position.x, shootPoint.position.y);
         }
     }
 }

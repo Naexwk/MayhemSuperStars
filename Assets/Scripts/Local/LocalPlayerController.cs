@@ -94,7 +94,7 @@ public class LocalPlayerController : PlayerController
         deviceID = GetComponent<PlayerInput>().devices[0].deviceId;
         GetComponent<VirtualCursor>().thisDeviceId = deviceID;
         GetComponent<VirtualCursor>().SetMyGamepad();
-        GetComponent<NetworkObject>().Spawn();
+        GetComponent<NetworkObject>().Spawn(); 
 
         GameObject canvas;
         canvas = Instantiate(prefabCharSelCanvas, new Vector3(0f,0f,0f), transform.rotation);
@@ -172,8 +172,10 @@ public class LocalPlayerController : PlayerController
                 this.isInvulnerable = true;
                 InputSystem.ResetHaptics();
                 if (curr == GameState.PurchasePhase) {
-                    GetComponent<VirtualCursor>().stopRecordingInput = false;
-                    GetComponent<VirtualCursor>().cursorTransform.gameObject.SetActive(true);
+                    if (GetComponent<PlayerInput>().devices[0].ToString() != "Keyboard:/Keyboard" && GetComponent<PlayerInput>().devices[0].ToString() != "Mouse:/Mouse") {
+                        GetComponent<VirtualCursor>().stopRecordingInput = false;
+                        GetComponent<VirtualCursor>().cursorTransform.gameObject.SetActive(true);
+                    }
                 } else {
                     GetComponent<VirtualCursor>().stopRecordingInput = true;
                     GetComponent<VirtualCursor>().cursorTransform.gameObject.SetActive(false);
@@ -329,7 +331,7 @@ public class LocalPlayerController : PlayerController
         }
 
         currentHealth -= 1;
-        GetHit();
+        GetHit(-1);
         StartCoroutine(invincibleSarge());
         StartCoroutine(recordAnimatorHitFrames());
         timeSinceLastAbility = Time.time;
@@ -351,7 +353,6 @@ public class LocalPlayerController : PlayerController
         Vector2 direction = input_Movement;
         // Encontrar dirección de disparo
         direction.Normalize();
-
         RaycastHit2D[] hits;
         hits = Physics2D.RaycastAll(transform.position, direction, 5.35f);
         foreach (RaycastHit2D hit in hits)
@@ -388,7 +389,7 @@ public class LocalPlayerController : PlayerController
     }
 
     // Función pública para hacer daño al jugador
-    public override void GetHit(){
+    public override void GetHit(int damageSourceOwner){
         // Si es invulnerable o no es propietario de este jugador, ignorar
         if (!IsOwner || isInvulnerable || this.sargeActive) {
             return;
@@ -410,6 +411,11 @@ public class LocalPlayerController : PlayerController
             if (gamepadSearcher != null){
                 gamepadSearcher.SetMotorSpeeds(0.10f, 0.25f);
                 StartCoroutine(handleRumble(1.5f,gamepadSearcher));
+            }
+
+            if (damageSourceOwner != -1 && damageSourceOwner != Convert.ToInt32(playerNumber)) {
+                PropKillCounter propKillCounter = GameObject.FindWithTag("PropKillCounter").GetComponent<PropKillCounter>();
+                propKillCounter.AddPropKill(damageSourceOwner);
             }
         } else {
             animator.SetBool("takeDamage", true);

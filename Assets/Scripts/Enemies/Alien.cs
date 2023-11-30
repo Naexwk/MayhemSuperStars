@@ -37,8 +37,11 @@ public class Alien : NetworkBehaviour
 
     [SerializeField] private GameObject shadow;
 
+    int owner;
+
     void Start () {
         bullethandler = GameObject.FindWithTag("BulletHandler");
+        owner = GetComponent<damageSource>().owner;
     }
 
     public override void OnNetworkSpawn()
@@ -70,7 +73,7 @@ public class Alien : NetworkBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
-            col.gameObject.GetComponent<PlayerController>().GetHit();
+            col.gameObject.GetComponent<PlayerController>().GetHit(owner);
         }
     }
 
@@ -148,7 +151,7 @@ public class Alien : NetworkBehaviour
     // Llamar al Bullet Handler para que cree una bala de red
     void Shoot(){
         if (NetworkManager.Singleton.IsServer) {
-            bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, Direction, transform.position.x, transform.position.y);
+            bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, Direction, transform.position.x, transform.position.y, owner);
         }
         animator.Play("IG_Alien_shoot_Animation");
     }

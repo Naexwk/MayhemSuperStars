@@ -37,6 +37,8 @@ public class VirtualCursor : MonoBehaviour
 
             InputUser.PerformPairingWithDevice(virtualMouse, playerInput.user);
 
+            cursorTransform.gameObject.SetActive(true);
+
             if (cursorTransform != null) {
                 Vector2 position = cursorTransform.anchoredPosition;
                 InputState.Change(virtualMouse.position, position);
@@ -44,8 +46,6 @@ public class VirtualCursor : MonoBehaviour
 
             InputSystem.onAfterUpdate += UpdateMotion;
             AnchorCursor(transform.position);
-        } else {
-            cursorTransform.gameObject.SetActive(false);
         }
     }
 

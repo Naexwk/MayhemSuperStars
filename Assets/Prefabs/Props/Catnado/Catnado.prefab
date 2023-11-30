@@ -20,6 +20,8 @@ GameObject:
   - component: {fileID: 1584134512855825168}
   - component: {fileID: 3586795587367959941}
   - component: {fileID: 1344481705021257632}
+  - component: {fileID: 3783604656849279693}
+  - component: {fileID: -8128171194687194356}
   m_Layer: 6
   m_Name: Catnado
   m_TagString: Spawner
@@ -298,6 +300,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TransitionStateInfoList: []
   m_Animator: {fileID: 3586795587367959941}
+--- !u!114 &3783604656849279693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550598751626481641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f77b49ca9cbd9747aaaffdf55689461, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: -1
+--- !u!114 &-8128171194687194356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550598751626481641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 753587dfd2e58bf42841475e41fa303d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: -1
 --- !u!1 &3441444615153840026
 GameObject:
   m_ObjectHideFlags: 0

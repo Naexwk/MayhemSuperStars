@@ -19,6 +19,8 @@ public class Dropship : NetworkBehaviour
     private bool canMove = true;
     private bool WaitingToSpawn = false;
 
+    private int owner;
+
     // Escuchar al cambio de estado de juego
     private void Awake() {
         GameManager.state.OnValueChanged += StateChange;
@@ -31,6 +33,7 @@ public class Dropship : NetworkBehaviour
         // iniciar una corutina nueva de spawn de zombies
         if (this != null && IsServer) {
             if (curr == GameState.Round || curr == GameState.StartGame) {
+                owner = GetComponent<propOwner>().owner;
                 StopAllCoroutines();
                 isMoving = false;
                 canMove = true;
@@ -111,6 +114,7 @@ public class Dropship : NetworkBehaviour
         if (this != null && IsServer) {
             GameObject clone;
             clone = Instantiate(alienPrefab, helperSpawnPosition, transform.rotation);
+            clone.GetComponent<damageSource>().owner = owner;
             clone.GetComponent<NetworkObject>().Spawn();
         }
     }

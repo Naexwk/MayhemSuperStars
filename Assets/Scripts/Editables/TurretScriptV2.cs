@@ -37,18 +37,24 @@ public class TurretScriptV2 : MonoBehaviour
 
     private int health;
 
+    private int owner;
+
     private void Awake() {
         GameManager.state.OnValueChanged += StateChange;
     }
 
     // Función de cambio de estado de juego
     private void StateChange(GameState prev, GameState curr){
-        if (curr == GameState.Round || curr == GameState.StartGame) {
-            canShoot = true;
-            disabled = false;
-        } else {
-            canShoot = false;
+        if (this != null) {
+            if (curr == GameState.Round || curr == GameState.StartGame) {
+                owner = GetComponent<propOwner>().owner;
+                canShoot = true;
+                disabled = false;
+            } else {
+                canShoot = false;
+            }
         }
+        
     }
 
 
@@ -100,7 +106,7 @@ public class TurretScriptV2 : MonoBehaviour
     // Llamar al Bullet Handler para que cree una bala de red
     void Shoot(){
         if (bullethandler.GetComponent<NetworkObject>().IsOwner) {
-            bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, Direction, shootPoint.position.x, shootPoint.position.y);
+            bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, Direction, shootPoint.position.x, shootPoint.position.y, owner);
         }
     }
 

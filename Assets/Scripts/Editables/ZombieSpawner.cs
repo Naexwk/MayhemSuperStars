@@ -13,6 +13,8 @@ public class ZombieSpawner : NetworkBehaviour
     [SerializeField] private float timeToSpawn;
     [SerializeField] private GameObject zombieSpawnParticles;
 
+    int owner;
+
     private bool hasCoroutines = false;
 
     // Escuchar al cambio de estado de juego
@@ -26,6 +28,7 @@ public class ZombieSpawner : NetworkBehaviour
         // iniciar una corutina nueva de spawn de zombies
         if (this != null) {
             if (curr == GameState.Round || curr == GameState.StartGame) {
+                owner = GetComponent<propOwner>().owner;
                 if (hasCoroutines) {
                     StopAllCoroutines();
                     hasCoroutines = false;
@@ -57,6 +60,7 @@ public class ZombieSpawner : NetworkBehaviour
             yield return new WaitForSeconds(0.5f);
             GameObject clone;
             clone = Instantiate(zombiePrefab, transform.position, Quaternion.identity);
+            clone.GetComponent<damageSource>().owner = owner;
             clone.GetComponent<NetworkObject>().Spawn();
             StartCoroutine(SpawnZombie());
         }
