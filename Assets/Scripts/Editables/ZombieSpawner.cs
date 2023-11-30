@@ -11,6 +11,7 @@ public class ZombieSpawner : NetworkBehaviour
     [SerializeField] private GameObject zombiePrefab;
     // Tiempo en el que se spawnea un zombie (en segundos)
     [SerializeField] private float timeToSpawn;
+    [SerializeField] private GameObject zombieSpawnParticles;
 
     private bool hasCoroutines = false;
 
@@ -51,7 +52,9 @@ public class ZombieSpawner : NetworkBehaviour
     IEnumerator SpawnZombie() {
         if (this != null) {
             hasCoroutines = true;
-            yield return new WaitForSeconds(timeToSpawn);
+            yield return new WaitForSeconds(Random.Range(1.0f, 2.0f));
+            Instantiate(zombieSpawnParticles, transform.position, Quaternion.identity);
+            yield return new WaitForSeconds(0.5f);
             GameObject clone;
             clone = Instantiate(zombiePrefab, transform.position, Quaternion.identity);
             clone.GetComponent<NetworkObject>().Spawn();

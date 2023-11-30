@@ -247,6 +247,7 @@ public class OptionsSelector : MonoBehaviour
         // Hardcodeado para volver a defaults
         // Eliminar ya que existan los objetos
         
+
         /*
         
         
