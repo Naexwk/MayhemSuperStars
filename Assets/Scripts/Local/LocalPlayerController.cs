@@ -649,6 +649,7 @@ public class LocalPlayerController : PlayerController
             abilityCooldown = 5f;
             specAb = new specialAbility(CheesemanSA);
             changeAnimatorServerRpc(playerNumber, 0);
+            GetComponent<VirtualCursor>().ChangeCursorImage(0);
             await Task.Yield();
         }
         if (_characterCode == "sarge") {
@@ -661,6 +662,7 @@ public class LocalPlayerController : PlayerController
             abilityCooldown = 15;
             specAb = new specialAbility(SargeSA);
             changeAnimatorServerRpc(playerNumber, 1);
+            GetComponent<VirtualCursor>().ChangeCursorImage(1);
             await Task.Yield();
         }
         if (_characterCode == "sleek") {
@@ -673,6 +675,7 @@ public class LocalPlayerController : PlayerController
             abilityCooldown = 0.5f;
             specAb = new specialAbility(SleekSA);
             changeAnimatorServerRpc(playerNumber, 2);
+            GetComponent<VirtualCursor>().ChangeCursorImage(2);
             await Task.Yield();
         }
     }

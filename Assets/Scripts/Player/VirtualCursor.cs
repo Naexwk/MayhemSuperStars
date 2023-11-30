@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.Users;
@@ -17,6 +18,9 @@ public class VirtualCursor : MonoBehaviour
     [SerializeField] private RectTransform canvasRectTransform;
     [SerializeField] private Camera myCamera;
     [SerializeField] private float padding = 60f;
+    [SerializeField] private Image cursorImage;
+    [SerializeField] private Sprite defaultSprite;
+    [SerializeField] private Sprite[] cursorSprites;
 
     private bool previousMouseState;
     public Mouse virtualMouse;
@@ -25,6 +29,8 @@ public class VirtualCursor : MonoBehaviour
     public int thisDeviceId;
     public bool stopRecordingInput = false;
     Gamepad myGamepad;
+
+
 
     private void OnEnable() {
         if (playerInput.user.controlScheme.ToString() != "Keyboard(<Keyboard>,<Mouse>)") {
@@ -112,5 +118,13 @@ public class VirtualCursor : MonoBehaviour
         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, position, canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : myCamera, out anchoredPosition);
         cursorTransform.anchoredPosition = anchoredPosition;
 
+    }
+
+    public void ChangeCursorImage(int i){
+        if (i < cursorSprites.Length) {
+            cursorImage.sprite = cursorSprites[i];
+        } else {
+            cursorImage.sprite = defaultSprite;
+        }
     }
 }
