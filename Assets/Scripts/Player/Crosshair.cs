@@ -23,9 +23,12 @@ public class Crosshair : MonoBehaviour
     Color myColor, tmp;
 
     private void Start() {
-        myColor = crosshairUI.color;
-        tmp = myColor;
-        tmp.a = 0f;
+        if (crosshairUI != null) {
+            myColor = crosshairUI.color;
+            tmp = myColor;
+            tmp.a = 0f;
+        }
+        
     }
 
     // Update is called once per frame
@@ -40,7 +43,9 @@ public class Crosshair : MonoBehaviour
             transform.localPosition = direction;
         }
 
-        crosshairUI.gameObject.transform.position = myCamera.WorldToScreenPoint(transform.parent.transform.position + (transform.localPosition));        
+        if (crosshairUI != null) {
+            crosshairUI.gameObject.transform.position = myCamera.WorldToScreenPoint(transform.parent.transform.position + (transform.localPosition));
+        }
         
         if (direction == Vector2.zero) {
             GetComponent<SpriteRenderer>().color = tmp;

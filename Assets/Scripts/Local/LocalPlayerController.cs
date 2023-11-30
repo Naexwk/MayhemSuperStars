@@ -65,6 +65,7 @@ public class LocalPlayerController : PlayerController
     Gamepad gamepadSearcher;
     private bool isDashing = false;
     private Vector2 sleekDirection;
+    private ShadowsSleek shadowsSleek;
 
     // Función para colorear objetos según el número del jugador
     public void ColorCodeToPlayer (GameObject go, ulong playerNumber) {
@@ -121,7 +122,7 @@ public class LocalPlayerController : PlayerController
             await ChangeCharacter("cheeseman");
         }
 
-        
+        shadowsSleek = GetComponent<ShadowsSleek>();
         
     }
 
@@ -243,7 +244,7 @@ public class LocalPlayerController : PlayerController
         // el  control, ignorar
         if (isDashing)
         {
-            ShadowsSleek.me.shadow_skill();
+            shadowsSleek.shadow_skill();
         }
         if (!IsOwner || !enableControl || isDashing) {
             return;
