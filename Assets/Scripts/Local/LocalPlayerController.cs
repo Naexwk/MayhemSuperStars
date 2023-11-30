@@ -241,6 +241,10 @@ public class LocalPlayerController : PlayerController
     private void FixedUpdate(){
         // Si no es dueño de este script o no está habilitado
         // el  control, ignorar
+        if (isDashing)
+        {
+            ShadowsSleek.me.shadow_skill();
+        }
         if (!IsOwner || !enableControl || isDashing) {
             return;
         }
@@ -364,6 +368,7 @@ public class LocalPlayerController : PlayerController
         }
 
         sleekDirection = direction;
+        
         rig.AddForce(sleekDirection * 30f, ForceMode2D.Impulse);
         StartCoroutine(SleekTimer());
         this.isInvulnerable = true;

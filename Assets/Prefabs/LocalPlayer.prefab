@@ -191,6 +191,7 @@ GameObject:
   - component: {fileID: 4899051916965169951}
   - component: {fileID: 8542525990571917212}
   - component: {fileID: 7766644210186625518}
+  - component: {fileID: 8798255662086231541}
   m_Layer: 7
   m_Name: LocalPlayer
   m_TagString: Player
@@ -812,6 +813,22 @@ MonoBehaviour:
   playerNumber: -1
   thisDeviceId: 0
   stopRecordingInput: 0
+--- !u!114 &8798255662086231541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810112698189722300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d04499b3b7fe769489f78017244db949, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shadow: {fileID: 1151391901583494824, guid: 5725c1aedb5512b4f9d4de2d532279a1, type: 3}
+  pool: []
+  speed: 500
+  _color: {r: 0, g: 0.35816315, b: 0.7075472, a: 0}
 --- !u!1 &2017297992113670114
 GameObject:
   m_ObjectHideFlags: 0
