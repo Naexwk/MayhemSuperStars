@@ -809,7 +809,10 @@ MonoBehaviour:
   padding: 60
   cursorImage: {fileID: 5820024524351588231}
   defaultSprite: {fileID: 21300000, guid: 54645bc7fb16a7741aed2a2d0e20ba63, type: 3}
-  cursorSprites: []
+  cursorSprites:
+  - {fileID: 21300000, guid: 54645bc7fb16a7741aed2a2d0e20ba63, type: 3}
+  - {fileID: 21300000, guid: 54645bc7fb16a7741aed2a2d0e20ba63, type: 3}
+  - {fileID: 21300000, guid: 4adf610e26838514a9de264febcc704f, type: 3}
   playerNumber: -1
   thisDeviceId: 0
   stopRecordingInput: 0
