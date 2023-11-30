@@ -10,6 +10,8 @@ public class AcidCloud : MonoBehaviour
     private Vector2 initialPosition;
     private bool canMove = false;
 
+    int owner;
+
     private void Awake() {
         initialPosition = transform.position;
         GameManager.state.OnValueChanged += StateChange;
@@ -21,6 +23,8 @@ public class AcidCloud : MonoBehaviour
         // iniciar una corutina nueva de spawn de zombies
         if (this != null) {
             if (curr == GameState.Round || curr == GameState.StartGame) {
+                owner = GetComponent<propOwner>().owner;
+                GetComponent<damageSource>().owner = owner;
                 canMove = true;
             } else {
                 canMove = false;
@@ -35,7 +39,7 @@ public class AcidCloud : MonoBehaviour
     void OnTriggerStay2D(Collider2D other){
         if (other.gameObject.tag == "Player")
         {
-            other.gameObject.GetComponent<PlayerController>().GetHit();
+            other.gameObject.GetComponent<PlayerController>().GetHit(owner);
         }
     }
     void Update()

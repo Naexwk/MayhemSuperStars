@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3088125933930241007}
   - component: {fileID: 6946268040951311394}
   - component: {fileID: 4892086872314521595}
+  - component: {fileID: -6739463581384565367}
   m_Layer: 22
   m_Name: Dropship
   m_TagString: Spawner
@@ -264,3 +265,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-6739463581384565367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1706980794289364843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 753587dfd2e58bf42841475e41fa303d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: -1

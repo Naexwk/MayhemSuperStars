@@ -329,7 +329,7 @@ public class NetworkPlayerController : PlayerController
     }
 
     // Función pública para hacer daño al jugador
-    public override void GetHit(){
+    public override void GetHit(int damageSourceOwner){
         // Si es invulnerable o no es propietario de este jugador, ignorar
         if (!IsOwner || isInvulnerable || this.sargeActive) {
             return;

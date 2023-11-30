@@ -20,6 +20,12 @@ public class ZombieScript : NetworkBehaviour
     [SerializeField] private GameObject zombieDie;
     [SerializeField] private GameObject zombieHit;
 
+    int owner;
+
+    private void Awake() {
+        owner = GetComponent<damageSource>().owner;
+    }
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -53,7 +59,7 @@ public class ZombieScript : NetworkBehaviour
     {
         if (col.gameObject.tag == "Player")
         {
-            col.gameObject.GetComponent<PlayerController>().GetHit();
+            col.gameObject.GetComponent<PlayerController>().GetHit(owner);
         }
     }
 

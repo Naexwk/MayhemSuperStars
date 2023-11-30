@@ -24,7 +24,7 @@ public class BombEditModeScript : NetworkBehaviour
     // Add to list of Colliders if not MapBorders, changes the colors for the other objects
     private void OnTriggerEnter2D (Collider2D other) {
         
-        if (!colliders.Contains(other) && other.gameObject.tag != "MapBorders" && GetARenderer(other) != null && other is BoxCollider2D) 
+        if (!colliders.Contains(other) && other.gameObject.tag != "MapBorders" && GetARenderer(other) != null && other is BoxCollider2D && other.GetComponent<TriggerEditModeController>() == null) 
         {
             Renderer rend = GetARenderer(other);
             colliders.Add(other);
@@ -39,7 +39,7 @@ public class BombEditModeScript : NetworkBehaviour
     // cambiar su color a rojo y hacerlo no colocable
     void OnTriggerStay2D(Collider2D other)
     {
-        if (other is BoxCollider2D && other.gameObject.tag != "MapBorders" && GetARenderer(other)!= null)
+        if (other is BoxCollider2D && other.gameObject.tag != "MapBorders" && GetARenderer(other)!= null && other.GetComponent<TriggerEditModeController>() == null)
         {
             placeable = true; 
             float newGreen = 255f;
@@ -51,7 +51,7 @@ public class BombEditModeScript : NetworkBehaviour
     // Al salir de otros colliders, hacer al objeto colocable y cambiar su color al normal
     void OnTriggerExit2D(Collider2D other)
     {
-        if(other is BoxCollider2D && other.gameObject.tag != "MapBorders" && GetARenderer(other) != null){
+        if(other is BoxCollider2D && other.gameObject.tag != "MapBorders" && GetARenderer(other) != null && other.GetComponent<TriggerEditModeController>() == null){
             placeable = false; 
             tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
             GetARenderer(other).material.color = colors[colliders.IndexOf(other)];
@@ -59,6 +59,7 @@ public class BombEditModeScript : NetworkBehaviour
             colliders.Remove(other);
         }
     }
+
     Renderer GetARenderer(Collider2D other){
         Renderer rend = null;
         if(other.gameObject.GetComponent<Renderer>() != null){

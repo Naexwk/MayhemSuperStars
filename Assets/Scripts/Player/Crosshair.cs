@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using UnityEngine.UI;
 
 public class Crosshair : MonoBehaviour
 {
@@ -13,10 +13,17 @@ public class Crosshair : MonoBehaviour
     [SerializeField] private PlayerInput playerInput;
 
     [SerializeField] private float distance = 10f;
+    [SerializeField] private Image crosshairUI;
+    [SerializeField] private RectTransform canvasRectTransform;
+    [SerializeField] private Canvas canvas;
+    [SerializeField] private Camera myCamera;
+
+    Vector3 cameraRelative;
+
     Color myColor, tmp;
 
     private void Start() {
-        myColor = GetComponent<SpriteRenderer>().color;
+        myColor = crosshairUI.color;
         tmp = myColor;
         tmp.a = 0f;
     }
@@ -32,11 +39,16 @@ public class Crosshair : MonoBehaviour
             direction = direction * distance;
             transform.localPosition = direction;
         }
+
+        crosshairUI.gameObject.transform.position = myCamera.WorldToScreenPoint(transform.parent.transform.position + (transform.localPosition));        
         
         if (direction == Vector2.zero) {
             GetComponent<SpriteRenderer>().color = tmp;
+            crosshairUI.color = tmp;
         } else {
-            GetComponent<SpriteRenderer>().color = myColor;
+            crosshairUI.color = myColor;
+            GetComponent<SpriteRenderer>().color = tmp;
+            //GetComponent<SpriteRenderer>().color = myColor;
         }
     }
 }

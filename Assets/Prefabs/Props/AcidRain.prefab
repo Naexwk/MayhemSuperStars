@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 2163955091904083652}
   - component: {fileID: 604058641044720357}
   - component: {fileID: -6188850263744258456}
+  - component: {fileID: 7133612013282011028}
+  - component: {fileID: -1930780566124937602}
   m_Layer: 0
   m_Name: AcidRain
   m_TagString: Untagged
@@ -174,6 +176,32 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &7133612013282011028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2128796165573967610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f77b49ca9cbd9747aaaffdf55689461, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: -1
+--- !u!114 &-1930780566124937602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2128796165573967610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 753587dfd2e58bf42841475e41fa303d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: -1
 --- !u!1 &7120957552319470938
 GameObject:
   m_ObjectHideFlags: 0

@@ -24,7 +24,7 @@ public class TriggerEditModeController : MonoBehaviour
     // cambiar su color a rojo y hacerlo no colocable
     void OnTriggerStay2D(Collider2D other)
     {
-        if (other is BoxCollider2D)
+        if (other is BoxCollider2D && other.gameObject.tag != "Bomb")
         {
             placeable = false; 
             float newRed = 255f;

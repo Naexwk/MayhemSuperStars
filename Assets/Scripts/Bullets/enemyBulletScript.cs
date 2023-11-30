@@ -15,7 +15,7 @@ public class enemyBulletScript : MonoBehaviour
         // Hacer daño al jugador al tocarlo
         if (collision.gameObject.tag == "Player")
         {
-            collision.gameObject.GetComponent<PlayerController>().GetHit();
+            collision.gameObject.GetComponent<PlayerController>().GetHit(GetComponent<damageSource>().owner);
             Destroy(this.gameObject);
         }
 

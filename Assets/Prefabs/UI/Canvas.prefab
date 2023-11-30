@@ -13417,6 +13417,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LevelEditorManager
       objectReference: {fileID: 0}
+    - target: {fileID: 5876329159105012344, guid: ae5dd773c7f747f4f87403c8e76471fa, type: 3}
+      propertyPath: poof
+      value: 
+      objectReference: {fileID: 4965221076876284956, guid: 9c8803406d466a549a53c4174b20bf64, type: 3}
     - target: {fileID: 8250914389059105893, guid: ae5dd773c7f747f4f87403c8e76471fa, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.054453135

@@ -27,7 +27,7 @@ public abstract class PlayerController : NetworkBehaviour
     public Vector2 input_ShootDirection;
     public bool input_UiClick;
     public NetworkVariable<FixedString64Bytes> characterCode = new NetworkVariable<FixedString64Bytes>(default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
-    public abstract void GetHit();
+    public abstract void GetHit(int damageSourceOwner);
     public abstract void SpawnFakeBullet(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y);
     public abstract Task ChangeCharacter(string _characterCode);
     public abstract void Respawn();

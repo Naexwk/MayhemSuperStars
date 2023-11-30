@@ -184,6 +184,12 @@ public class GameManager : NetworkBehaviour
             playerPoints[i] += killCounter.killCounterArray[i] * (points[currentRound-1]/32);
         }
 
+        PropKillCounter propKillCounter = GameObject.FindWithTag("PropKillCounter").GetComponent<PropKillCounter>();
+        for (int i = 0; i < playerPoints.Length; i++) {
+            Debug.Log("player " + (i+1) + ": " + propKillCounter.propKillCounterArray[i]);
+            playerPoints[i] += propKillCounter.propKillCounterArray[i] * (points[currentRound-1]/4);
+        }
+
         // Enviar los puntos de cada jugador a la red a través de networkPoints
         networkPoints.Clear();
         for (int i = 0; i < playerPoints.Length; i++) {

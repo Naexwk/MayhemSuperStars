@@ -186,6 +186,7 @@ GameObject:
   - component: {fileID: 6879688070267203923}
   - component: {fileID: 301565506497071673}
   - component: {fileID: 1929638466387633552}
+  - component: {fileID: -2020338450013126488}
   m_Layer: 0
   m_Name: alien
   m_TagString: Enemy
@@ -227,7 +228,6 @@ MonoBehaviour:
   force: 500
   alienDie: {fileID: 6510522552706586842, guid: d9f73786a67b6404280e172bff37380b, type: 3}
   alienHit: {fileID: 6510522552706586842, guid: 908a9303e3653834fa2ea1cbdc91d286, type: 3}
-  spriteRenderer: {fileID: 8074730206968443562}
   shadow: {fileID: 3767845861170626342}
 --- !u!114 &3824033238959399562
 MonoBehaviour:
@@ -409,3 +409,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-2020338450013126488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9150818363841136571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f77b49ca9cbd9747aaaffdf55689461, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: -1

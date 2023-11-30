@@ -21,6 +21,7 @@ public class ItemController : MonoBehaviour
     public GameObject playerObject;
     private Vector2 screenPosition;
     private bool waitedForPlace = false;
+    
 
     // Escuchar cambios de estado de juego
     private void Awake() {
@@ -122,7 +123,7 @@ public class ItemController : MonoBehaviour
     }
 
     IEnumerator waitToPlace () {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.25f);
         waitedForPlace = true;
     }
     void Update(){
@@ -157,6 +158,8 @@ public class ItemController : MonoBehaviour
                     GameObject gm;
                     gm = GameObject.FindGameObjectWithTag("GameManager");
                     gm.GetComponent<GameManager>().DoneWithPurchaseServerRpc();
+                } else if (playerObject.GetComponent<PlayerController>().input_UiClick) {
+                    playerObject.GetComponent<PlayerController>().input_UiClick = false;
                 }
             }
         }

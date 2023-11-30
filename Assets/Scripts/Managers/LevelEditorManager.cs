@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-
+using System;
 using UnityEngine.InputSystem;
 
 // Controlador de prefabs de props para el modo edición
@@ -21,6 +21,8 @@ public class LevelEditorManager : MonoBehaviour
     public int id;
     private Vector2 worldPosition;
     private Vector2 screenPosition;
+
+    [SerializeField] private GameObject poof;
 
     // Aparecer Prop
     public void SpawnProp(){
@@ -44,6 +46,7 @@ public class LevelEditorManager : MonoBehaviour
             }
         }
     }
+
     [ServerRpc (RequireOwnership=false)] 
     void BombServerRpc(float x, float y){
         GameObject spawnedObject;
@@ -54,7 +57,10 @@ public class LevelEditorManager : MonoBehaviour
     [ServerRpc (RequireOwnership=false)] 
     void EditModeSpawnerServerRpc(float x, float y, int index){
         GameObject spawnedObject;
+    
         spawnedObject = Instantiate(ItemPrefabs[index], new Vector3(x, y, 0), Quaternion.identity);
+        Instantiate(poof, new Vector3(x, y, 0), Quaternion.Euler(-90f,0f,0f));
+        spawnedObject.GetComponent<propOwner>().owner = Convert.ToInt32(itemController.playerObject.GetComponent<PlayerController>().playerNumber);
         if (spawnedObject.tag == "Spawner") {
             spawnedObject.GetComponent<NetworkObject>().Spawn();
         } else {

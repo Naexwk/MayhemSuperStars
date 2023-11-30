@@ -68,9 +68,10 @@ public class BulletHandler : NetworkBehaviour
 
     // Llamada al server para crear una bala enemiga server-side
     [ServerRpc]
-    public void SpawnEnemyBulletServerRpc(float _force, Vector2 _direction, float _x, float _y) {
+    public void SpawnEnemyBulletServerRpc(float _force, Vector2 _direction, float _x, float _y, int playerNumber) {
         GameObject clone;
         clone = Instantiate(enemyBullet, new Vector3 (_x, _y, 0f), transform.rotation);
+        clone.GetComponent<damageSource>().owner = playerNumber;
         clone.GetComponent<Rigidbody2D>().AddForce(_direction * _force);
         SpawnEnemyBulletClientRPC(_force, _direction, _x, _y);
     }

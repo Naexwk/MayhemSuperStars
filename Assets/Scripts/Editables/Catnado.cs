@@ -16,6 +16,7 @@ public class Catnado : NetworkBehaviour
     // Referencia al objeto que maneja las balas de red
     private GameObject bullethandler;
     private bool canSucc = false;
+    private int owner;
 
     private void Awake() {
         GameManager.state.OnValueChanged += StateChange;
@@ -34,6 +35,8 @@ public class Catnado : NetworkBehaviour
         // iniciar una corutina nueva de spawn de zombies
         if (this != null) {
             if (curr == GameState.Round || curr == GameState.StartGame) {
+                owner = GetComponent<propOwner>().owner;
+                GetComponent<damageSource>().owner = owner;
                 canSucc = true;
                 enableControl = true;
                 transform.position = startingPos;
@@ -59,7 +62,7 @@ public class Catnado : NetworkBehaviour
 
     void OnCollisionStay2D(Collision2D other) {
         if (other.gameObject.tag == "Player"){
-            other.gameObject.GetComponent<PlayerController>().GetHit();
+            other.gameObject.GetComponent<PlayerController>().GetHit(owner);
         }
     }
 
@@ -74,7 +77,7 @@ public class Catnado : NetworkBehaviour
         Vector2 direction = new Vector2 (UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f));
         direction.Normalize();
         if (NetworkManager.Singleton.IsServer) {
-            bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, direction, transform.position.x, transform.position.y + 4f);
+            bullethandler.GetComponent<BulletHandler>().SpawnEnemyBulletServerRpc(force, direction, transform.position.x, transform.position.y + 4f, owner);
         }
     }
 
