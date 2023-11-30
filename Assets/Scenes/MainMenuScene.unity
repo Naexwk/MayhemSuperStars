@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 663249304}
+  m_FirstSelected: {fileID: 1007730063}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
 --- !u!4 &9476865
@@ -853,7 +853,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &346229878
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2331,7 +2331,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 643446804}
         m_TargetAssemblyTypeName: LanBehaviour, Assembly-CSharp
-        m_MethodName: StartHost
+        m_MethodName: StartLocalGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
