@@ -118,7 +118,7 @@ public class ItemManager : NetworkBehaviour
     IEnumerator VampireCoroutine(){
         yield return new WaitForSeconds(10f);
         if (!((GetComponent<PlayerController>().currentHealth + 1) > GetComponent<PlayerController>().maxHealth) && gameObject.tag != "Dead Player") {
-            GetComponent<PlayerController>().currentHealth++;
+            GetComponent<PlayerController>().currentHealth += 2;
         }
         StartCoroutine(VampireCoroutine());
     }

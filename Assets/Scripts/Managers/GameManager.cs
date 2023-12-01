@@ -171,12 +171,6 @@ public class GameManager : NetworkBehaviour
             PlayerController playerScript = player.GetComponent<PlayerController>();
             int playerNumber = Convert.ToInt32(playerScript.playerNumber);
             playerPoints[playerNumber] += pointsToDistribute;
-            if (playerScript.currentHealth == 1) {
-                playerPoints[playerNumber] += (points[currentRound-1])/4;
-            }
-            if (playerScript.currentHealth == playerScript.maxHealth) {
-                playerPoints[playerNumber] += (points[currentRound-1])/4;
-            }
         }
 
         KillCounter killCounter = GameObject.FindWithTag("KillCounter").GetComponent<KillCounter>();
