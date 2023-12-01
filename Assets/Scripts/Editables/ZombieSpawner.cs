@@ -59,9 +59,15 @@ public class ZombieSpawner : NetworkBehaviour
             Instantiate(zombieSpawnParticles, transform.position, Quaternion.identity);
             yield return new WaitForSeconds(0.5f);
             GameObject clone;
-            clone = Instantiate(zombiePrefab, transform.position, Quaternion.identity);
-            clone.GetComponent<damageSource>().owner = owner;
-            clone.GetComponent<NetworkObject>().Spawn();
+            int numberOfInstances = 1;
+            if (GameManager.numberOfPlayers.Value >= 3) {
+                numberOfInstances++;
+            }
+            for (int i = 0; i < numberOfInstances; i++) {
+                clone = Instantiate(zombiePrefab, transform.position, Quaternion.identity);
+                clone.GetComponent<damageSource>().owner = owner;
+                clone.GetComponent<NetworkObject>().Spawn();
+            }
             StartCoroutine(SpawnZombie());
         }
     }
